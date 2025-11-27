@@ -1,0 +1,73 @@
+{
+  "id": "C001",
+  "name": "Web Development Bootcamp",
+  "logo": "https://cdn-icons-png.flaticon.com/512/919/919827.png",
+  "color": "#e6eafd",
+  "code": "WDB-2025-01",
+  "status": "active",
+  "trainer": "Dr. Sarah Johnson",
+  "schedule": "Mon, Wed, Fri - 10:00 AM",
+  "duration": "2025-11-01 to 2026-02-28",
+  "totalSessions": 36,
+  "description": "A hands-on full-stack web development bootcamp covering HTML, CSS, JavaScript, React, Node.js, and deployment.",
+  "students": ["stu1", "stu2", "stu3", "stu4", "stu7", "stu10", "stu13"],
+  "assignments": 8,
+  "attendance": [
+    { "date": "2025-11-24", "topic": "React Hooks", "status": "Present" },
+    { "date": "2025-11-22", "topic": "State Management", "status": "Absent" },
+    { "date": "2025-11-20", "topic": "CSS Flexbox", "status": "Present" }
+  ],
+  "resources": [
+    {
+      "name": "React Hooks Guide",
+      "type": "pdf",
+      "link": "https://example.com/react-hooks.pdf",
+      "uploaded": "2025-11-20",
+      "by": "Dr. Sarah Johnson"
+    },
+    {
+      "name": "Flexbox Cheatsheet",
+      "type": "pdf",
+      "link": "https://example.com/flexbox.pdf",
+      "uploaded": "2025-11-18",
+      "by": "Dr. Sarah Johnson"
+    },
+    {
+      "name": "State Management Video",
+      "type": "video",
+      "link": "https://example.com/state-management.mp4",
+      "uploaded": "2025-11-21",
+      "by": "Dr. Sarah Johnson"
+    }
+  ],
+  "sessions": [
+    {
+      "date": "2025-11-24",
+      "time": "10:00 AM",
+      "topic": "React Hooks",
+      "recording": "https://example.com/rec-react-hooks.mp4"
+    },
+    {
+      "date": "2025-11-22",
+      "time": "10:00 AM",
+      "topic": "State Management",
+      "recording": "https://example.com/rec-state-management.mp4"
+    },
+    {
+      "date": "2025-11-20",
+      "time": "10:00 AM",
+      "topic": "CSS Flexbox",
+      "recording": "https://example.com/rec-flexbox.mp4"
+    }
+  ],
+  "stats": {
+    "sessionsCompleted": 3,
+    "materialsAvailable": 3,
+    "attendancePercent": 90
+  },
+  "nextSession": {
+    "date": "2025-11-27",
+    "time": "10:00 AM",
+    "topic": "Node.js Basics"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "studentId": "stu2",
+  "name": "Rahul Sharma",
+  "email": "rahul.sharma@example.com",
+  "courses": ["C001", "C003", "C005", "C007"],
+  "notifications": [
+    "Welcome Rahul! You are enrolled in 4 active courses.",
+    "UI/UX Design Fundamentals (C003) session starts on Saturday at 11:00 AM."
+  ],
+  "recentActivity": [
+    "Updated profile details",
+    "Downloaded Flutter Getting Started PDF",
+    "Viewed Machine Learning & AI Fundamentals overview"
+  ]
+}

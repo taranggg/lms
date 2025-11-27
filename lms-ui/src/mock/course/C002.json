@@ -1,0 +1,85 @@
+{
+  "id": "C002",
+  "name": "Data Science with Python",
+  "logo": "https://cdn-icons-png.flaticon.com/512/5968/5968350.png",
+  "color": "#e6f7ff",
+  "code": "DSP-2025-01",
+  "status": "active",
+  "trainer": "Prof. Anil Mehta",
+  "schedule": "Tue, Thu - 7:00 PM",
+  "duration": "2025-11-05 to 2026-03-05",
+  "totalSessions": 40,
+  "description": "Learn data analysis, visualization, and machine learning using Python, NumPy, Pandas, Matplotlib, and Scikit-learn.",
+  "students": ["stu1", "stu3", "stu5", "stu6", "stu8", "stu11", "stu14"],
+  "assignments": 9,
+  "attendance": [
+    {
+      "date": "2025-11-23",
+      "topic": "Exploratory Data Analysis",
+      "status": "Present"
+    },
+    {
+      "date": "2025-11-21",
+      "topic": "Data Cleaning with Pandas",
+      "status": "Present"
+    },
+    {
+      "date": "2025-11-19",
+      "topic": "Python for Data Science Basics",
+      "status": "Absent"
+    }
+  ],
+  "resources": [
+    {
+      "name": "Pandas Basics Handbook",
+      "type": "pdf",
+      "link": "https://example.com/pandas-basics.pdf",
+      "uploaded": "2025-11-18",
+      "by": "Prof. Anil Mehta"
+    },
+    {
+      "name": "Data Visualization with Matplotlib",
+      "type": "video",
+      "link": "https://example.com/matplotlib-intro.mp4",
+      "uploaded": "2025-11-20",
+      "by": "Prof. Anil Mehta"
+    },
+    {
+      "name": "Intro to Machine Learning Slides",
+      "type": "pdf",
+      "link": "https://example.com/ml-intro-slides.pdf",
+      "uploaded": "2025-11-22",
+      "by": "Prof. Anil Mehta"
+    }
+  ],
+  "sessions": [
+    {
+      "date": "2025-11-23",
+      "time": "7:00 PM",
+      "topic": "Exploratory Data Analysis",
+      "recording": "https://example.com/rec-eda.mp4"
+    },
+    {
+      "date": "2025-11-21",
+      "time": "7:00 PM",
+      "topic": "Data Cleaning with Pandas",
+      "recording": "https://example.com/rec-pandas-cleaning.mp4"
+    },
+    {
+      "date": "2025-11-19",
+      "time": "7:00 PM",
+      "topic": "Python for Data Science Basics",
+      "recording": "https://example.com/rec-python-ds-basics.mp4"
+    }
+  ],
+  "stats": {
+    "sessionsCompleted": 3,
+    "materialsAvailable": 3,
+    "attendancePercent": 88
+  },
+  "nextSession": {
+    "date": "2025-11-27",
+    "time": "7:00 PM",
+    "topic": "Data Visualization with Matplotlib"
+  }
+}

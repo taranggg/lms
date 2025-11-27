@@ -1,0 +1,15 @@
+{
+  "studentId": "stu14",
+  "name": "Vikram Rao",
+  "email": "vikram.rao@example.com",
+  "courses": ["C002", "C005", "C007"],
+  "notifications": [
+    "Welcome Vikram! You have joined Data Science with Python (C002).",
+    "Machine Learning & AI Fundamentals (C007) project deadline updated."
+  ],
+  "recentActivity": [
+    "Viewed Matplotlib Visualization video",
+    "Watched Classification Algorithms recording",
+    "Checked Flutter weekend schedule"
+  ]
+}

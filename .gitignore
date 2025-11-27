@@ -1,0 +1,12 @@
+/lms-ui/node_modules
+/lms-ui/dist
+/lms-ui/build
+/lms-ui/.env
+/lms-ui/package-lock.json
+/lms-ui/.next
+
+/lms-backend/node_modules
+/lms-backend/dist
+/lms-backend/.env
+/lms-backend/package-lock.json
+/lms-backend/config

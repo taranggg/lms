@@ -1,0 +1,15 @@
+{
+  "studentId": "stu12",
+  "name": "Lucas Martin",
+  "email": "lucas.martin@example.com",
+  "courses": ["C003", "C005", "C008"],
+  "notifications": [
+    "Welcome Lucas! You are in UI/UX Design Fundamentals (C003) and 2 more courses.",
+    "Product Management for Tech Teams (C008) backlog prioritization session scheduled for 30 Nov."
+  ],
+  "recentActivity": [
+    "Watched Low-Fidelity Wireframes recording",
+    "Viewed Flutter Layouts & Navigation recording",
+    "Opened User Story Writing Guide PDF"
+  ]
+}

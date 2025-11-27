@@ -1,0 +1,15 @@
+{
+  "studentId": "stu8",
+  "name": "Karan Malhotra",
+  "email": "karan.malhotra@example.com",
+  "courses": ["C002", "C004", "C005", "C007"],
+  "notifications": [
+    "Welcome Karan! You’re enrolled in Data Science with Python (C002) and 3 more courses.",
+    "Next Machine Learning & AI Fundamentals (C007) session is on Model Evaluation & Metrics."
+  ],
+  "recentActivity": [
+    "Viewed Data Cleaning with Pandas recording",
+    "Downloaded Navigation & Routing in Flutter PDF",
+    "Watched Regression Basics recording"
+  ]
+}

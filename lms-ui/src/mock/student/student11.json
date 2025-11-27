@@ -1,0 +1,15 @@
+{
+  "studentId": "stu11",
+  "name": "Nisha Iyer",
+  "email": "nisha.iyer@example.com",
+  "courses": ["C002", "C005", "C007"],
+  "notifications": [
+    "Hi Nisha, you’re enrolled in Machine Learning & AI Fundamentals (C007).",
+    "New Flutter navigation PDF uploaded for Mobile App Development with Flutter (C005)."
+  ],
+  "recentActivity": [
+    "Viewed Exploratory Data Analysis recording",
+    "Downloaded Flutter Getting Started PDF",
+    "Opened Classification Demo video"
+  ]
+}

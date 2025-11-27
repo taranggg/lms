@@ -1,0 +1,15 @@
+{
+  "studentId": "stu15",
+  "name": "Zara Ali",
+  "email": "zara.ali@example.com",
+  "courses": ["C004", "C005", "C008"],
+  "notifications": [
+    "Hi Zara, your next Cloud Computing on Azure (C004) session is on Azure Networking Basics.",
+    "New Product Canvas Template uploaded for Product Management for Tech Teams (C008)."
+  ],
+  "recentActivity": [
+    "Watched Introduction to Flutter & Dart recording",
+    "Viewed Azure Portal & Resource Groups recording",
+    "Opened Product Canvas Template PDF"
+  ]
+}

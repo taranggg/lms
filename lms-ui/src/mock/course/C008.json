@@ -1,0 +1,90 @@
+{
+  "id": "C008",
+  "name": "Product Management for Tech Teams",
+  "logo": "https://cdn-icons-png.flaticon.com/512/3500/3500833.png",
+  "color": "#e9f7fb",
+  "code": "PMGT-2025-01",
+  "status": "active",
+  "trainer": "Ananya Sharma",
+  "schedule": "Sun - 10:00 AM",
+  "duration": "2025-11-10 to 2026-01-31",
+  "totalSessions": 18,
+  "description": "Learn how to define product vision, write user stories, prioritize backlogs, and collaborate with engineering and design teams.",
+  "students": [
+    "stu1",
+    "stu3",
+    "stu6",
+    "stu9",
+    "stu10",
+    "stu12",
+    "stu13",
+    "stu15"
+  ],
+  "assignments": 5,
+  "attendance": [
+    { "date": "2025-11-24", "topic": "MVP & Roadmapping", "status": "Present" },
+    {
+      "date": "2025-11-17",
+      "topic": "User Personas & Journey Mapping",
+      "status": "Present"
+    },
+    {
+      "date": "2025-11-10",
+      "topic": "Intro to Product Management",
+      "status": "Absent"
+    }
+  ],
+  "resources": [
+    {
+      "name": "Product Canvas Template",
+      "type": "pdf",
+      "link": "https://example.com/product-canvas.pdf",
+      "uploaded": "2025-11-09",
+      "by": "Ananya Sharma"
+    },
+    {
+      "name": "User Story Writing Guide",
+      "type": "pdf",
+      "link": "https://example.com/user-stories-guide.pdf",
+      "uploaded": "2025-11-16",
+      "by": "Ananya Sharma"
+    },
+    {
+      "name": "Roadmapping in Agile Teams",
+      "type": "video",
+      "link": "https://example.com/roadmapping-agile.mp4",
+      "uploaded": "2025-11-23",
+      "by": "Ananya Sharma"
+    }
+  ],
+  "sessions": [
+    {
+      "date": "2025-11-24",
+      "time": "10:00 AM",
+      "topic": "MVP & Roadmapping",
+      "recording": "https://example.com/rec-mvp-roadmap.mp4"
+    },
+    {
+      "date": "2025-11-17",
+      "time": "10:00 AM",
+      "topic": "User Personas & Journey Mapping",
+      "recording": "https://example.com/rec-personas-journey.mp4"
+    },
+    {
+      "date": "2025-11-10",
+      "time": "10:00 AM",
+      "topic": "Intro to Product Management",
+      "recording": "https://example.com/rec-pm-intro.mp4"
+    }
+  ],
+  "stats": {
+    "sessionsCompleted": 3,
+    "materialsAvailable": 3,
+    "attendancePercent": 87
+  },
+  "nextSession": {
+    "date": "2025-11-30",
+    "time": "10:00 AM",
+    "topic": "Backlog Prioritization Techniques"
+  }
+}

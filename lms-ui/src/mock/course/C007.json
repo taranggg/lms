@@ -1,0 +1,81 @@
+{
+  "id": "C007",
+  "name": "Machine Learning & AI Fundamentals",
+  "logo": "https://cdn-icons-png.flaticon.com/512/4712/4712035.png",
+  "color": "#fdf0ff",
+  "code": "MLAI-2025-01",
+  "status": "active",
+  "trainer": "Dr. Kavita Rao",
+  "schedule": "Tue, Thu - 8:00 PM",
+  "duration": "2025-11-12 to 2026-03-10",
+  "totalSessions": 36,
+  "description": "A beginner-friendly course on machine learning and AI concepts with practical projects using Python and Scikit-learn.",
+  "students": ["stu2", "stu3", "stu4", "stu5", "stu8", "stu11", "stu14"],
+  "assignments": 8,
+  "attendance": [
+    {
+      "date": "2025-11-26",
+      "topic": "Classification Algorithms",
+      "status": "Present"
+    },
+    { "date": "2025-11-20", "topic": "Regression Basics", "status": "Present" },
+    {
+      "date": "2025-11-18",
+      "topic": "Supervised vs Unsupervised Learning",
+      "status": "Absent"
+    }
+  ],
+  "resources": [
+    {
+      "name": "ML Concepts Overview",
+      "type": "pdf",
+      "link": "https://example.com/ml-concepts.pdf",
+      "uploaded": "2025-11-17",
+      "by": "Dr. Kavita Rao"
+    },
+    {
+      "name": "Linear Regression Notebook",
+      "type": "pdf",
+      "link": "https://example.com/linear-regression-notes.pdf",
+      "uploaded": "2025-11-19",
+      "by": "Dr. Kavita Rao"
+    },
+    {
+      "name": "Classification Demo",
+      "type": "video",
+      "link": "https://example.com/classification-demo.mp4",
+      "uploaded": "2025-11-25",
+      "by": "Dr. Kavita Rao"
+    }
+  ],
+  "sessions": [
+    {
+      "date": "2025-11-26",
+      "time": "8:00 PM",
+      "topic": "Classification Algorithms",
+      "recording": "https://example.com/rec-classification.mp4"
+    },
+    {
+      "date": "2025-11-20",
+      "time": "8:00 PM",
+      "topic": "Regression Basics",
+      "recording": "https://example.com/rec-regression.mp4"
+    },
+    {
+      "date": "2025-11-18",
+      "time": "8:00 PM",
+      "topic": "Supervised vs Unsupervised Learning",
+      "recording": "https://example.com/rec-supervised-unsupervised.mp4"
+    }
+  ],
+  "stats": {
+    "sessionsCompleted": 3,
+    "materialsAvailable": 3,
+    "attendancePercent": 90
+  },
+  "nextSession": {
+    "date": "2025-11-27",
+    "time": "8:00 PM",
+    "topic": "Model Evaluation & Metrics"
+  }
+}
