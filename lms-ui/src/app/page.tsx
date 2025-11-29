@@ -1,3 +1,4 @@
+"use client"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { GraduationCap, UserCog, Users, School } from "lucide-react";
 import { Button } from "@/components/ui/button";
