@@ -37,24 +37,23 @@ export default function StudentDashboard() {
           router.push("/student/login");
           return;
         }
-        const mod = await import(
-          `@/mock/student/student${studentId.replace("stu", "")}.json`
-        );
-        const studentData = mod.default;
-        setStudent(studentData);
-
-        // Load batch details dynamically
-        const batchIds = studentData.batches;
-        const batchPromises = batchIds.map((id: string) =>
-          import(`@/mock/batch/${id}.json`).then((b) => b.default)
-        );
-        const batchDetails = await Promise.all(batchPromises);
-        setBatches(batchDetails);
+        // Find student in mock array
+        const student = students.find((s) => s.studentId === studentId) || null;
+        setStudent(student);
+        // Find batch details from courses
+        if (student) {
+          const batchDetails = student.courses
+            .map((courseId: string) => courses.find((c) => c.id === courseId))
+            .filter(Boolean);
+          setBatches(batchDetails);
+        }
         setLoading(false);
       }
     }
     loadStudentAndBatches();
   }, [router]);
+  import { students } from "@/mock/student/students_mock";
+  import { courses } from "@/mock/course/courses_mock";
 
   if (loading || !student) {
     return (

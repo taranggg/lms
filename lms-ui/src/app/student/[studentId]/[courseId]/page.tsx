@@ -18,46 +18,15 @@ import SessionsTab from "@/components/student/course-detail/SessionsTab";
 import AttendanceTab from "@/components/student/course-detail/AttendanceTab";
 import StudentNavbar from "@/components/student/StudentNavbar";
 
+import { students } from "@/mock/student/students_mock";
+import { courses } from "@/mock/course/courses_mock";
+
 function useStudentData(studentId: string) {
-  const [student, setStudent] = React.useState<Record<string, unknown> | null>(
-    null
-  );
-
-  React.useEffect(() => {
-    async function fetchStudent() {
-      if (!studentId) return;
-      try {
-        const mod = await import(
-          `@/mock/student/student${studentId.replace("stu", "")}.json`
-        );
-        setStudent(mod.default);
-      } catch {
-        setStudent(null);
-      }
-    }
-    fetchStudent();
-  }, [studentId]);
-
-  return student;
+  return students.find((s) => s.studentId === studentId) || null;
 }
 
 function useCourseData(courseId: string) {
-  const [course, setCourse] = React.useState<Course | null>(null);
-
-  React.useEffect(() => {
-    async function fetchCourse() {
-      if (!courseId) return;
-      try {
-        const mod = await import(`@/mock/course/${courseId}.json`);
-        setCourse(mod.default as Course);
-      } catch {
-        setCourse(null);
-      }
-    }
-    fetchCourse();
-  }, [courseId]);
-
-  return course;
+  return courses.find((c) => c.id === courseId) || null;
 }
 
 export default function StudentCourseDetail() {

@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import type { Batch } from "@/types/student/type";
 import { BatchmateList } from "@/components/student/BatchmateList";
+import { students } from "@/mock/student/students_mock";
+import { courses } from "@/mock/course/courses_mock";
 
 export default function StudentBatchDetail() {
   type Student = {
@@ -32,30 +34,23 @@ export default function StudentBatchDetail() {
   const params = useParams();
 
   useEffect(() => {
-    async function fetchData() {
-      if (typeof window !== "undefined") {
-        const studentId = window.localStorage.getItem("student_logged_in");
-        if (!studentId) {
-          router.push("/student/login");
-          return;
-        }
-        // Load student data
-        const studentMod = await import(
-          `@/mock/student/student${studentId.replace("stu", "")}.json`
-        );
-        const student: Student = studentMod.default;
-        setStudentData(student);
-        // Load batch details for each batch ID
-        const batchPromises = student.batches.map((batchId) =>
-          import(`@/mock/batch/batch${batchId.replace("batch", "")}.json`).then(
-            (mod) => mod.default
-          )
-        );
-        const batches: Batch[] = await Promise.all(batchPromises);
-        setBatchDetails(batches);
+    if (typeof window !== "undefined") {
+      const studentId = window.localStorage.getItem("student_logged_in");
+      if (!studentId) {
+        router.push("/student/login");
+        return;
+      }
+      // Find student in mock array
+      const student = students.find((s) => s.studentId === studentId) || null;
+      setStudentData(student);
+      // Find batch details from courses
+      if (student) {
+        const batchDetails: Batch[] = student.courses
+          .map((courseId) => courses.find((c) => c.id === courseId))
+          .filter(Boolean) as Batch[];
+        setBatchDetails(batchDetails);
       }
     }
-    fetchData();
   }, [router]);
 
   // Set selectedBatch based on batchId from URL

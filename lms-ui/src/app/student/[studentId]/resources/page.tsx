@@ -4,6 +4,8 @@ import StudentResourcesPage from "@/components/student/StudentResourcesPage";
 import { useParams, useRouter } from "next/navigation";
 import type { CourseCard } from "@/components/dashboard/CourseCards";
 export type Resource = CourseCard["resources"][number];
+import { students } from "@/mock/student/students_mock";
+import { courses } from "@/mock/course/courses_mock";
 
 export default function Page() {
   const { studentId } = useParams();
@@ -19,15 +21,15 @@ export default function Page() {
           router.push("/student/login");
           return;
         }
-        const mod = await import(
-          `@/mock/student/student${sid.replace("stu", "")}.json`
-        );
-        const studentData = mod.default;
-        const courseIds = studentData.courses;
-        const coursePromises = courseIds.map((id: string) =>
-          import(`@/mock/course/${id}.json`).then((c) => c.default)
-        );
-        const courseDetails = await Promise.all(coursePromises);
+        // Find student in mock array
+        const student = students.find((s) => s.studentId === sid) || null;
+        if (!student) {
+          router.push("/student/login");
+          return;
+        }
+        const courseDetails = student.courses
+          .map((id: string) => courses.find((c) => c.id === id))
+          .filter(Boolean);
         // Aggregate resources from all courses
         const allResources = courseDetails.flatMap(
           (course) => course.resources || []

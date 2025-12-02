@@ -4,7 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Users, FileText, Calendar, BadgeCheck } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import batchDetailsData from "@/mock/studentBatchDetails.json";
+import { courses } from "@/mock/course/courses_mock";
 import type { Batch, AttendanceRecord } from "@/types/student/type";
 import BatchOverview from "@/components/student/BatchOverview";
 import BatchStats from "@/components/student/BatchStats";
@@ -16,9 +16,7 @@ export default function StudentBatchDetail() {
   const router = useRouter();
   const params = useParams();
   const batchId = params?.id as string;
-  const batch =
-    (batchDetailsData.batches as Batch[]).find((b) => b.id === batchId) ||
-    (batchDetailsData.batches as Batch[])[0];
+  const batch = courses.find((c) => c.id === batchId) || courses[0];
   const [tab, setTab] = React.useState("overview");
   React.useEffect(() => {
     if (
