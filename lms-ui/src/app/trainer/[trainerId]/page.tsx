@@ -1,21 +1,25 @@
-"use client"
+"use client";
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-interface TrainerDashboardProps {
-  params: { trainerId: string };
-}
+import { useParams } from "next/navigation";
+import { trainers, Trainer, Batch } from "@/mock/trainer/trainers";
 
-export default function TrainerDashboard({ params }: TrainerDashboardProps) {
-  // Dummy data for UI
-  const trainer = { name: "Mr. Smith", id: params.trainerId };
-  const batches = [
-    { name: "Batch A", schedule: "Mon, Wed, Fri - 5:00pm", id: 1 },
-    { name: "Batch B", schedule: "Tue, Thu - 4:00pm", id: 2 },
-  ];
-  // ...existing code...
+export default function TrainerDashboard() {
+  const { trainerId } = useParams();
+  const trainer = trainers.find(
+    (t: Trainer) => String(t.id) === String(trainerId)
+  );
+  if (!trainer) {
+    return <div className="p-8 text-center">Trainer not found.</div>;
+  }
+  const batches = trainer.batches.map((batch: Batch) => ({
+    name: batch.name,
+    schedule: batch.schedule,
+    id: batch.id,
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 flex flex-col gap-6">
