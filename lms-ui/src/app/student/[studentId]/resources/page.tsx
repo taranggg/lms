@@ -31,8 +31,8 @@ export default function Page() {
           .map((id: string) => courses.find((c) => c.id === id))
           .filter(Boolean);
         // Aggregate resources from all courses
-        const allResources = courseDetails.flatMap(
-          (course) => course.resources || []
+        const allResources = courseDetails.flatMap((course) =>
+          Array.isArray(course?.resources) ? course.resources : []
         );
         setResources(allResources);
         setLoading(false);

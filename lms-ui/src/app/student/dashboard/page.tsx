@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import type { Batch, Resource, Session } from "@/types/student/type";
+import type { AttendanceRecord } from "@/types/student/type";
 import {
   School,
   LogOut,
@@ -14,6 +15,8 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { students } from "@/mock/student/students_mock";
+import { courses } from "@/mock/course/courses_mock";
 
 export default function StudentDashboard() {
   const router = useRouter();
@@ -30,32 +33,67 @@ export default function StudentDashboard() {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    async function loadStudentAndBatches() {
-      if (typeof window !== "undefined") {
-        const studentId = window.localStorage.getItem("student_logged_in");
-        if (!studentId) {
-          router.push("/student/login");
-          return;
-        }
-        // Find student in mock array
-        const student = students.find((s) => s.studentId === studentId) || null;
-        setStudent(student);
-        // Find batch details from courses
-        if (student) {
-          const batchDetails = student.courses
-            .map((courseId: string) => courses.find((c) => c.id === courseId))
-            .filter(Boolean);
-          setBatches(batchDetails);
-        }
-        setLoading(false);
-      }
+    // Only run on client
+    if (typeof window === "undefined") return;
+    const studentId = window.localStorage.getItem("student_logged_in");
+    if (!studentId) {
+      router.push("/student/login");
+      return;
     }
-    loadStudentAndBatches();
+    // Find student in mock array
+    const foundStudent =
+      students.find((s) => s.studentId === studentId) || null;
+    if (foundStudent) {
+      // Compose student object with batches
+      const batchDetailsRaw = Array.isArray(foundStudent.courses)
+        ? foundStudent.courses.map((courseId: string) =>
+            courses.find((c) => String(c.id) === String(courseId))
+          )
+        : [];
+      // Only map defined batches and fill missing properties
+      const batchDetails: Batch[] = batchDetailsRaw
+        .filter((b): b is (typeof courses)[0] => !!b)
+        .map((b) => ({
+          classmates: [],
+          id: b.id ?? "",
+          name: b.name ?? "",
+          logo: b.logo ?? "",
+          color: b.color ?? "",
+          code: b.code ?? "",
+          status: b.status ?? "",
+          trainer: b.trainer ?? "",
+          schedule: b.schedule ?? "",
+          duration: b.duration ?? "",
+          totalSessions: b.totalSessions ?? 0,
+          description: b.description ?? "",
+          students: Array.isArray(b.students) ? b.students : [],
+          assignments: Array.isArray(b.assignments) ? b.assignments : [],
+          resources: Array.isArray(b.resources) ? b.resources : [],
+          sessions: Array.isArray(b.sessions) ? b.sessions : [],
+          nextSession: b.nextSession ?? null,
+          stats: b.stats ?? undefined,
+          attendance: Array.isArray(b.attendance)
+            ? (b.attendance as AttendanceRecord[])
+            : [],
+        }));
+      setStudent({
+        studentId: foundStudent.studentId,
+        name: foundStudent.name,
+        email: foundStudent.email,
+        batches: batchDetails,
+        notifications: foundStudent.notifications,
+        recentActivity: foundStudent.recentActivity,
+      });
+      setBatches(batchDetails);
+    } else {
+      setStudent(null);
+      setBatches([]);
+    }
+    setLoading(false);
   }, [router]);
-  import { students } from "@/mock/student/students_mock";
-  import { courses } from "@/mock/course/courses_mock";
 
-  if (loading || !student) {
+  // Always render loading spinner on SSR to prevent hydration mismatch
+  if (typeof window === "undefined" || loading || !student) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <span className="text-lg text-[var(--muted-foreground)]">
