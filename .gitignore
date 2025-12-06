@@ -5,8 +5,7 @@
 /lms-ui/package-lock.json
 /lms-ui/.next
 
-/lms-backend/node_modules
-/lms-backend/dist
-/lms-backend/.env
-/lms-backend/package-lock.json
-/lms-backend/config
+/lms-server/node_modules
+/lms-server/dist
+/lms-server/package-lock.json
+/lms-server/src/config/config.env
