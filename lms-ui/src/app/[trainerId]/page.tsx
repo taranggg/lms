@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import TrainerDashboardComponent from "@/components/trainer/TrainerDashboard";
 import type { Batch } from "@/types/trainer/type";
 import type { CourseCard } from "@/components/dashboard/CourseCards";
@@ -9,7 +9,9 @@ import type { TodoMainTask } from "@/components/dashboard/TodoList";
 import { trainers as trainerData } from "@/mock/trainer/trainers_courses";
 
 export default function TrainerDashboard() {
+  const params = useParams();
   const router = useRouter();
+  const trainerId = params?.trainerId as string;
 
   type Trainer = {
     trainerId: string;
@@ -25,20 +27,11 @@ export default function TrainerDashboard() {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Only run on client
-    if (typeof window === "undefined") return;
-
-    const trainerId = window.localStorage.getItem("trainer_logged_in");
-    if (!trainerId) {
-      router.push("/trainer/login");
-      return;
-    }
-
+    if (!trainerId) return;
     // Find trainer in mock array
     const foundTrainer = trainerData.find((t) => String(t.id) === trainerId);
-
     if (foundTrainer) {
-      // Map courses to CourseCard format
+      // Map courses to CourseCard format with all required fields
       const mappedCourses: CourseCard[] = foundTrainer.courses.map(
         (course) => ({
           id: course.id,
@@ -53,10 +46,28 @@ export default function TrainerDashboard() {
           totalSessions: course.totalSessions,
           description: course.description,
           students: [],
-          resources: course.resources || [],
+          assignments: course.assignments || 0,
+          attendance: [],
+          resources: (course.resources || []).map((r) => ({
+            name: r.name,
+            type: r.type,
+            link: r.link,
+            uploaded: "2025-12-01",
+            by: foundTrainer.name,
+          })),
+          sessions: [],
+          stats: {
+            sessionsCompleted: 0,
+            materialsAvailable: (course.resources || []).length,
+            attendancePercent: 100,
+          },
+          nextSession: {
+            date: "2025-12-10",
+            time: "10:00 AM",
+            topic: "Next Topic",
+          },
         })
       );
-
       setTrainer({
         trainerId: String(foundTrainer.id),
         name: foundTrainer.name,
@@ -71,10 +82,9 @@ export default function TrainerDashboard() {
       setCourses([]);
     }
     setLoading(false);
-  }, [router]);
+  }, [trainerId]);
 
-  // Loading state
-  if (typeof window === "undefined" || loading || !trainer) {
+  if (!trainerId || loading || !trainer) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <span className="text-lg text-[var(--muted-foreground)]">
