@@ -11,6 +11,7 @@ export interface Batch extends mongoose.Document {
   status: "Running" | "Completed";
   currentTopic: string;
   type: "Weekdays" | "Weekends";
+  googleMeetLink: string;
 }
 
 const batchSchema = new mongoose.Schema<Batch>({
@@ -57,6 +58,9 @@ const batchSchema = new mongoose.Schema<Batch>({
     type: String,
     enum: ["Weekdays", "Weekends"],
     required: true,
+  },
+  googleMeetLink: {
+    type: String,
   },
 });
 

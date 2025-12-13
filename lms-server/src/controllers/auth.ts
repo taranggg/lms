@@ -10,9 +10,13 @@ export async function adminGoogleLogin(req: Request, res: Response) {
     const { email } = decodedToken;
     const isEmailExist = await EmailModel.findOne({ email });
     if (isEmailExist) {
-      const token = jwt.sign({ email }, process.env.JWT_SECRET as string, {
-        expiresIn: "9h",
-      });
+      const token = jwt.sign(
+        { email, role: isEmailExist.role },
+        process.env.JWT_SECRET as string,
+        {
+          expiresIn: "9h",
+        }
+      );
       return res.status(200).json({ token });
     } else {
       return res.status(401).json({ message: "Unauthorized" });
@@ -31,9 +35,13 @@ export async function trainerGoogleLogin(req: Request, res: Response) {
     const { email } = decodedToken;
     const isEmailExist = await EmailModel.findOne({ email });
     if (isEmailExist) {
-      const token = jwt.sign({ email }, process.env.JWT_SECRET as string, {
-        expiresIn: "9h",
-      });
+      const token = jwt.sign(
+        { email, role: isEmailExist.role },
+        process.env.JWT_SECRET as string,
+        {
+          expiresIn: "9h",
+        }
+      );
       return res.status(200).json({ token });
     } else {
       return res.status(401).json({ message: "Unauthorized" });

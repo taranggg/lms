@@ -1,6 +1,5 @@
 import express from "express";
 import { adminGoogleLogin, trainerGoogleLogin } from "../controllers/auth.js";
-import { authenticator } from "../middlewares/authenticator.js";
 
 const router = express.Router();
 
