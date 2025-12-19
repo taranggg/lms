@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # 1. The React Frontend
+  # client:
+  #   build: ./lms-ui
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NEXT_PUBLIC_MODE=dev
+  #     - NEXT_PUBLIC_DEV_BASE_URL=http://localhost:8000
+  #     - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_SECRET}
+  #     - WATCHPACK_POLLING=true
+  #     - CHOKIDAR_USEPOLLING=true
+  #   volumes:
+  #     - ./lms-ui:/app         # Syncs your code changes in real-time
+  #     - /app/node_modules     # Prevents overwriting container node_modules
+  #   stdin_open: true          # Fixes React exit bug in Docker
+  #   depends_on:
+  #     - server
+
+  # 2. The Node/Express Backend
+  server:
+    build: ./lms-server
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=mongodb://mongo_db:27017/lms_db
+      - PORT=8000
+      - JWT_SECRET=${JWT_SECRET}
+    volumes:
+      - ./lms-server:/app
+      - /app/node_modules
+    depends_on:
+      - mongo_db
+
+  # 3. The Database (No Dockerfile needed!)
+  mongo_db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db   # Persists data even if you delete containers
+
+volumes:
+  mongo-data:
