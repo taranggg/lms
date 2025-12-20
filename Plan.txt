@@ -1,3 +1,8 @@
+Version 1:
+   -Interactive and crazy ass Calander
+
 Version 2:
   -Full custome themeing with color and font pllet like tweakcn
-  -
+ 
+Version 3:
+  -Chat options
