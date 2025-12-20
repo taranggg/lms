@@ -175,7 +175,7 @@ export default function TodoList({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-6 mt-6">
+    <div className="bg-card rounded-xl shadow p-6 mt-6">
       <div className="flex items-center justify-between mb-4">
         <div className="font-semibold text-lg">To Do List</div>
         <Button
