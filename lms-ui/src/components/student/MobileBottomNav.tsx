@@ -23,7 +23,7 @@ export default function MobileBottomNav({ items }: MobileBottomNavProps) {
   if (!items || items.length === 0) return null;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-[var(--card)]/95 backdrop-blur z-40">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-[var(--card)]/95 backdrop-blur z-40">
       <div className="flex justify-around py-2">
         {items.map((item) => (
           <Button

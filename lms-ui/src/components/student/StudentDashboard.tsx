@@ -52,9 +52,6 @@ interface CenterSectionProps {
   hoursSpent: HourSpent[];
   leaderboard: LeaderboardEntry[];
   studentId: string;
-  todoList: TodoItem[];
-  calendarDate: Date;
-  setCalendarDate: React.Dispatch<React.SetStateAction<Date>>;
 }
 
 function CenterSection({
@@ -63,20 +60,8 @@ function CenterSection({
   hoursSpent,
   leaderboard,
   studentId,
-  todoList,
-  calendarDate,
-  setCalendarDate,
 }: CenterSectionProps) {
   const [search, setSearch] = React.useState("");
-  const [profileModalOpen, setProfileModalOpen] = React.useState(false);
-  const [profile, setProfile] = React.useState<StudentProfile>({
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
-    name: student.name,
-    age: "",
-    profession: "College Student",
-    gender: "Other",
-    email: "",
-  });
 
   const filteredCourses = courses.filter((c) => {
     const query = search.toLowerCase();
@@ -112,61 +97,7 @@ function CenterSection({
             {/* <Leaderboard entries={leaderboard} /> */}
           </div>
 
-           {/* ------------------ TABLET SECTION (Right content moved to bottom) ------------------ */}
-          <div className="flex flex-col gap-8 lg:hidden xl:col-span-3">
-               <div className="flex flex-col gap-6">
-                   {/* Profile Snippet */}
-                   <div className="bg-muted/30 rounded-xl p-4 flex flex-col items-center">
-                       <div className="flex items-center justify-between w-full mb-4">
-                           <div className="font-semibold text-base">Profile</div>
-                           <button
-                             type="button"
-                             className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-                             onClick={() => setProfileModalOpen(true)}
-                             aria-label="Edit profile"
-                           >
-                             <Pencil size={18} />
-                           </button>
-                       </div>
-                       <div className="relative mb-2">
-                          <Image
-                            src={profile.image || "https://randomuser.me/api/portraits/women/44.jpg"}
-                            alt={profile.name}
-                            width={72}
-                            height={72}
-                            className="rounded-full relative z-10 object-cover ring-2 ring-sky-200"
-                          />
-                        </div>
-                        <div className="font-semibold text-sm mt-1">{profile.name}</div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-[11px] text-muted-foreground">{profile.profession}</span>
-                          <span className="bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full text-[10px] font-semibold">Active</span>
-                        </div>
-                   </div>
 
-                   {/* Calendar */}
-                   <div className="bg-muted/40 rounded-xl p-4">
-                       <WeeklyCalendar
-                          selected={calendarDate}
-                          onSelect={setCalendarDate}
-                          className="rounded-xl bg-background"
-                        />
-                   </div>
-                   
-                   {/* Todo List */}
-                    <div>
-                      <h3 className="font-bold text-lg text-foreground mb-4">To Do List</h3>
-                      <TodoList items={todoList} />
-                    </div>
-
-                    <StudentProfileForm
-                      open={profileModalOpen}
-                      onClose={() => setProfileModalOpen(false)}
-                      initialProfile={profile}
-                      onSave={setProfile}
-                    />
-               </div>
-          </div>
         </div>
       </div>
     </div>
@@ -451,7 +382,7 @@ export default function StudentDashboardComponent({
   return (
     <div className="flex bg-background h-screen overflow-hidden">
       {/* Desktop + Tablet */}
-      <div className="hidden md:flex w-full">
+      <div className="hidden lg:flex w-full">
         <Sidebar items={sidebarItems} />
 
         <div className="flex flex-1 min-w-0">
@@ -463,9 +394,6 @@ export default function StudentDashboardComponent({
                 hoursSpent={hoursSpent}
                 leaderboard={leaderboard}
                 studentId={studentId}
-                todoList={todoList}
-                calendarDate={calendarDate}
-                setCalendarDate={setCalendarDate}
               />
               <div className="hidden lg:flex">
                 <div className="w-px bg-border mx-2 h-screen" />
@@ -496,7 +424,7 @@ export default function StudentDashboardComponent({
       </div>
 
       {/* Mobile + Bottom Nav */}
-      <div className="flex flex-col w-full md:hidden min-h-screen pb-14">
+      <div className="flex flex-col w-full lg:hidden h-full overflow-y-auto pb-14">
         {activePage === "Overview" && (
           <MobileOverview
             student={student}
