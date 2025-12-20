@@ -17,6 +17,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import AddTrainerForm from "@/components/admin/forms/AddTrainerForm";
 
 // Mock Data
 const MOCK_TRAINERS = [
@@ -30,7 +38,6 @@ const MOCK_TRAINERS = [
     email: "sarah.w@example.com",
     phone: "+1 234 567 890",
     status: "Active",
-    color: "from-pink-500 to-rose-400",
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {
@@ -43,7 +50,6 @@ const MOCK_TRAINERS = [
     email: "mike.c@example.com",
     phone: "+1 234 567 891",
     status: "On Leave",
-    color: "from-violet-500 to-indigo-400",
     avatar: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
@@ -56,7 +62,6 @@ const MOCK_TRAINERS = [
     email: "emily.d@example.com",
     phone: "+1 234 567 892",
     status: "Active",
-    color: "from-cyan-500 to-teal-400",
     avatar: "https://randomuser.me/api/portraits/women/68.jpg",
   },
   {
@@ -69,7 +74,6 @@ const MOCK_TRAINERS = [
     email: "alex.t@example.com",
     phone: "+1 234 567 893",
     status: "Active",
-    color: "from-amber-500 to-orange-400",
     avatar: "https://randomuser.me/api/portraits/men/86.jpg",
   },
 ];
@@ -78,6 +82,7 @@ export default function AdminTrainersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [mounted, setMounted] = useState(false);
+  const [isAddTrainerOpen, setIsAddTrainerOpen] = useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -103,7 +108,7 @@ export default function AdminTrainersPage() {
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+                  <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
             Trainers
           </h1>
           <p className="text-gray-500 font-medium">
@@ -162,7 +167,7 @@ export default function AdminTrainersPage() {
             className="group relative bg-white/40 backdrop-blur-xl rounded-3xl border border-white/50 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
           >
             {/* Gradient Bar */}
-            <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r ${trainer.color}`} />
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-secondary" />
 
             <div className="flex justify-between items-start mb-6">
               <div className="flex gap-4 items-center">
@@ -172,13 +177,13 @@ export default function AdminTrainersPage() {
                         alt={trainer.name}
                         className="w-14 h-14 rounded-2xl object-cover shadow-sm border-2 border-white"
                     />
-                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${trainer.status === 'Active' ? 'bg-green-500' : 'bg-gray-400'}`} />
+                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${trainer.status === 'Active' ? 'bg-[var(--status-active)]' : 'bg-[var(--status-inactive)]'}`} />
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-800 text-lg leading-tight">
                     {trainer.name}
                   </h3>
-                  <span className="text-xs font-medium text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-md">
+                  <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">
                     {trainer.specialization}
                   </span>
                 </div>
@@ -219,7 +224,7 @@ export default function AdminTrainersPage() {
                     <BookOpen size={16} className="text-gray-400" />
                     <span>{trainer.activeBatches} Active Batches</span>
                 </div>
-                <button className="text-xs font-bold text-indigo-600 hover:underline">
+            <button className="text-xs font-bold text-primary hover:underline">
                     View Profile
                 </button>
             </div>
@@ -227,13 +232,27 @@ export default function AdminTrainersPage() {
         ))}
       </div>
 
-      {/* FAB */}
-      <button className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-pink-600 to-rose-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all duration-300 z-50 group">
-        <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
-        <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-            Add New Trainer
-        </span>
-      </button>
+      {/* FAB with Dialog */}
+      <Dialog open={isAddTrainerOpen} onOpenChange={setIsAddTrainerOpen}>
+        <DialogTrigger asChild>
+          <button className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-full shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all duration-300 z-50 group">
+            <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
+            <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                Add New Trainer
+            </span>
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px] bg-white/80 backdrop-blur-xl border-white/40 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+              Add New Trainer
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <AddTrainerForm onSuccess={() => setIsAddTrainerOpen(false)} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

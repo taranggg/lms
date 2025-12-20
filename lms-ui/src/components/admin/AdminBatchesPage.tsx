@@ -17,6 +17,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import CreateBatchForm from "@/components/admin/forms/CreateBatchForm";
 
 // Mock Data
 const MOCK_BATCHES = [
@@ -28,7 +36,6 @@ const MOCK_BATCHES = [
     trainer: "Sarah Wilson",
     students: 24,
     status: "Active",
-    color: "from-blue-500 to-cyan-400",
   },
   {
     id: 2,
@@ -38,7 +45,6 @@ const MOCK_BATCHES = [
     trainer: "Mike Chen",
     students: 18,
     status: "Active",
-    color: "from-emerald-500 to-teal-400",
   },
   {
     id: 3,
@@ -48,7 +54,6 @@ const MOCK_BATCHES = [
     trainer: "Emily Davis",
     students: 30,
     status: "Upcoming",
-    color: "from-purple-500 to-pink-400",
   },
   {
     id: 4,
@@ -58,7 +63,6 @@ const MOCK_BATCHES = [
     trainer: "Alex Thompson",
     students: 22,
     status: "Active",
-    color: "from-orange-500 to-amber-400",
   },
 ];
 
@@ -67,6 +71,7 @@ export default function AdminBatchesPage() {
   const [filterBranch, setFilterBranch] = useState("All");
   const [filterTrainer, setFilterTrainer] = useState("All");
   const [mounted, setMounted] = useState(false);
+  const [isCreateBatchOpen, setIsCreateBatchOpen] = useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -110,7 +115,7 @@ export default function AdminBatchesPage() {
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
             Batches
           </h1>
           <p className="text-gray-500 font-medium">
@@ -213,11 +218,11 @@ export default function AdminBatchesPage() {
             className="group relative bg-white/40 backdrop-blur-xl rounded-3xl border border-white/50 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
           >
             {/* Colorful nice gradient bar at top */}
-            <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r ${batch.color}`} />
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-secondary" />
 
             <div className="flex justify-between items-start mb-4">
               <div className="flex gap-3 items-center">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${batch.color} flex items-center justify-center text-white shadow-lg`}>
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/20">
                   <GraduationCap size={20} />
                 </div>
                 <div>
@@ -240,13 +245,13 @@ export default function AdminBatchesPage() {
 
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm text-gray-600 bg-white/30 p-2.5 rounded-xl">
-                <Calendar size={16} className="text-indigo-500" />
+                <Calendar size={16} className="text-primary" />
                 <span>{batch.schedule}</span>
               </div>
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Users size={16} className="text-orange-500" />
+                  <Users size={16} className="text-secondary" />
                   <span>{batch.students} Students</span>
                 </div>
                 <div className="flex -space-x-2">
@@ -268,8 +273,8 @@ export default function AdminBatchesPage() {
                <span
                 className={`px-3 py-1 rounded-full text-xs font-bold border ${
                   batch.status === "Active"
-                    ? "bg-emerald-100/50 text-emerald-700 border-emerald-200"
-                    : "bg-purple-100/50 text-purple-700 border-purple-200"
+                    ? "bg-[var(--status-active)]/10 text-[var(--status-active)] border-[var(--status-active)]/20"
+                    : "bg-[var(--status-pending)]/10 text-[var(--status-pending)] border-[var(--status-pending)]/20"
                 }`}
               >
                 {batch.status}
@@ -279,14 +284,27 @@ export default function AdminBatchesPage() {
         ))}
       </div>
 
-      {/* FAB - Floating Action Button */}
-      <button className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all duration-300 z-50 group">
-        <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
-        {/* Tooltip or Label - optional, maybe just icon is cleaner as requested FAB */}
-        <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-            Add New Batch
-        </span>
-      </button>
+      {/* FAB with Dialog */}
+      <Dialog open={isCreateBatchOpen} onOpenChange={setIsCreateBatchOpen}>
+        <DialogTrigger asChild>
+          <button className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-full shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all duration-300 z-50 group">
+            <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
+            <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                Add New Batch
+            </span>
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px] bg-white/80 backdrop-blur-xl border-white/40 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+              Create New Batch
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <CreateBatchForm onSuccess={() => setIsCreateBatchOpen(false)} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

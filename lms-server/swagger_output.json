@@ -214,6 +214,9 @@
                 },
                 "mobileNumber": {
                   "example": "any"
+                },
+                "designation": {
+                  "example": "any"
                 }
               }
             }

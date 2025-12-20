@@ -7,6 +7,7 @@ import {
   ChevronRight,
   LogOut,
 } from "lucide-react";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import {
   Popover,
   PopoverContent,
@@ -108,7 +109,12 @@ export default function Sidebar({ items }: SidebarProps) {
                 )}
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-40 p-2">
+            <PopoverContent align="start" className="w-48 p-2">
+              <div className="flex items-center justify-between px-2 py-2 mb-1 rounded hover:bg-gray-100">
+                <span className="text-sm font-medium text-gray-700">Theme</span>
+                <ModeToggle />
+              </div>
+              <div className="h-px bg-gray-200 my-1" />
               <button
                 className="flex items-center gap-2 w-full px-2 py-2 rounded hover:bg-red-100 text-red-600 font-semibold"
                 onClick={() => {

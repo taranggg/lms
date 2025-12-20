@@ -10,7 +10,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 type StudentNavbarProps = {
   studentId: string;
@@ -73,11 +83,34 @@ export default function StudentNavbar({ studentId }: StudentNavbarProps) {
       {/* Right side – avatar + mobile menu */}
       <div className="flex items-center gap-2">
         <div className="hidden sm:flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-[var(--muted)] flex items-center justify-center">
-            <span className="text-[var(--muted-foreground)] font-semibold">
-              S
-            </span>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="w-8 h-8 rounded-full bg-[var(--muted)] flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
+                <span className="text-[var(--muted-foreground)] font-semibold">
+                  S
+                </span>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="flex items-center justify-between px-2 py-1.5 text-sm">
+                    <span>Theme</span>
+                    <ModeToggle />
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                    className="text-red-600 focus:text-red-600"
+                    onClick={() => {
+                        // Add actual logout logic here if needed, or just redirect
+                         window.location.href = "/login";
+                    }}
+                >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Mobile menu button */}
@@ -114,20 +147,35 @@ export default function StudentNavbar({ studentId }: StudentNavbarProps) {
                 </button>
               ))}
             </div>
-            <div className="border-t px-4 py-3 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[var(--muted)] flex items-center justify-center">
-                <span className="text-[var(--muted-foreground)] font-semibold">
-                  S
-                </span>
+            <div className="border-t px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-[var(--muted)] flex items-center justify-center">
+                    <span className="text-[var(--muted-foreground)] font-semibold">
+                      S
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-[var(--card-foreground)]">
+                      Student
+                    </span>
+                    <span className="text-xs text-[var(--muted-foreground)]">
+                      learner@learnspace.io
+                    </span>
+                  </div>
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-[var(--card-foreground)]">
-                  Student
-                </span>
-                <span className="text-xs text-[var(--muted-foreground)]">
-                  learner@learnspace.io
-                </span>
-              </div>
+               <ModeToggle />
+            </div>
+            <div className="p-4 border-t">
+                <Button 
+                    variant="destructive" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                         window.location.href = "/login";
+                    }}
+                >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log out
+                </Button>
             </div>
           </SheetContent>
         </Sheet>

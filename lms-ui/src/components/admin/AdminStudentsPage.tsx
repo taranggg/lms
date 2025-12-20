@@ -17,6 +17,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import AddStudentForm from "@/components/admin/forms/AddStudentForm";
 
 // Mock Data
 const MOCK_STUDENTS = [
@@ -30,7 +38,6 @@ const MOCK_STUDENTS = [
     status: "Active",
     email: "alice.j@example.com",
     avatar: "https://randomuser.me/api/portraits/women/12.jpg",
-    color: "from-blue-500 to-indigo-400",
   },
   {
     id: 2,
@@ -42,7 +49,6 @@ const MOCK_STUDENTS = [
     status: "Active",
     email: "bob.smith@example.com",
     avatar: "https://randomuser.me/api/portraits/men/22.jpg",
-    color: "from-emerald-500 to-green-400",
   },
   {
     id: 3,
@@ -54,7 +60,6 @@ const MOCK_STUDENTS = [
     status: "Completed",
     email: "charlie.b@example.com",
     avatar: "https://randomuser.me/api/portraits/men/45.jpg",
-    color: "from-purple-500 to-violet-400",
   },
   {
     id: 4,
@@ -66,7 +71,6 @@ const MOCK_STUDENTS = [
     status: "Active",
     email: "diana.p@example.com",
     avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-    color: "from-orange-500 to-amber-400",
   },
   {
     id: 5,
@@ -78,7 +82,6 @@ const MOCK_STUDENTS = [
     status: "Inactive",
     email: "ethan.h@example.com",
     avatar: "https://randomuser.me/api/portraits/men/11.jpg",
-    color: "from-red-500 to-rose-400",
   },
 ];
 
@@ -86,6 +89,7 @@ export default function AdminStudentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [mounted, setMounted] = useState(false);
+  const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -111,7 +115,7 @@ export default function AdminStudentsPage() {
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
             Students
           </h1>
           <p className="text-gray-500 font-medium">
@@ -172,8 +176,8 @@ export default function AdminStudentsPage() {
             key={student.id}
             className="group relative bg-white/40 backdrop-blur-xl rounded-3xl border border-white/50 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
           >
-           {/* Color Accent Top Bar */}
-           <div className={`absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r ${student.color}`} />
+            {/* Color Accent Top Bar */}
+           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary to-secondary" />
 
             <div className="flex justify-between items-start mb-6">
               <div className="flex gap-4 items-center">
@@ -184,8 +188,8 @@ export default function AdminStudentsPage() {
                         className="w-14 h-14 rounded-2xl object-cover shadow-sm border-2 border-white"
                     />
                     <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-                        student.status === 'Active' ? 'bg-green-500' : 
-                        student.status === 'Completed' ? 'bg-blue-500' : 'bg-red-500'
+                        student.status === 'Active' ? 'bg-[var(--status-active)]' : 
+                        student.status === 'Completed' ? 'bg-[var(--status-completed)]' : 'bg-[var(--status-inactive)]'
                     }`} />
                 </div>
                 <div>
@@ -216,7 +220,7 @@ export default function AdminStudentsPage() {
                     </div>
                     <div className="h-2 w-full bg-gray-200/50 rounded-full overflow-hidden">
                         <div 
-                            className={`h-full bg-gradient-to-r ${student.color}`} 
+                            className="h-full bg-gradient-to-r from-primary to-secondary" 
                             style={{ width: `${student.progress}%` }} 
                         />
                     </div>
@@ -228,7 +232,7 @@ export default function AdminStudentsPage() {
                     </div>
                     <div className="h-2 w-full bg-gray-200/50 rounded-full overflow-hidden">
                         <div 
-                            className="h-full bg-indigo-500" 
+                            className="h-full bg-primary" 
                             style={{ width: `${student.attendance}%` }} 
                         />
                     </div>
@@ -245,7 +249,7 @@ export default function AdminStudentsPage() {
                     <BookOpen size={14} />
                     <span>{student.branch}</span>
                 </div>
-                <button className="text-xs font-bold text-indigo-600 hover:underline">
+                <button className="text-xs font-bold text-primary hover:underline">
                     Detailed Report
                 </button>
             </div>
@@ -253,13 +257,27 @@ export default function AdminStudentsPage() {
         ))}
       </div>
 
-      {/* FAB */}
-      <button className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all duration-300 z-50 group">
-        <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
-        <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-            Add New Student
-        </span>
-      </button>
+      {/* FAB with Dialog */}
+      <Dialog open={isAddStudentOpen} onOpenChange={setIsAddStudentOpen}>
+        <DialogTrigger asChild>
+          <button className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-full shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all duration-300 z-50 group">
+            <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
+            <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                Add New Student
+            </span>
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px] bg-white/80 backdrop-blur-xl border-white/40 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+              Add New Student
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <AddStudentForm onSuccess={() => setIsAddStudentOpen(false)} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

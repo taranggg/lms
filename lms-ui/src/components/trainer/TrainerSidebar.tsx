@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import {
   HoverCard,
   HoverCardContent,
@@ -123,8 +124,15 @@ export default function TrainerSidebar({
                 <div>
                   <h4 className="font-semibold text-popover-foreground">{trainerName}</h4>
                   <p className="text-xs text-muted-foreground">{trainerDesignation}</p>
+                  <p className="text-xs text-muted-foreground">{trainerDesignation}</p>
                 </div>
               </div>
+              
+              <div className="flex items-center justify-between px-1">
+                 <span className="text-sm font-medium text-popover-foreground">Theme</span>
+                 <ModeToggle />
+              </div>
+
               <Button
                 variant="destructive"
                 size="sm"
