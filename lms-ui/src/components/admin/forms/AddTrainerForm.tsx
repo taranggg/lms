@@ -15,6 +15,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   AddTrainerFormValues,
   addTrainerSchema,
 } from "@/Schemas/adminForms";
@@ -70,7 +77,7 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Name</FormLabel>
+                <FormLabel className="text-gray-700 font-medium">Full Name</FormLabel>
                 <FormControl>
                   <Input placeholder="John Doe" {...field} className="glass-input" />
                 </FormControl>
@@ -84,7 +91,7 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Email</FormLabel>
+                <FormLabel className="text-gray-700 font-medium">Email Address</FormLabel>
                 <FormControl>
                   <Input placeholder="john@example.com" {...field} className="glass-input" />
                 </FormControl>
