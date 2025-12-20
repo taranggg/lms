@@ -6,6 +6,7 @@ export interface Trainer extends mongoose.Document {
   branch: mongoose.Types.ObjectId;
   domain: string;
   mobileNumber: string;
+  designation: string;
 }
 
 const trainerSchema = new mongoose.Schema<Trainer>(
@@ -23,6 +24,7 @@ const trainerSchema = new mongoose.Schema<Trainer>(
     },
     domain: { type: String, required: true },
     mobileNumber: { type: String, required: true },
+    designation: { type: String, required: true },
   },
   { timestamps: true }
 );

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export interface Topic extends mongoose.Document {
   name: string;
-  duration: string;
+  duration: number;
 }
 
 const topicSchema = new mongoose.Schema<Topic>({
@@ -11,7 +11,7 @@ const topicSchema = new mongoose.Schema<Topic>({
     required: true,
   },
   duration: {
-    type: String,
+    type: Number,
     required: true,
   },
 });
