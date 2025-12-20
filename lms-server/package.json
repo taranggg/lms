@@ -11,7 +11,9 @@
     "watch:serve": "nodemon dist/server.js",
     "copy-assets": "copyfiles -u 1 src/**/*.env dist",
     "watch:assets": "nodemon -e env -w src --exec \"npm run copy-assets\"",
-    "dev": "concurrently \"npm run watch:ts\" \"npm run watch:serve\" \"npm run watch:assets\""
+    "dev": "concurrently \"npm run watch:ts\" \"npm run watch:serve\" \"npm run watch:assets\"",
+    "swagger": "node --loader ts-node/esm swagger.ts",
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -47,12 +49,20 @@
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.10.1",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.17",
+    "@types/supertest": "^6.0.3",
+    "@types/swagger-ui-express": "^4.1.8",
     "copyfiles": "^2.4.1",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1",
+    "ts-jest": "^29.4.6",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   }
