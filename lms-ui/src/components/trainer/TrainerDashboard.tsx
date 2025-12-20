@@ -16,6 +16,7 @@ import ResourceUpdateList from "./ResourceUpdateList";
 import TrainerBatchesWithAttendance from "./TrainerBatchesWithAttendance";
 import TodoList, { type TodoMainTask as TodoItem } from "@/components/dashboard/TodoList";
 import MobileBottomNav, { type MobileNavItem } from "@/components/dashboard/MobileBottomNav";
+import TrainerBatchesPage from "./TrainerBatchesPage";
 
 interface TrainerDashboardProps {
   trainer: {
@@ -173,7 +174,7 @@ export default function TrainerDashboardComponent({
                         )}
                         
                         {activePage === "Batches" && (
-                          <div className="p-10 text-muted-foreground text-center">Batch Management Page Placeholder</div>
+                          <TrainerBatchesPage batches={batches} trainerId={trainerId} />
                         )}
                         
                         {activePage === "Resources" && (
@@ -212,8 +213,7 @@ export default function TrainerDashboardComponent({
              <div className="flex-1 flex flex-col p-4 overflow-y-auto pb-20">
                 <Header name={trainer.name} onSearch={setSearch} />
                 <div className="mt-6">
-                    <h2 className="text-lg font-bold mb-4">My Batches</h2>
-                    <TrainerBatchesWithAttendance batches={batches} trainerId={trainerId} />
+                    <TrainerBatchesPage batches={batches} trainerId={trainerId} />
                 </div>
              </div>
          )}
