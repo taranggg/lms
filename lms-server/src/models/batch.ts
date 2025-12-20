@@ -35,7 +35,6 @@ const batchSchema = new mongoose.Schema<Batch>({
   },
   endDate: {
     type: Date,
-    required: true,
   },
   startTime: {
     type: String,

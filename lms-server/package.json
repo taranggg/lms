@@ -29,7 +29,9 @@
     "eslint": "^9.39.1",
     "express": "^5.1.0",
     "express-validator": "^7.3.1",
+    "fs": "^0.0.1-security",
     "googleapis": "^166.0.0",
+    "handlebars": "^4.7.8",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
@@ -38,7 +40,8 @@
     "multer": "^2.0.2",
     "nodemon": "^3.1.11",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "resend": "^6.6.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

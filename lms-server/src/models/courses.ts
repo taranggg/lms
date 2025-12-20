@@ -10,14 +10,13 @@ export interface Course extends mongoose.Document {
 const courseSchema = new mongoose.Schema<Course>({
   name: {
     type: String,
+    required: true,
   },
   description: {
     type: String,
-    required: true,
   },
   image: {
     type: String,
-    required: true,
   },
   type: {
     type: String,

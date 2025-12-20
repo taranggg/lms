@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import BranchModel from "../models/branch";
+import BranchModel from "../models/branch.js";
 
 export async function createBranch(req: Request, res: Response) {
   try {
