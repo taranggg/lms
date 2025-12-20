@@ -13,7 +13,7 @@ const Main: React.FC = () => {
         const res = await AdminGoogleLogin(credentialResponse.credential);
         dispatch({ type: "SIGN_IN", payload: res.token });
         toast("Login Successful");
-        router.push("/admin/dashboard");
+        router.push("/admin");
       }
     } catch (err: any) {
       console.log(err);
