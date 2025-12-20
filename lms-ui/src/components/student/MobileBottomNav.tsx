@@ -23,35 +23,43 @@ export default function MobileBottomNav({ items }: MobileBottomNavProps) {
   if (!items || items.length === 0) return null;
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-[var(--card)]/95 backdrop-blur z-40">
-      <div className="flex justify-around py-2">
+    <nav className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+      {/* Container: Color Tinted Glass */}
+      <div className="flex items-center gap-2 bg-sky-100/30 dark:bg-sky-950/30 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] rounded-full p-2 pr-2.5 transition-all duration-300">
         {items.map((item) => (
           <Button
             key={item.label}
             type="button"
             variant="ghost"
             size="icon"
-            className="flex flex-col items-center justify-center h-auto px-0 py-1 bg-transparent"
+            className={`relative flex items-center justify-center h-12 rounded-full transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-hidden ${
+              item.active 
+                ? "w-auto px-5 bg-sky-500/15 text-sky-700 dark:text-sky-300 shadow-[inset_0_0_20px_rgba(56,189,248,0.2)] border border-sky-500/20" 
+                : "w-12 text-slate-500 dark:text-slate-400 hover:bg-sky-500/10 hover:text-sky-600"
+            }`}
             onClick={item.onClick}
           >
+           
+            {/* Icon */}
             <span
-              className={`flex items-center justify-center rounded-full p-1.5 ${
-                item.active
-                  ? "bg-sky-100 text-sky-600"
-                  : "text-muted-foreground"
+              className={`relative z-10 transition-transform duration-300 ${
+                item.active ? "scale-110 drop-shadow-sm" : "scale-100"
               }`}
             >
               {item.icon}
             </span>
+
+            {/* Label - slides in when active */}
             <span
-              className={`mt-0.5 text-[10px] ${
+              className={`relative z-10 text-sm font-bold ml-2 whitespace-nowrap overflow-hidden transition-all duration-500 ease-in-out ${
                 item.active
-                  ? "text-sky-600 font-medium"
-                  : "text-muted-foreground"
+                  ? "max-w-[100px] opacity-100 translate-x-0"
+                  : "max-w-0 opacity-0 -translate-x-4"
               }`}
             >
               {item.label}
             </span>
+            
           </Button>
         ))}
       </div>

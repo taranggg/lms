@@ -74,28 +74,31 @@ function CenterSection({
 
   /* Update container class for internal scrolling structure */
   const containerClass =
-    "grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8 px-4 md:px-6 xl:px-10 pb-10 pt-4";
+    "grid grid-cols-1 xl:grid-cols-3 gap-8 md:gap-10 px-6 md:px-8 xl:px-12 pb-20 pt-8";
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-background/50">
       <Header name={student.name} onSearch={setSearch} />
       <div className="flex-1 overflow-y-auto">
         <div className={containerClass}>
-          <div className="xl:col-span-3 flex flex-col gap-8">
+          <div className="xl:col-span-3 flex flex-col gap-10">
             {/* Courses strip */}
-            <div className="-mx-4 md:mx-0">
-              <div className="overflow-x-auto scrollbar-hide px-4 md:px-0">
+            <div className="-mx-6 md:mx-0">
+              <div className="overflow-x-auto scrollbar-hide px-6 md:px-0 pb-4">
                 <CourseCards courses={filteredCourses} studentId={studentId} />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
               <HoursSpentChart data={hoursSpent} />
               <PerformanceGauge points={8966} rank="5th in Leaderboard" />
             </div>
 
             {/* <Leaderboard entries={leaderboard} /> */}
           </div>
+
+           {/* ------------------ TABLET SECTION (Right content moved to bottom) ------------------ */}
+          <div className="flex flex-col gap-10 lg:hidden xl:col-span-3"></div>
 
 
         </div>
@@ -281,7 +284,7 @@ function MobileOverview({
   });
 
   return (
-    <div className="flex-1 flex flex-col bg-background">
+    <div className="flex-1 flex flex-col m-4 bg-background">
       <MobileHeader studentName={student.name} onSearch={setSearch} />
 
       <div className="flex-1 px-3 pt-2 pb-20 space-y-6">
@@ -424,7 +427,7 @@ export default function StudentDashboardComponent({
       </div>
 
       {/* Mobile + Bottom Nav */}
-      <div className="flex flex-col w-full lg:hidden h-full overflow-y-auto pb-14">
+      <div className="flex flex-col w-full lg:hidden h-full overflow-y-auto pb-32">
         {activePage === "Overview" && (
           <MobileOverview
             student={student}
@@ -436,13 +439,13 @@ export default function StudentDashboardComponent({
         )}
 
         {activePage === "Courses" && (
-          <div className="flex-1 px-3 pt-4 pb-14">
+          <div className="flex-1 px-3 pt-4 pb-32">
             <StudentCoursesPage courses={courses} studentId={studentId} />
           </div>
         )}
 
         {activePage === "Resources" && (
-          <div className="flex-1 px-3 pt-4 pb-14">
+          <div className="flex-1 px-3 pt-4 pb-32">
             <StudentResourcesPage
               resources={courses.flatMap((c) => c.resources ?? [])}
             />
