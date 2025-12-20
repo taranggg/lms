@@ -3,10 +3,13 @@ import mongoose from "mongoose";
 export interface Student extends mongoose.Document {
   name: string;
   studentId: string;
+  password: string;
   branch: mongoose.Types.ObjectId;
   mobileNumber: string;
   profilePicture: string;
   type: "Weekdays" | "Weekends";
+  firstLogin: boolean;
+  email: string;
 }
 
 const studentSchema = new mongoose.Schema<Student>({
@@ -15,6 +18,19 @@ const studentSchema = new mongoose.Schema<Student>({
     required: true,
   },
   studentId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  firstLogin: {
+    type: Boolean,
+    default: true,
+  },
+  email: {
     type: String,
     required: true,
     unique: true,

@@ -4,8 +4,8 @@ import {
   deleteBranch,
   getAllBranches,
   updateBranch,
-} from "../controllers/branch";
-import { adminAuthenticator } from "../middlewares/adminAuthenticator";
+} from "../controllers/branch.js";
+import { adminAuthenticator } from "../middlewares/adminAuthenticator.js";
 const branchRouter = express.Router();
 
 branchRouter.post("/createBranch", adminAuthenticator, createBranch);
