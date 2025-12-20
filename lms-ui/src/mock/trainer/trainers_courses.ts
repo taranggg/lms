@@ -33,6 +33,57 @@ export const trainers = [
           },
         ],
       },
+      {
+        id: "C102",
+        name: "Advanced React Patterns",
+        schedule: "Tue, Thu - 2:00 PM",
+        duration: "2025-12-01 to 2026-03-01",
+        totalSessions: 24,
+        assignments: 5,
+        description:
+          "Deep dive into HOCs, Render Props, Custom Hooks, Performance Optimization, and State Management patterns.",
+        resources: [
+          {
+            name: "React Patterns Book",
+            type: "pdf",
+            link: "https://example.com/patterns.pdf",
+          },
+        ],
+      },
+      {
+        id: "C103",
+        name: "Node.js Microservices",
+        schedule: "Sat, Sun - 10:00 AM",
+        duration: "2026-01-15 to 2026-04-15",
+        totalSessions: 32,
+        assignments: 8,
+        description:
+          "Building scalable backend systems using Node.js, Docker, Kubernetes, and Message Queues.",
+        resources: [
+          {
+            name: "Microservices Architecture",
+            type: "video",
+            link: "https://example.com/microservices.mp4",
+          },
+        ],
+      },
+      {
+        id: "C104",
+        name: "Frontend System Design",
+        schedule: "Fri - 6:00 PM",
+        duration: "2025-11-20 to 2026-01-20",
+        totalSessions: 16,
+        assignments: 4,
+        description:
+          "Learn how to architect large-scale frontend applications, focusing on performance, scalability, and maintainability.",
+        resources: [
+          {
+            name: "System Design Cheatsheet",
+            type: "pdf",
+            link: "https://example.com/system-design.pdf",
+          },
+        ],
+      },
     ],
   },
   {

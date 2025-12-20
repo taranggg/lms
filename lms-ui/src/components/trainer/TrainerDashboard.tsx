@@ -15,7 +15,7 @@ import UpcomingClassesList from "./UpcomingClassesList";
 import ResourceUpdateList from "./ResourceUpdateList";
 import TrainerBatchesWithAttendance from "./TrainerBatchesWithAttendance";
 import TodoList, { type TodoMainTask as TodoItem } from "@/components/dashboard/TodoList";
-import MobileBottomNav, { type MobileNavItem } from "@/components/student/MobileBottomNav";
+import MobileBottomNav, { type MobileNavItem } from "@/components/dashboard/MobileBottomNav";
 
 interface TrainerDashboardProps {
   trainer: {
@@ -69,7 +69,7 @@ export default function TrainerDashboardComponent({
   todoList,
   trainerId,
 }: TrainerDashboardProps) {
-  const [activePage, setActivePage] = React.useState<"Overview" | "Batches" | "Resources">("Overview");
+  const [activePage, setActivePage] = React.useState<"Overview" | "Batches" | "Resources" | "Schedule" | "Assignments" | "Reports" | "Settings">("Overview");
   const [search, setSearch] = React.useState("");
 
   const sidebarItems: TrainerSidebarItem[] = [
@@ -94,41 +94,38 @@ export default function TrainerDashboardComponent({
     {
       label: "Schedule",
       icon: <Calendar size={20} />,
+      active: activePage === "Schedule",
+      onClick: () => setActivePage("Schedule"),
     },
     {
       label: "Assignments",
       icon: <FileText size={20} />,
+      active: activePage === "Assignments",
+      onClick: () => setActivePage("Assignments"),
     },
     {
        label: "Reports",
        icon: <BarChart size={20} />,
+       active: activePage === "Reports",
+       onClick: () => setActivePage("Reports"),
     },
     {
         label: "Settings",
         icon: <Settings size={20} />,
+        active: activePage === "Settings",
+        onClick: () => setActivePage("Settings"),
     }
   ];
 
-  const mobileNavItems: MobileNavItem[] = [
-    {
-      label: "Overview",
-      icon: <Home className="w-5 h-5" />,
-      active: activePage === "Overview",
-      onClick: () => setActivePage("Overview"),
-    },
-    {
-      label: "Batches",
-      icon: <Users className="w-5 h-5" />,
-      active: activePage === "Batches",
-      onClick: () => setActivePage("Batches"),
-    },
-     {
-      label: "Resources",
-      icon: <BookOpen className="w-5 h-5" />,
-      active: activePage === "Resources",
-      onClick: () => setActivePage("Resources"),
-    },
-  ];
+  // Derive mobile nav items from sidebar items for DRY principle
+  const mobileNavItems: MobileNavItem[] = sidebarItems.map((item) => ({
+    label: item.label,
+    icon: React.cloneElement(item.icon as React.ReactElement<{ className?: string }>, {
+      className: "w-5 h-5",
+    }),
+    active: item.active || (item.label === "Settings" && activePage === "Settings") || (item.label === "Reports" && activePage === "Reports") || (item.label === "Assignments" && activePage === "Assignments") || (item.label === "Schedule" && activePage === "Schedule"), // Fallback logic if 'active' isn't set explicitly for placeholders
+    onClick: item.onClick ? item.onClick : () => setActivePage(item.label as any),
+  }));
 
 
   return (
@@ -227,6 +224,13 @@ export default function TrainerDashboardComponent({
                  <div className="mt-6 text-center text-muted-foreground">Resources View</div>
             </div>
          )}
+
+          {(activePage === "Schedule" || activePage === "Assignments" || activePage === "Reports" || activePage === "Settings") && (
+             <div className="flex-1 flex flex-col p-4 overflow-y-auto pb-20">
+                  <Header name={trainer.name} onSearch={setSearch} />
+                  <div className="mt-6 text-center text-muted-foreground">{activePage} View Placeholder</div>
+             </div>
+          )}
 
          <MobileBottomNav items={mobileNavItems} />
       </div>

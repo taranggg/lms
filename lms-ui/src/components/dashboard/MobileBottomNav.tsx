@@ -23,16 +23,16 @@ export default function MobileBottomNav({ items }: MobileBottomNavProps) {
   if (!items || items.length === 0) return null;
 
   return (
-    <nav className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-      {/* Container: Color Tinted Glass */}
-      <div className="flex items-center gap-2 bg-sky-100/30 dark:bg-sky-950/30 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] rounded-full p-2 pr-2.5 transition-all duration-300">
+    <nav className="lg:hidden fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
+      {/* Container: Color Tinted Glass - Scrollable */}
+      <div className="pointer-events-auto max-w-[90%] flex items-center gap-2 bg-sky-100/30 dark:bg-sky-950/30 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] rounded-full p-2 pr-2.5 transition-all duration-300 overflow-x-auto scrollbar-hide">
         {items.map((item) => (
           <Button
             key={item.label}
             type="button"
             variant="ghost"
             size="icon"
-            className={`relative flex items-center justify-center h-12 rounded-full transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-hidden ${
+            className={`relative flex-shrink-0 flex items-center justify-center h-12 rounded-full transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-hidden ${
               item.active 
                 ? "w-auto px-5 bg-sky-500/15 text-sky-700 dark:text-sky-300 shadow-[inset_0_0_20px_rgba(56,189,248,0.2)] border border-sky-500/20" 
                 : "w-12 text-slate-500 dark:text-slate-400 hover:bg-sky-500/10 hover:text-sky-600"

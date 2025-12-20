@@ -28,7 +28,7 @@ import WeeklyCalendar from "@/components/ui/WeeklyCalendar";
 import StudentProfileForm, { type StudentProfile } from "./StudentProfileForm";
 import MobileBottomNav, {
   type MobileNavItem,
-} from "@/components/student/MobileBottomNav";
+} from "@/components/dashboard/MobileBottomNav";
 
 export interface HourSpent {
   month: string;
