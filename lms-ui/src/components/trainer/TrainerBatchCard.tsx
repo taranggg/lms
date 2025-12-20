@@ -69,37 +69,37 @@ export default function TrainerBatchCard({
               <Edit className="w-4 h-4 mr-2" />
               Edit Batch
             </DropdownMenuItem>
-            <Link href={`/trainer/${trainerId}/batch/${batch.id}?tab=students`}>
+            <Link href={`/trainer/${trainerId}/${batch.id}?tab=students`}>
               <DropdownMenuItem>
                 <Users className="w-4 h-4 mr-2" />
                 Student List
               </DropdownMenuItem>
             </Link>
-            <Link href={`/trainer/${trainerId}/batch/${batch.id}?tab=attendance`}>
+            <Link href={`/trainer/${trainerId}/${batch.id}?tab=attendance`}>
               <DropdownMenuItem>
                 <Calendar className="w-4 h-4 mr-2" />
                 Attendance
               </DropdownMenuItem>
             </Link>
-            <Link href={`/trainer/${trainerId}/batch/${batch.id}?tab=assignments`}>
+            <Link href={`/trainer/${trainerId}/${batch.id}?tab=assignments`}>
               <DropdownMenuItem>
                 <BookOpen className="w-4 h-4 mr-2" />
                 Assignments
               </DropdownMenuItem>
             </Link>
-            <Link href={`/trainer/${trainerId}/batch/${batch.id}?tab=exams`}>
+            <Link href={`/trainer/${trainerId}/${batch.id}?tab=exams`}>
               <DropdownMenuItem>
                 <FileText className="w-4 h-4 mr-2" />
                 Exams
               </DropdownMenuItem>
             </Link>
-            <Link href={`/trainer/${trainerId}/batch/${batch.id}?tab=results`}>
+            <Link href={`/trainer/${trainerId}/${batch.id}?tab=results`}>
               <DropdownMenuItem>
                 <GraduationCap className="w-4 h-4 mr-2" />
                 Results
               </DropdownMenuItem>
             </Link>
-            <Link href={`/trainer/${trainerId}/batch/${batch.id}?tab=progress`}>
+            <Link href={`/trainer/${trainerId}/${batch.id}?tab=progress`}>
               <DropdownMenuItem>
                 <BarChart className="w-4 h-4 mr-2" />
                 Progress
@@ -115,7 +115,7 @@ export default function TrainerBatchCard({
       </div>
 
       {/* Main Content Group */}
-      <Link href={`/trainer/${trainerId}/batch/${batch.id}`} className="flex-1 min-w-0 pr-8 md:pr-0 cursor-pointer block">
+      <Link href={`/trainer/${trainerId}/${batch.id}`} className="flex-1 min-w-0 pr-8 md:pr-0 cursor-pointer block">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-white shadow-sm text-xl shrink-0">
             {batch.logo ? (

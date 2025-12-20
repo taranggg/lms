@@ -1,6 +1,6 @@
 "use client"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { GraduationCap, UserCog, Users, School } from "lucide-react";
+import { GraduationCap, Users, School } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -21,22 +21,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col md:flex-row gap-8 w-full max-w-4xl justify-center">
           {/* Admin Portal Card */}
-          <div className="flex-1 bg-white rounded-xl shadow-md p-8 flex flex-col items-center">
-            <span className="mb-4">
-              <UserCog size={40} strokeWidth={2} color="#4F46E5" />
-            </span>
-            <h2 className="text-xl font-semibold text-[#3730a3] mb-2">
-              Admin Portal
-            </h2>
-            <p className="text-center text-zinc-500 mb-6">
-              Manage users, batches, and system configuration
-            </p>
-            <Link href="/admin/login" className="w-full">
-              <Button className="w-full bg-[#18181b] text-white hover:bg-[#3730a3]">
-                Admin Login
-              </Button>
-            </Link>
-          </div>
+
           {/* Trainer Portal Card */}
           <div className="flex-1 bg-white rounded-xl shadow-md p-8 flex flex-col items-center">
             <span className="mb-4">
