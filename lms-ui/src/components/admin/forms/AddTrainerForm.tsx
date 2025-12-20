@@ -77,9 +77,9 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Full Name</FormLabel>
+                <FormLabel>Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} className="glass-input" />
+                  <Input placeholder="John Doe" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -91,37 +91,9 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Email Address</FormLabel>
+                <FormLabel>Email Address</FormLabel>
                 <FormControl>
-                  <Input placeholder="john@example.com" {...field} className="glass-input" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-           <FormField
-            control={form.control}
-            name="mobileNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Mobile Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="9876543210" {...field} className="glass-input" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="designation"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Designation</FormLabel>
-                <FormControl>
-                  <Input placeholder="Senior Developer" {...field} className="glass-input" />
+                  <Input placeholder="john@example.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -135,10 +107,19 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             name="branch"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Branch</FormLabel>
-                <FormControl>
-                  <Input placeholder="Main Branch" {...field} className="glass-input" />
-                </FormControl>
+                <FormLabel>Branch</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Branch" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Main Branch">Main Branch</SelectItem>
+                    <SelectItem value="Downtown Branch">Downtown Branch</SelectItem>
+                    <SelectItem value="Online">Online</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
@@ -149,9 +130,39 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             name="domain"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Domain</FormLabel>
+                <FormLabel>Domain</FormLabel>
                 <FormControl>
-                  <Input placeholder="Full Stack" {...field} className="glass-input" />
+                  <Input placeholder="Full Stack, Data Science, etc." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           <FormField
+            control={form.control}
+            name="mobileNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mobile Number</FormLabel>
+                <FormControl>
+                  <Input placeholder="9876543210" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="designation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Designation</FormLabel>
+                <FormControl>
+                  <Input placeholder="Senior Developer" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -163,7 +174,6 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             <Button 
                 type="submit" 
                 disabled={isLoading}
-                className="btn-primary"
             >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add Trainer

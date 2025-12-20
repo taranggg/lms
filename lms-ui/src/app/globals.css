@@ -186,19 +186,5 @@ body {
 }
 
 @layer components {
-  .glass-panel {
-    @apply bg-[var(--glass-bg)] backdrop-blur-xl border border-[var(--glass-border)] shadow-xl rounded-2xl;
-  }
-
-  .glass-input {
-    @apply bg-[var(--glass-input-bg)] border-[var(--glass-border)] transition-all backdrop-blur-sm focus:bg-[var(--glass-bg)] hover:bg-[var(--glass-bg)] focus:ring-2 focus:ring-primary/20 outline-none;
-  }
-
-  .glass-modal {
-    @apply bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-2xl;
-  }
-
-  .btn-primary {
-    @apply bg-gradient-to-r from-primary to-secondary hover:brightness-110 text-primary-foreground shadow-md hover:shadow-lg transition-all active:scale-95;
-  }
+  /* Custom components layer if needed in future */
 }

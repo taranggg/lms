@@ -105,92 +105,72 @@ export default function AdminBatchesPage() {
 
   return (
     <div className="relative min-h-[calc(100vh-2rem)] flex flex-col gap-8">
-      {/* Background Blobs */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-200/30 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[20%] left-[-5%] w-[400px] h-[400px] bg-blue-200/30 rounded-full blur-[100px]" />
-        <div className="absolute top-[40%] left-[30%] w-[600px] h-[600px] bg-orange-100/20 rounded-full blur-[100px]" />
-      </div>
-
+      
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            Batches
-          </h1>
-          <p className="text-gray-500 font-medium">
+          <h1 className="text-3xl font-bold tracking-tight">Batches</h1>
+          <p className="text-muted-foreground">
             Manage your classes and schedules
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white/40 backdrop-blur-md p-2 rounded-2xl border border-white/50 shadow-sm">
+        <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
             <Input
               placeholder="Search batches..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-transparent border-none focus-visible:ring-0 w-[200px] placeholder:text-gray-400"
+              className="pl-10 w-[200px]"
             />
           </div>
-          <div className="h-6 w-px bg-gray-300" />
           
           {/* Branch Filter */}
           {!mounted ? (
-            <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
+             <Button variant="outline" className="gap-2">
               <Filter size={16} />
               <span>{filterBranch === "All" ? "Branch" : filterBranch}</span>
-            </button>
+            </Button>
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
+                <Button variant="outline" className="gap-2">
                   <Filter size={16} />
                   <span>{filterBranch === "All" ? "Branch" : filterBranch}</span>
-                </button>
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-white/90 backdrop-blur-xl"
-              >
+              <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setFilterBranch("All")}>
                   All Branches
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setFilterBranch("Main Branch")}>
                   Main Branch
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setFilterBranch("Downtown Branch")}
-                >
+                <DropdownMenuItem onClick={() => setFilterBranch("Downtown Branch")}>
                   Downtown Branch
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
 
-          {/* Trainer Filter - Only visible if Branch is selected */}
+          {/* Trainer Filter */}
           {filterBranch !== "All" && (
             <>
-              <div className="h-6 w-px bg-gray-300" />
               {!mounted ? (
-                <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
+                <Button variant="outline" className="gap-2">
                   <Users size={16} />
                   <span>{filterTrainer === "All" ? "Trainer" : filterTrainer}</span>
-                </button>
+                </Button>
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
+                    <Button variant="outline" className="gap-2">
                       <Users size={16} />
-                      <span>
-                        {filterTrainer === "All" ? "Trainer" : filterTrainer}
-                      </span>
-                    </button>
+                      <span>{filterTrainer === "All" ? "Trainer" : filterTrainer}</span>
+                    </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="bg-white/90 backdrop-blur-xl"
-                  >
+                  <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => setFilterTrainer("All")}>
                       All Trainers
                     </DropdownMenuItem>
@@ -215,70 +195,61 @@ export default function AdminBatchesPage() {
         {filteredBatches.map((batch) => (
           <div
             key={batch.id}
-            className="group relative bg-white/40 backdrop-blur-xl rounded-3xl border border-white/50 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            className="bg-card text-card-foreground rounded-xl border shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 p-6 space-y-4 cursor-pointer"
           >
-            {/* Colorful nice gradient bar at top */}
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-secondary" />
-
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex gap-3 items-center">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/20">
-                  <GraduationCap size={20} />
+            <div className="flex justify-between items-start">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-lg leading-none tracking-tight">
+                        {batch.name}
+                    </h3>
+                    <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
+                        batch.status === "Active"
+                            ? "bg-green-50 text-green-700 border-green-200"
+                            : "bg-yellow-50 text-yellow-700 border-yellow-200"
+                        }`}
+                    >
+                        {batch.status}
+                    </span>
                 </div>
-                <div>
-                  <h3 className="font-bold text-gray-800 text-lg leading-tight">
-                    {batch.name}
-                  </h3>
-                  <span className="text-xs font-medium text-gray-500">
-                    {batch.branch}
-                  </span>
-                </div>
+                <p className="text-sm text-muted-foreground">{batch.branch}</p>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-white/50 rounded-full"
+                className="h-8 w-8 -mr-2"
               >
-                <MoreVertical size={18} />
+                <MoreVertical size={16} />
               </Button>
             </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm text-gray-600 bg-white/30 p-2.5 rounded-xl">
-                <Calendar size={16} className="text-primary" />
-                <span>{batch.schedule}</span>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Users size={16} className="text-secondary" />
-                  <span>{batch.students} Students</span>
+            <div className="space-y-2">
+                <div className="flex items-center text-sm">
+                    <Calendar className="mr-2 h-4 w-4 text-blue-500" />
+                    {batch.schedule}
                 </div>
-                <div className="flex -space-x-2">
+                 <div className="flex items-center text-sm">
+                    <GraduationCap className="mr-2 h-4 w-4 text-purple-500" />
+                    {batch.trainer}
+                </div>
+            </div>
+
+            <div className="pt-4 flex items-center justify-between border-t">
+                 <div className="flex items-center text-sm text-muted-foreground">
+                    <Users className="mr-2 h-4 w-4 text-orange-500" />
+                    {batch.students} Students
+                </div>
+                 <div className="flex -space-x-2">
                    {[1,2,3].map(i => (
-                       <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-200" />
+                       <div key={i} className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[8px] font-medium">
+                           S{i}
+                       </div>
                    ))}
-                   <div className="w-6 h-6 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">
+                   <div className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px]">
                      +
                    </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex items-center justify-between pt-4 border-t border-white/30">
-               <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Trainer</span>
-                  <span className="text-sm font-semibold text-gray-700">{batch.trainer}</span>
-               </div>
-               <span
-                className={`px-3 py-1 rounded-full text-xs font-bold border ${
-                  batch.status === "Active"
-                    ? "bg-[var(--status-active)]/10 text-[var(--status-active)] border-[var(--status-active)]/20"
-                    : "bg-[var(--status-pending)]/10 text-[var(--status-pending)] border-[var(--status-pending)]/20"
-                }`}
-              >
-                {batch.status}
-              </span>
             </div>
           </div>
         ))}
@@ -287,18 +258,13 @@ export default function AdminBatchesPage() {
       {/* FAB with Dialog */}
       <Dialog open={isCreateBatchOpen} onOpenChange={setIsCreateBatchOpen}>
         <DialogTrigger asChild>
-          <button className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-full shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all duration-300 z-50 group">
-            <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
-            <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                Add New Batch
-            </span>
+          <button className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform duration-200 z-50">
+            <Plus size={24} />
           </button>
         </DialogTrigger>
-        <DialogContent className="glass-modal sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-              Create New Batch
-            </DialogTitle>
+            <DialogTitle>Create New Batch</DialogTitle>
           </DialogHeader>
           <div className="mt-4">
             <CreateBatchForm onSuccess={() => setIsCreateBatchOpen(false)} />

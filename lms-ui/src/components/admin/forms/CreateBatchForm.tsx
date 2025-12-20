@@ -109,9 +109,9 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Batch Name</FormLabel>
+                <FormLabel>Batch Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="React Mastery 2024" {...field} className="glass-input" />
+                  <Input placeholder="React Mastery 2024" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -124,10 +124,10 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
             name="branch"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Branch</FormLabel>
+                <FormLabel>Branch</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="glass-input">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select Branch" />
                     </SelectTrigger>
                   </FormControl>
@@ -147,10 +147,10 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
             name="trainer"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Trainer</FormLabel>
+                <FormLabel>Trainer</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="glass-input">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select Trainer" />
                     </SelectTrigger>
                   </FormControl>
@@ -180,9 +180,9 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
             name="startDate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Start Date</FormLabel>
+                <FormLabel>Start Date</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} className="glass-input" />
+                  <Input type="date" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -194,7 +194,7 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
             name="schedule"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-medium">Schedule</FormLabel>
+                <FormLabel>Schedule</FormLabel>
                 <FormControl>
                   <ToggleGroup
                     type="multiple"
@@ -213,7 +213,8 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
                         key={day}
                         value={day}
                         aria-label={`Toggle ${day}`}
-                        className="glass-input data-[state=on]:bg-primary data-[state=on]:text-primary-foreground hover:bg-primary/10 hover:text-primary border-transparent"
+                        variant="outline"
+                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
                       >
                         {day}
                       </ToggleGroupItem>
@@ -230,7 +231,6 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
           <Button 
             type="submit" 
             disabled={isLoading}
-            className="btn-primary"
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Create Batch
