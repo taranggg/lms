@@ -65,19 +65,37 @@ const MOCK_BATCHES = [
 export default function AdminBatchesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBranch, setFilterBranch] = useState("All");
+  const [filterTrainer, setFilterTrainer] = useState("All");
   const [mounted, setMounted] = useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Reset trainer filter when branch changes
+  React.useEffect(() => {
+    setFilterTrainer("All");
+  }, [filterBranch]);
+
+  // Derive available trainers for the selected branch
+  const availableTrainers = React.useMemo(() => {
+    if (filterBranch === "All") return [];
+    const trainers = new Set(
+      MOCK_BATCHES.filter((b) => b.branch === filterBranch).map((b) => b.trainer)
+    );
+    return Array.from(trainers);
+  }, [filterBranch]);
+
   const filteredBatches = MOCK_BATCHES.filter((batch) => {
     const matchesSearch = batch.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    const matchesFilter =
+    const matchesBranch =
       filterBranch === "All" || batch.branch === filterBranch;
-    return matchesSearch && matchesFilter;
+    const matchesTrainer =
+      filterTrainer === "All" || batch.trainer === filterTrainer;
+
+    return matchesSearch && matchesBranch && matchesTrainer;
   });
 
   return (
@@ -111,17 +129,19 @@ export default function AdminBatchesPage() {
             />
           </div>
           <div className="h-6 w-px bg-gray-300" />
+          
+          {/* Branch Filter */}
           {!mounted ? (
             <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
               <Filter size={16} />
-              <span>{filterBranch === "All" ? "Filter" : filterBranch}</span>
+              <span>{filterBranch === "All" ? "Branch" : filterBranch}</span>
             </button>
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
                   <Filter size={16} />
-                  <span>{filterBranch === "All" ? "Filter" : filterBranch}</span>
+                  <span>{filterBranch === "All" ? "Branch" : filterBranch}</span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -141,6 +161,46 @@ export default function AdminBatchesPage() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          )}
+
+          {/* Trainer Filter - Only visible if Branch is selected */}
+          {filterBranch !== "All" && (
+            <>
+              <div className="h-6 w-px bg-gray-300" />
+              {!mounted ? (
+                <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
+                  <Users size={16} />
+                  <span>{filterTrainer === "All" ? "Trainer" : filterTrainer}</span>
+                </button>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
+                      <Users size={16} />
+                      <span>
+                        {filterTrainer === "All" ? "Trainer" : filterTrainer}
+                      </span>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="bg-white/90 backdrop-blur-xl"
+                  >
+                    <DropdownMenuItem onClick={() => setFilterTrainer("All")}>
+                      All Trainers
+                    </DropdownMenuItem>
+                    {availableTrainers.map((trainer) => (
+                      <DropdownMenuItem
+                        key={trainer}
+                        onClick={() => setFilterTrainer(trainer)}
+                      >
+                        {trainer}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </>
           )}
         </div>
       </div>

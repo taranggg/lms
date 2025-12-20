@@ -27,7 +27,7 @@ export default function AdminLayout({
     {
       label: "Dashboard",
       icon: <LayoutDashboard size={20} />,
-      active: pathname === "/admin", // Updated to root /admin
+      active: pathname === "/admin", 
       onClick: () => router.push("/admin"),
     },
     {
