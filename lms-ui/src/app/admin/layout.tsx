@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Sidebar, { SidebarItem } from "@/components/dashboard/Sidebar";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutDashboard, Users, BookOpen, GraduationCap } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -9,51 +10,41 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const items: SidebarItem[] = [
+    {
+      label: "Dashboard",
+      icon: <LayoutDashboard size={20} />,
+      active: pathname === "/admin/dashboard",
+      onClick: () => router.push("/admin/dashboard"),
+    },
+    {
+      label: "Batches",
+      icon: <BookOpen size={20} />,
+      active: pathname === "/admin/batches",
+      onClick: () => router.push("/admin/batches"),
+    },
+    {
+      label: "Trainers",
+      icon: <Users size={20} />,
+      active: pathname === "/admin/trainers",
+      onClick: () => router.push("/admin/trainers"),
+    },
+    {
+      label: "Students",
+      icon: <GraduationCap size={20} />,
+      active: pathname === "/admin/students",
+      onClick: () => router.push("/admin/students"),
+    },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--background)]">
-      <nav className="bg-[var(--card)] shadow p-4 flex gap-4 text-[var(--card-foreground)]">
-        <Link
-          href="/admin/dashboard"
-          className={
-            pathname === "/admin/dashboard"
-              ? "font-bold text-[var(--primary)]"
-              : ""
-          }
-        >
-          Dashboard
-        </Link>
-        <Link
-          href="/admin/batches"
-          className={
-            pathname === "/admin/batches"
-              ? "font-bold text-[var(--primary)]"
-              : ""
-          }
-        >
-          Batches
-        </Link>
-        <Link
-          href="/admin/trainers"
-          className={
-            pathname === "/admin/trainers"
-              ? "font-bold text-[var(--primary)]"
-              : ""
-          }
-        >
-          Trainers
-        </Link>
-        <Link
-          href="/admin/students"
-          className={
-            pathname === "/admin/students"
-              ? "font-bold text-[var(--primary)]"
-              : ""
-          }
-        >
-          Students
-        </Link>
-      </nav>
-      <main className="flex-1 p-4">{children}</main>
+    <div className="flex bg-[var(--background)] min-h-screen">
+      <div className="shrink-0 z-20 h-screen sticky top-0">
+        <Sidebar items={items} />
+      </div>
+      <main className="flex-1 p-4 overflow-y-auto h-screen">{children}</main>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Home,
@@ -28,7 +29,13 @@ import { useRouter } from "next/navigation";
 
 export default function Sidebar({ items }: SidebarProps) {
   const [collapsed, setCollapsed] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
   const router = useRouter();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <aside
       className={`bg-white rounded-2xl shadow flex flex-col py-8 px-4 min-h-screen transition-all duration-300 relative ${
@@ -77,36 +84,44 @@ export default function Sidebar({ items }: SidebarProps) {
       </nav>
       {/* Settings with popover menu at bottom, always visible */}
       <div className="mt-auto mb-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <div
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer text-gray-700 font-medium hover:bg-gray-100 relative`}
-              tabIndex={0}
-              role="button"
-              aria-label="Settings"
-            >
-              <Settings />
-              {!collapsed && <span>Settings</span>}
-              {collapsed && (
-                <span className="absolute left-12 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                  Settings
-                </span>
-              )}
-            </div>
-          </PopoverTrigger>
-          <PopoverContent align="start" className="w-40 p-2">
-            <button
-              className="flex items-center gap-2 w-full px-2 py-2 rounded hover:bg-red-100 text-red-600 font-semibold"
-              onClick={() => {
-                localStorage.clear();
-                window.location.href = "/login";
-              }}
-            >
-              <LogOut size={18} />
-              <span>Logout</span>
-            </button>
-          </PopoverContent>
-        </Popover>
+        {!mounted ? (
+          <button
+            className={`flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer text-gray-700 font-medium hover:bg-gray-100 relative w-full text-left border-none bg-transparent`}
+            aria-label="Settings"
+          >
+            <Settings />
+            {!collapsed && <span>Settings</span>}
+          </button>
+        ) : (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                className={`flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer text-gray-700 font-medium hover:bg-gray-100 relative w-full text-left border-none bg-transparent`}
+                aria-label="Settings"
+              >
+                <Settings />
+                {!collapsed && <span>Settings</span>}
+                {collapsed && (
+                  <span className="absolute left-12 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Settings
+                  </span>
+                )}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-40 p-2">
+              <button
+                className="flex items-center gap-2 w-full px-2 py-2 rounded hover:bg-red-100 text-red-600 font-semibold"
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.href = "/login";
+                }}
+              >
+                <LogOut size={18} />
+                <span>Logout</span>
+              </button>
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
     </aside>
   );
