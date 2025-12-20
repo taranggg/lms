@@ -61,7 +61,7 @@ export default function StudentCoursesPage({
               return (
                 <a
                   key={course.id}
-                  href={`/${studentId}/${course.id}`}
+                  href={`/student/${studentId}/${course.id}`}
                   className="block"
                   style={{ textDecoration: "none" }}
                 >

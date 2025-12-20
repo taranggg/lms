@@ -95,9 +95,14 @@ export default function StudentCourseDetail() {
 
         {/* Title Section */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--card-foreground)] break-words">
-            {course.name}
-          </h1>
+            {course.code && (
+              <span className="inline-block px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium bg-slate-100 text-slate-600 mb-2 border border-slate-200">
+                Code: {course.code}
+              </span>
+            )}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--card-foreground)] break-words">
+              {course.name}
+            </h1>
           <p className="text-[var(--muted-foreground)] text-sm sm:text-base mt-1 break-words max-w-3xl">
             {course.description ||
               "Master the art of creating intuitive and beautiful user experiences."}
