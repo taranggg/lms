@@ -25,7 +25,7 @@ export default function TrainerSidebar({
 
   return (
     <aside
-      className={`bg-cardcs rounded-2xl shadow flex flex-col py-8 px-4 min-h-screen transition-all duration-300 relative ml-4 my-4 border border-sidebar-border ${
+      className={`bg-cardcs rounded-2xl shadow flex flex-col py-8 px-4 h-[calc(100vh-2rem)] transition-all duration-300 relative ml-4 my-4 border border-sidebar-border ${
         collapsed ? "w-20" : "w-64"
       }`}
     >
@@ -101,7 +101,7 @@ export default function TrainerSidebar({
             </div>
           </HoverCardTrigger>
           <HoverCardContent
-            align="start"
+            align="end"
             side="right"
             className="w-64 p-4 ml-4 shadow-xl border-border bg-popover"
           >

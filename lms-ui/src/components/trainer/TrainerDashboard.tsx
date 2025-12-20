@@ -48,7 +48,7 @@ export default function TrainerDashboardComponent({
   }));
 
   return (
-    <div className="flex bg-background min-h-screen font-sans text-foreground">
+    <div className="flex bg-background h-screen overflow-hidden font-sans text-foreground">
       {/* Desktop + Tablet Sidebar */}
       <div className="hidden md:flex shrink-0">
         <TrainerSidebar 

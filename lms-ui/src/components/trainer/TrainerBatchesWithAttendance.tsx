@@ -14,9 +14,9 @@ export default function TrainerBatchesWithAttendance({
 }: TrainerBatchesWithAttendanceProps) {
   return (
     <div className="w-full mt-6 pb-10">
-      <div className="flex flex-col 2xl:flex-row gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-4 items-start">
         {/* Batches List Section - Takes more space */}
-        <div className="flex-1 w-full">
+        <div className="flex-1 w-full min-w-0">
              <Card className="shadow-sm border-slate-100">
                 <CardHeader>
                     <CardTitle className="text-lg font-semibold text-slate-800">My Batches</CardTitle>
@@ -28,7 +28,7 @@ export default function TrainerBatchesWithAttendance({
         </div>
 
         {/* Attendance Widget - Fixed width or smaller share */}
-        <div className="w-full xl:w-[350px] shrink-0 sticky top-4">
+        <div className="w-full lg:w-[300px] shrink-0 sticky top-4">
            <AttendanceReportWidget />
         </div>
       </div>

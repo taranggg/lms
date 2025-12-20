@@ -4,7 +4,6 @@ import {
   Users,
   Calendar,
   BookOpen,
-  ClipboardList,
   GraduationCap,
   FileText,
   BarChart,
@@ -45,23 +44,22 @@ export default function TrainerBatchCard({
 }: TrainerBatchCardProps) {
   return (
     <div
-      className="rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4 shadow-sm bg-white border border-slate-100 hover:shadow-md transition-all relative w-full"
+      className="rounded-xl p-3 flex flex-col md:flex-row gap-3 shadow-sm bg-white border border-slate-100 hover:shadow-md transition-all relative w-full items-start"
       style={{
         background: `linear-gradient(100deg, ${batch.color}15 0%, white 40%)`,
         borderLeft: `4px solid ${batch.color}`,
       }}
     >
-      {/* Top Section: Logo + Menu */}
-      <div className="flex justify-between items-start sm:order-last sm:ml-auto">
-
+      {/* Absolute Menu for Space Saving */}
+      <div className="absolute top-2 right-2 md:static md:order-last">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-slate-400 hover:text-slate-600 -mr-2 -mt-2"
+              className="h-7 w-7 text-slate-400 hover:text-slate-600"
             >
-              <MoreVertical size={16} />
+              <MoreVertical size={14} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
@@ -116,65 +114,76 @@ export default function TrainerBatchCard({
         </DropdownMenu>
       </div>
 
-      {/* Content Section */}
-      <div className="flex items-center gap-4 flex-1">
-         <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-white shadow-sm text-2xl shrink-0">
-          {batch.logo ? (
-            <img
-              src={batch.logo}
-              alt="logo"
-              className="w-full h-full object-cover rounded-lg"
-            />
-          ) : (
-            <span role="img" aria-label="logo">
-              🎓
-            </span>
-          )}
-        </div>
-        <div>
-            <h3 className="font-bold text-lg text-slate-800 leading-tight mb-1">
-            {batch.name}
+      {/* Main Content Group */}
+      <div className="flex-1 min-w-0 pr-8 md:pr-0">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-white shadow-sm text-xl shrink-0">
+            {batch.logo ? (
+              <img
+                src={batch.logo}
+                alt="logo"
+                className="w-full h-full object-cover rounded-lg"
+              />
+            ) : (
+              <span role="img" aria-label="logo">
+                🎓
+              </span>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-bold text-base text-slate-800 leading-tight mb-0.5 truncate pr-2">
+              {batch.name}
             </h3>
             {batch.instructor && (
-                <p className="text-xs text-slate-500 font-medium">Trainer: {batch.instructor}</p>
+              <p className="text-[10px] text-slate-500 font-medium">
+                Trainer: {batch.instructor}
+              </p>
             )}
+
+            {/* Mobile/Compact Tablet: Stats below text */}
+            <div className="grid grid-cols-2 gap-2 mt-3 xl:flex xl:items-center xl:gap-4">
+              <div className="flex items-center gap-1.5 p-1.5 px-2 rounded-lg bg-slate-50/80 border border-slate-100">
+                <Calendar size={12} className="text-slate-400" />
+                <div className="flex flex-col">
+                  <span className="text-[9px] text-slate-400 font-semibold uppercase leading-none mb-0.5">
+                    Schedule
+                  </span>
+                  <span
+                    className="text-[11px] font-medium text-slate-700 truncate max-w-[80px]"
+                    title={batch.schedule}
+                  >
+                    {batch.schedule}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5 p-1.5 px-2 rounded-lg bg-slate-50/80 border border-slate-100">
+                <Users size={12} className="text-slate-400" />
+                <div className="flex flex-col">
+                  <span className="text-[9px] text-slate-400 font-semibold uppercase leading-none mb-0.5">
+                    Students
+                  </span>
+                  <span className="text-[11px] font-medium text-slate-700">
+                    {batch.students} Active
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Info Stats */}
-      <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 mt-2 sm:mt-0 sm:mr-4">
-        <div className="flex items-center gap-1.5 p-2 rounded-lg bg-slate-50/80">
-          <Calendar size={14} className="text-slate-400" />
-          <div className="flex flex-col">
-            <span className="text-[10px] text-slate-400 font-semibold uppercase">
-              Schedule
-            </span>
-            <span className="text-xs font-medium text-slate-700 truncate max-w-[80px]" title={batch.schedule}>
-              {batch.schedule}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-1.5 p-2 rounded-lg bg-slate-50/80">
-          <Users size={14} className="text-slate-400" />
-          <div className="flex flex-col">
-             <span className="text-[10px] text-slate-400 font-semibold uppercase">
-              Students
-            </span>
-            <span className="text-xs font-medium text-slate-700">
-              {batch.students} Active
-            </span>
-          </div>
-        </div>
+      {/* Right Section: Status Badge (Desktop) */}
+      <div className="flex items-center md:flex-col md:items-end md:justify-center gap-2 mt-2 md:mt-0 md:h-auto">
+        <span
+          className={`text-[10px] px-2 py-1 rounded-full font-semibold border ${
+            batch.active
+              ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+              : "bg-slate-50 text-slate-500 border-slate-100"
+          }`}
+        >
+          {batch.active ? "Active" : "Archived"}
+        </span>
       </div>
-      
-       <div className="flex items-center justify-between sm:justify-start sm:gap-4 pt-2 border-t border-slate-100 sm:border-t-0 sm:pt-0 sm:border-l sm:pl-4 sm:h-8">
-          <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${batch.active ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>
-              {batch.active ? 'Active' : 'Archived'}
-          </span>
-           <Link href={`/trainer/batch/${batch.id}`} className="text-xs font-semibold text-sky-600 hover:underline sm:hidden">
-            View Details
-          </Link>
-       </div>
     </div>
   );
 }
