@@ -8,8 +8,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
+export interface TrainerSidebarItem {
+  label: string;
+  icon: React.ReactNode;
+  active?: boolean;
+  onClick?: () => void;
+}
+
 interface TrainerSidebarProps {
-  items: { label: string; icon: React.ReactNode; active?: boolean; onClick?: () => void }[];
+  items: TrainerSidebarItem[];
   trainerName: string;
   trainerImage: string;
   trainerDesignation?: string;

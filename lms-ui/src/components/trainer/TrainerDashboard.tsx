@@ -14,7 +14,7 @@ import Header from "@/components/dashboard/Header";
 import UpcomingClassesList from "./UpcomingClassesList";
 import ResourceUpdateList from "./ResourceUpdateList";
 import TrainerBatchesWithAttendance from "./TrainerBatchesWithAttendance";
-import TodoList, { type TodoItem } from "@/components/dashboard/TodoList";
+import TodoList, { type TodoMainTask as TodoItem } from "@/components/dashboard/TodoList";
 import MobileBottomNav, { type MobileNavItem } from "@/components/student/MobileBottomNav";
 
 interface TrainerDashboardProps {
@@ -166,6 +166,12 @@ export default function TrainerDashboardComponent({
 
                             {/* 3. Batches & Attendance */}
                             <TrainerBatchesWithAttendance batches={batches} trainerId={trainerId} />
+
+                            {/* 4. Quick Actions (Tablet View - moved from Right Sidebar) */}
+                            <div className="lg:hidden flex flex-col gap-6 mt-2">
+                                <h3 className="font-bold text-lg text-foreground">Quick Actions</h3>
+                                <TodoList items={todoList} />
+                            </div>
                           </>
                         )}
                         
