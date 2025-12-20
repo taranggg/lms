@@ -6,7 +6,7 @@ import compression from "compression";
 import dotenv from "dotenv";
 import path from "path";
 // import { fileURLToPath } from "url"; // Removed
-import adminAuth from "./routes/auth.js";
+
 import { connectDB } from "./config/db.js";
 import branchRouter from "./routes/branch.js";
 import trainerRouter from "./routes/trainer.js";
@@ -15,6 +15,7 @@ import studentRouter from "./routes/student.js";
 import batchRouter from "./routes/batch.js";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
+import authRouter from "./routes/auth.js";
 
 // const __filename = fileURLToPath(import.meta.url); // Removed
 // const __dirname = path.dirname(__filename); // Removed
@@ -45,7 +46,7 @@ if (fs.existsSync(swaggerFile)) {
 }
 
 /////Routes
-app.use("/auth", adminAuth);
+app.use("/auth", authRouter);
 app.use("/api/v1/branch", branchRouter);
 app.use("/api/v1/trainer", trainerRouter);
 app.use("/api/v1/coursesandtopics", coursesandtopicsRouter);
