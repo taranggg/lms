@@ -17,6 +17,7 @@ import materialRouter from "./routes/materials.js";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import authRouter from "./routes/auth.js";
+import domainRouter from "./routes/domain.js";
 
 // const __filename = fileURLToPath(import.meta.url); // Removed
 // const __dirname = path.dirname(__filename); // Removed
@@ -25,6 +26,8 @@ dotenv.config({ path: path.resolve(process.cwd(), "src/config/config.env") });
 
 export const app = express();
 
+app.use("/assets", express.static(path.join(process.cwd(), "assets")));
+
 connectDB();
 
 // Essential middleware in correct order
@@ -32,7 +35,7 @@ app.use(helmet());
 app.use(compression());
 app.use(cors());
 app.use(morgan("combined"));
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // Health check
@@ -54,3 +57,4 @@ app.use("/api/v1/coursesandtopics", coursesandtopicsRouter);
 app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/batch", batchRouter);
 app.use("/api/v1/material", materialRouter);
+app.use("/api/v1/domain", domainRouter);
