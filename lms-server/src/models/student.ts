@@ -10,6 +10,7 @@ export interface Student extends mongoose.Document {
   type: "Weekdays" | "Weekends";
   firstLogin: boolean;
   email: string;
+  status: "Active" | "Completed";
 }
 
 const studentSchema = new mongoose.Schema<Student>({
@@ -52,6 +53,12 @@ const studentSchema = new mongoose.Schema<Student>({
     type: String,
     enum: ["Weekdays", "Weekends"],
     required: true,
+  },
+  status: {
+    type: String,
+    enum: ["Active", "Completed"],
+    required: true,
+    default: "Active",
   },
 });
 

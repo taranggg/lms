@@ -17,36 +17,68 @@ export const createCourse = async (req: Request, res: Response) => {
 
 export const getAllCourses = async (req: Request, res: Response) => {
   try {
-    const courses = await Course.aggregate([
-      {
-        $lookup: {
-          from: "coursetopiclinks",
-          localField: "_id",
-          foreignField: "course",
-          as: "links",
-        },
+    const { type, page = 1, limit = 10 } = req.query;
+
+    const matchStage: any = {};
+    if (type) matchStage.type = type;
+
+    const pageNumber = parseInt(page as string);
+    const limitNumber = parseInt(limit as string);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const facetStage = {
+      $facet: {
+        data: [
+          { $skip: skip },
+          { $limit: limitNumber },
+          {
+            $lookup: {
+              from: "coursetopiclinks",
+              localField: "_id",
+              foreignField: "course",
+              as: "links",
+            },
+          },
+          {
+            $lookup: {
+              from: "topics",
+              localField: "links.topic",
+              foreignField: "_id",
+              as: "topics",
+            },
+          },
+          {
+            $addFields: {
+              totalDuration: { $sum: "$topics.duration" },
+            },
+          },
+          {
+            $project: {
+              links: 0,
+              __v: 0,
+            },
+          },
+        ],
+        totalCount: [{ $count: "count" }],
       },
-      {
-        $lookup: {
-          from: "topics",
-          localField: "links.topic",
-          foreignField: "_id",
-          as: "topics",
-        },
-      },
-      {
-        $addFields: {
-          totalDuration: { $sum: "$topics.duration" },
-        },
-      },
-      {
-        $project: {
-          links: 0,
-          __v: 0,
-        },
-      },
-    ]);
-    res.status(200).json(courses);
+    };
+
+    const pipeline: any[] = [];
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+    pipeline.push(facetStage);
+
+    const result = await Course.aggregate(pipeline);
+    const data = result[0].data;
+    const total = result[0].totalCount[0] ? result[0].totalCount[0].count : 0;
+
+    res.status(200).json({
+      data,
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    });
   } catch (error) {
     console.error("Error getting all courses:", error);
     res.status(500).json({ error: "Failed To Get Courses" });

@@ -100,18 +100,41 @@ export const getAllStudents = async (req: Request, res: Response) => {
       });
     }
 
-    // 4. Cleanup (Project)
-    pipeline.push({
-      $project: {
-        batchLinks: 0,
-        courseLinks: 0,
-        password: 0, // Don't send password
-        __v: 0,
-      },
-    });
+    // 4. Pagination and Facet
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
 
-    const students = await StudentModel.aggregate(pipeline);
-    res.status(200).send(students);
+    const facetStage = {
+      $facet: {
+        data: [
+          { $skip: skip },
+          { $limit: limit },
+          {
+            $project: {
+              batchLinks: 0,
+              courseLinks: 0,
+              password: 0,
+              __v: 0,
+            },
+          },
+        ],
+        totalCount: [{ $count: "count" }],
+      },
+    };
+
+    pipeline.push(facetStage);
+
+    const result = await StudentModel.aggregate(pipeline);
+    const data = result[0].data;
+    const total = result[0].totalCount[0] ? result[0].totalCount[0].count : 0;
+
+    res.status(200).json({
+      data,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (error) {
     console.error("Error getting students:", error);
     res.status(500).send("Internal Server Error");
@@ -143,15 +166,6 @@ export const deleteStudent = async (req: Request, res: Response) => {
   try {
     const student = await StudentModel.findByIdAndDelete(req.params.id);
     res.status(200).send("Deleted Student Successfully");
-  } catch (error) {
-    res.status(500).send("Internal Server Error");
-  }
-};
-
-export const getStudentByBranch = async (req: Request, res: Response) => {
-  try {
-    const students = await StudentModel.find({ branch: req.params.branch });
-    res.status(200).send(students);
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
