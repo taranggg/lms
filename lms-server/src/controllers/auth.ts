@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 import jwt from "jsonwebtoken";
 import EmailModel from "../models/email.js";
 import StudentModel from "../models/student.js";
@@ -7,19 +7,26 @@ import bcrypt from "bcrypt";
 
 export async function adminGoogleLogin(req: Request, res: Response) {
   try {
-    const decodedToken = jwtDecode(req.body.token);
-    //@ts-ignore
-    const { email } = decodedToken;
+    const { token } = req.body;
+    const response = await axios.get(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const { email } = response.data;
     const isEmailExist = await EmailModel.findOne({ email });
     if (isEmailExist) {
-      const token = jwt.sign(
+      const jwtToken = jwt.sign(
         { email, role: isEmailExist.role },
         process.env.JWT_SECRET as string,
         {
           expiresIn: "9h",
         }
       );
-      return res.status(200).json({ token });
+      return res.status(200).json({ token: jwtToken });
     } else {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -32,19 +39,26 @@ export async function adminGoogleLogin(req: Request, res: Response) {
 
 export async function trainerGoogleLogin(req: Request, res: Response) {
   try {
-    const decodedToken = jwtDecode(req.body.token);
-    //@ts-ignore
-    const { email } = decodedToken;
+    const { token } = req.body;
+    const response = await axios.get(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const { email } = response.data;
     const isEmailExist = await EmailModel.findOne({ email });
     if (isEmailExist) {
-      const token = jwt.sign(
+      const jwtToken = jwt.sign(
         { email, role: isEmailExist.role },
         process.env.JWT_SECRET as string,
         {
           expiresIn: "9h",
         }
       );
-      return res.status(200).json({ token });
+      return res.status(200).json({ token: jwtToken });
     } else {
       return res.status(401).json({ message: "Unauthorized" });
     }
