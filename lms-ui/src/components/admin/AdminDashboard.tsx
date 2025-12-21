@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdminRecentActivity from "@/components/admin/AdminRecentActivity";
 
+import AddBranchForm from "@/components/admin/AddBranchForm";
+
 // Mock Data for Branches
 const BRANCHES = [
   {
@@ -66,6 +68,7 @@ const ALL_BRANCH_ID = "all";
 
 export default function AdminDashboardComponent() {
   const [selectedBranchId, setSelectedBranchId] = useState(BRANCHES[0].id);
+  const [isAddBranchOpen, setIsAddBranchOpen] = useState(false);
 
   // Logic to handle "All Branches" or specific branch
   const isAllSelected = selectedBranchId === ALL_BRANCH_ID;
@@ -153,7 +156,7 @@ export default function AdminDashboardComponent() {
             </Button>
              <Button 
                 className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-10 px-4 shadow-lg shadow-primary/20"
-                onClick={() => {}} // Hook up to logic if needed
+                onClick={() => setIsAddBranchOpen(true)}
             >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Branch
@@ -258,6 +261,15 @@ export default function AdminDashboardComponent() {
           <TodoList items={MOCK_TODO_LIST} />
         </div>
       </aside>
+      
+      <AddBranchForm 
+        open={isAddBranchOpen} 
+        onOpenChange={setIsAddBranchOpen}
+        onSuccess={() => {
+          // TODO: Refresh branch list
+          console.log("Branch added successfully");
+        }}
+      />
     </div>
   );
 }

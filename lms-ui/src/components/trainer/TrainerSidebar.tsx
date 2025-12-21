@@ -31,24 +31,26 @@ export default function TrainerSidebar({
 }: TrainerSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
 
+
   return (
     <aside
-      className={`bg-cardcs rounded-2xl shadow flex flex-col py-8 px-4 h-[calc(100vh-2rem)] transition-all duration-300 relative ml-4 my-4 border border-sidebar-border ${
+      className={`bg-white/50 dark:bg-black/50 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl shadow-sm flex flex-col py-8 px-4 h-[calc(100vh-2rem)] transition-all duration-300 relative ml-4 my-4 ${
         collapsed ? "w-20" : "w-64"
       }`}
     >
       {/* Brand / Logo */}
       <div className="flex items-center gap-2 mb-10 justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-tr from-cyan-400 to-orange-300 rounded-lg shrink-0" />
+          <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+             <div className="w-4 h-4 bg-primary rounded-sm" />
+          </div>
           {!collapsed && (
-            <span className="font-bold text-lg text-sidebar-foreground">Learninja</span>
+            <span className="font-bold text-lg text-foreground">Learninja</span>
           )}
-          <span className="ml-1 text-xs text-orange-500">•</span>
         </div>
         {collapsed ? (
           <button
-            className="absolute -right-6 top-8 p-1 rounded-full bg-sidebar shadow border border-sidebar-border hover:bg-sidebar-accent z-10 text-sidebar-foreground"
+            className="absolute -right-6 top-8 p-1 rounded-full bg-background shadow border border-border hover:bg-muted z-10 text-foreground"
             onClick={() => setCollapsed(false)}
             aria-label="Expand sidebar"
           >
@@ -56,7 +58,7 @@ export default function TrainerSidebar({
           </button>
         ) : (
           <button
-            className="ml-auto p-1 rounded hover:bg-sidebar-accent text-sidebar-foreground"
+            className="ml-auto p-1 rounded hover:bg-muted text-foreground"
             onClick={() => setCollapsed(true)}
             aria-label="Collapse sidebar"
           >
@@ -70,8 +72,10 @@ export default function TrainerSidebar({
         {items.map((item) => (
           <div
             key={item.label}
-            className={`flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer font-medium transition-colors ${
-              item.active ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent"
+            className={`flex items-center gap-3 px-4 py-2 rounded-xl cursor-pointer font-medium transition-all duration-200 ${
+              item.active 
+                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" 
+                : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
             }`}
             onClick={item.onClick}
           >
@@ -86,13 +90,13 @@ export default function TrainerSidebar({
         <HoverCard openDelay={0} closeDelay={200}>
           <HoverCardTrigger asChild>
             <div
-              className={`flex items-center gap-3 px-2 py-2 rounded-lg cursor-pointer hover:bg-sidebar-accent transition-colors border border-transparent hover:border-sidebar-border ${
+              className={`flex items-center gap-3 px-2 py-2 rounded-xl cursor-pointer hover:bg-primary/5 transition-colors border border-transparent hover:border-primary/10 ${
                 collapsed ? "justify-center" : ""
               }`}
             >
               <Avatar className="h-9 w-9 border-2 border-background shadow-sm">
                 <AvatarImage src={trainerImage} alt={trainerName} />
-                <AvatarFallback className="bg-sky-100 text-sky-700 font-semibold">
+                <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                   {trainerName.charAt(0)}
                 </AvatarFallback>
               </Avatar>

@@ -7,27 +7,46 @@ import type { CourseCard } from "@/components/dashboard/CourseCards";
 export default function Page() {
   const { studentId } = useParams();
   const router = useRouter();
-  const [courses, setCourses] = React.useState<CourseCard[]>([]);
+  const [coursesList, setCoursesList] = React.useState<CourseCard[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     async function loadStudentCourses() {
+      // Import mock data statically (or lazily if needed, but static is fine here)
+      const { students } = await import("@/mock/student/students_mock");
+      const { courses: allCourses } = await import("@/mock/course/courses_mock");
+
       if (typeof window !== "undefined") {
         const sid = Array.isArray(studentId) ? studentId[0] : studentId;
-        if (!sid || !/^stu\d+$/.test(sid)) {
-          router.push("/student/login");
-          return;
+        
+        // Find the student
+        const student = students.find(s => s.studentId === sid);
+        
+        if (!student) {
+          // If student not found (or invalid format), redirect
+          // But for now, if format is correct but not found, maybe handle gracefully?
+          // Using the existing regex check from previous code:
+          if (!sid || !/^stu\d+$/.test(sid)) {
+             router.push("/student/login");
+             return;
+          }
+          // If ID format is valid but student not in mock, maybe show empty? 
+          // Previous code would fail to load file. Let's redirect if not found.
+          if (!student) {
+             console.error("Student not found in mock data");
+             // Optional: router.push("/student/login");
+             setLoading(false);
+             return;
+          }
         }
-        const mod = await import(
-          `@/mock/student/student${sid.replace("stu", "")}.json`
-        );
-        const studentData = mod.default;
-        const courseIds = studentData.courses;
-        const coursePromises = courseIds.map((id: string) =>
-          import(`@/mock/course/${id}.json`).then((c) => c.default)
-        );
-        const courseDetails = await Promise.all(coursePromises);
-        setCourses(courseDetails);
+
+        if (student) {
+           const studentCourseIds = student.courses;
+           // Filter courses based on student's course list
+           const studentCourses = allCourses.filter(c => studentCourseIds.includes(c.id));
+           // Cast to CourseCard types if needed, assuming mocks match structure
+           setCoursesList(studentCourses as unknown as CourseCard[]);
+        }
         setLoading(false);
       }
     }
@@ -35,5 +54,6 @@ export default function Page() {
   }, [studentId, router]);
 
   if (loading) return <div className="p-8">Loading...</div>;
-  return <StudentCoursesPage courses={courses} />;
+  const sid = Array.isArray(studentId) ? studentId[0] : studentId;
+  return <StudentCoursesPage courses={coursesList} studentId={sid || ""} />;
 }

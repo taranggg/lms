@@ -38,7 +38,13 @@ function MobileOverview({
     // Search state for mobile header if needed
     const [search, setSearch] = React.useState("");
     return (
-        <div className="flex-1 flex flex-col bg-background h-full overflow-y-auto pb-20 custom-scrollbar">
+        <div className="flex-1 flex flex-col h-full overflow-y-auto pb-20 custom-scrollbar relative">
+             {/* Background Blobs */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px]" />
+                <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] bg-secondary/10 rounded-full blur-[100px]" />
+            </div>
+
             {/* Reusing shared Header which is generic enough, or minimal mobile header */}
             <div className="px-4 py-4">
                 <Header name={trainer.name} onSearch={setSearch} />

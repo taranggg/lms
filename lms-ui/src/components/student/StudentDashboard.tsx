@@ -77,7 +77,13 @@ function CenterSection({
     "grid grid-cols-1 xl:grid-cols-3 gap-8 md:gap-10 px-6 md:px-8 xl:px-12 pb-20 pt-8";
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-background/50">
+    <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+       {/* Background Blobs */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px]" />
+        <div className="absolute top-[20%] right-[-5%] w-[400px] h-[400px] bg-secondary/10 rounded-full blur-[100px]" />
+      </div>
+
       <Header name={student.name} onSearch={setSearch} />
       <div className="flex-1 overflow-y-auto">
         <div className={containerClass}>
