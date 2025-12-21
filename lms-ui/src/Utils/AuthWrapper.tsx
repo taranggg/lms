@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { HashLoader } from "react-spinners";
 import axiosInstance from "./Axiosinstance";
 
 interface AuthResponse {
@@ -82,14 +83,14 @@ export const useAuthWrapper = (
         router.replace("/");
       }
     }
-    //// Add loader
-    // if (isLoading) {
-    //   return (
-    //     <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-black z-50">
-    //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-    //     </div>
-    //   );
-    // }
+    // Add loader
+    if (isLoading) {
+      return (
+        <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-black z-50">
+          <HashLoader color="#bf8850ff" />
+        </div>
+      );
+    }
 
     return isAuthorized ? <Component {...props} /> : null;
   };
