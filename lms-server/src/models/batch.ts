@@ -47,11 +47,10 @@ const batchSchema = new mongoose.Schema<Batch>({
   status: {
     type: String,
     enum: ["Running", "Completed"],
-    required: true,
+    default: "Running",
   },
   currentTopic: {
     type: String,
-    required: true,
   },
   type: {
     type: String,

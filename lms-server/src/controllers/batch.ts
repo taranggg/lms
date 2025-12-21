@@ -1,12 +1,86 @@
 import { Request, Response } from "express";
 import BatchModel from "../models/batch.js";
 import StudentBatchLinkModel from "../models/studentbatchlink.js";
+import TrainerModel from "../models/trainer.js";
+import { google } from "googleapis";
+import { v4 as uuidv4 } from "uuid";
 
 export const createBatch = async (req: Request, res: Response) => {
   try {
-    const batch = await BatchModel.create(req.body);
+    const {
+      title,
+      branch,
+      trainer,
+      startDate,
+      startTime,
+      endTime,
+      status,
+      currentTopic,
+      type,
+    } = req.body;
+
+    const trainerData = await TrainerModel.findById(trainer).select(
+      "+googleRefreshToken"
+    );
+
+    let googleMeetLink = "";
+
+    if (trainerData?.googleRefreshToken) {
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI
+      );
+
+      oauth2Client.setCredentials({
+        refresh_token: trainerData.googleRefreshToken,
+      });
+
+      const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+
+      const eventStartTime = new Date(`${startDate}T${startTime}:00`);
+      const eventEndTime = new Date(`${startDate}T${endTime}:00`);
+
+      const event = {
+        summary: title,
+        description: `Batch: ${title}`,
+        start: {
+          dateTime: eventStartTime.toISOString(),
+          timeZone: "Asia/Kolkata",
+        },
+        end: {
+          dateTime: eventEndTime.toISOString(),
+          timeZone: "Asia/Kolkata",
+        },
+        conferenceData: {
+          createRequest: {
+            requestId: uuidv4(),
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
+        },
+      };
+
+      try {
+        const response = await calendar.events.insert({
+          calendarId: "primary",
+          requestBody: event,
+          conferenceDataVersion: 1,
+        });
+
+        googleMeetLink = response.data.hangoutLink || "";
+      } catch (calendarError) {
+        console.error("Error creating Google Meet link:", calendarError);
+        // Continue without link if fails, or handle as needed
+      }
+    }
+
+    const batch = await BatchModel.create({
+      ...req.body,
+      googleMeetLink,
+    });
     res.status(201).json(batch);
   } catch (error) {
+    console.error(error);
     res.status(500).json("Batch creation has failed! Please Try Again!");
   }
 };
