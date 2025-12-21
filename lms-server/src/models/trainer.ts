@@ -7,6 +7,7 @@ export interface Trainer extends mongoose.Document {
   domain: mongoose.Types.ObjectId;
   mobileNumber: string;
   designation: string;
+  profilePicture: string;
   gender: string;
 }
 
@@ -30,6 +31,7 @@ const trainerSchema = new mongoose.Schema<Trainer>(
     },
     mobileNumber: { type: String, required: true },
     designation: { type: String, required: true },
+    profilePicture: { type: String },
     gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
   },
   { timestamps: true }

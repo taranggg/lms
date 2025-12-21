@@ -3,8 +3,21 @@ import MaterialModel from "../models/materials.js";
 
 export const createMaterial = async (req: Request, res: Response) => {
   try {
-    const material = await MaterialModel.create(req.body);
-    res.status(201).json(material);
+    const files = req.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
+
+    const createdMaterials = await Promise.all(
+      files.map(async (file) => {
+        return await MaterialModel.create({
+          ...req.body,
+          file: file.filename,
+        });
+      })
+    );
+
+    res.status(201).json(createdMaterials);
   } catch (error) {
     console.error("Error creating material:", error);
     res.status(500).json({ error: "Failed to create material" });

@@ -9,7 +9,7 @@
 /lms-server/dist
 /lms-server/package-lock.json
 /lms-server/src/config/config.env
-
+/lms-server/assets
 .env
 .env.local
 .env.*.local

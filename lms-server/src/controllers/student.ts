@@ -4,7 +4,7 @@ import crypto from "crypto";
 import mongoose from "mongoose";
 import { sendWelcomeEmail } from "../utils/Email.js";
 import StudentModel from "../models/student.js";
-
+import fs from "fs";
 export const createStudent = async (req: Request, res: Response) => {
   try {
     const { name, email } = req.body;
@@ -26,11 +26,15 @@ export const createStudent = async (req: Request, res: Response) => {
     const studentId = `${prefix}${serialString}`;
     const plainPassword = crypto.randomBytes(4).toString("hex"); // 8 chars hex
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
+
+    const profilePicture = req.file ? req.file.filename : undefined;
+
     const student = await StudentModel.create({
       ...req.body,
       studentId: studentId,
       password: hashedPassword,
       firstLogin: true,
+      profilePicture,
     });
 
     sendWelcomeEmail(email, name, plainPassword);
@@ -38,6 +42,11 @@ export const createStudent = async (req: Request, res: Response) => {
     res.status(201).send("Added Student Successfully");
   } catch (error) {
     console.error("Error creating student:", error);
+    if (req.file) {
+      fs.unlinkSync(
+        `${process.cwd()}/assets/profilePicture/${req.file.filename as string}`
+      );
+    }
     res.status(500).send("Internal Server Error");
   }
 };
@@ -152,9 +161,13 @@ export const getStudentById = async (req: Request, res: Response) => {
 
 export const updateStudent = async (req: Request, res: Response) => {
   try {
+    const updateData = { ...req.body };
+    if (req.file) {
+      updateData.profilePicture = req.file.filename;
+    }
     const student = await StudentModel.findByIdAndUpdate(
       req.params.id,
-      req.body
+      updateData
     );
     res.status(200).send("Updated Student Successfully");
   } catch (error) {

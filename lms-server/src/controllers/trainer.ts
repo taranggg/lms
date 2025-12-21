@@ -1,24 +1,36 @@
 import { Request, Response } from "express";
 import TrainerModel from "../models/trainer.js";
 import EmailModel from "../models/email.js";
+import fs from "fs";
 
 export async function createTrainer(req: Request, res: Response) {
   try {
-    const { name, email, branch, domain, mobileNumber } = req.body;
-    const trainer = await TrainerModel.create({
-      name,
-      email,
-      branch,
-      domain,
-      mobileNumber,
-    });
-    await EmailModel.create({
+    const { name, email, branch, domain, mobileNumber, designation, gender } =
+      req.body;
+    const profilePicture = req.file ? req.file.filename : undefined;
+    const addedEmail = await EmailModel.create({
       role: "Trainer",
       email,
     });
+    const trainer = await TrainerModel.create({
+      name,
+      email: addedEmail._id,
+      branch,
+      domain,
+      mobileNumber,
+      designation,
+      gender,
+      profilePicture,
+    });
+
     res.status(201).json(trainer);
   } catch (error) {
     console.error(error);
+    if (req.file) {
+      fs.unlinkSync(
+        `${process.cwd()}/assets/profilePicture/${req.file.filename as string}`
+      );
+    }
     res.status(500).json({ error: "Failed to create trainer" });
   }
 }
@@ -74,7 +86,11 @@ export async function getTrainerById(req: Request, res: Response) {
 export async function updateTrainer(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const trainer = await TrainerModel.findByIdAndUpdate(id, req.body, {
+    const updateData = { ...req.body };
+    if (req.file) {
+      updateData.profilePicture = req.file.filename;
+    }
+    const trainer = await TrainerModel.findByIdAndUpdate(id, updateData, {
       new: true,
     });
     await EmailModel.findByIdAndUpdate(trainer?.email, req.body);
