@@ -42,7 +42,7 @@ export const AuthContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [state, dispatch] = useReducer(reducer, null);
+  const [state, dispatch] = useReducer(reducer, token);
 
   return (
     <AuthContext.Provider value={{ token: state, dispatch }}>
