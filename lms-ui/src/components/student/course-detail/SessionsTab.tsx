@@ -75,10 +75,12 @@ function deriveStatus(session: CourseSession): SessionStatus {
   return "live";
 }
 
+// ... (imports remain the same)
+
 function statusBadgeClasses(status: SessionStatus) {
-  if (status === "upcoming") return "bg-[#f5ebff] text-[#7c3aed]"; // purple
-  if (status === "live") return "bg-[#fee2e2] text-[#b91c1c]"; // red
-  return "bg-[#dcfce7] text-[#15803d]"; // green
+  if (status === "upcoming") return "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"; // purple
+  if (status === "live") return "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"; // red
+  return "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"; // green
 }
 
 function statusLabel(status: SessionStatus) {
@@ -89,10 +91,10 @@ function statusLabel(status: SessionStatus) {
 
 function statusIcon(status: SessionStatus) {
   if (status === "upcoming")
-    return <Clock3 className="w-4 h-4 text-[#4f46e5]" aria-hidden="true" />;
+    return <Clock3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />;
   if (status === "live")
-    return <Radio className="w-4 h-4 text-[#dc2626]" aria-hidden="true" />;
-  return <CheckCircle2 className="w-4 h-4 text-[#16a34a]" aria-hidden="true" />;
+    return <Radio className="w-4 h-4 text-red-600 dark:text-red-400" aria-hidden="true" />;
+  return <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" aria-hidden="true" />;
 }
 
 function primaryButtonProps(status: SessionStatus): {
@@ -103,18 +105,18 @@ function primaryButtonProps(status: SessionStatus): {
     return {
       label: "Join Session",
       variantClasses:
-        "bg-muted text-muted-foreground hover:bg-muted/80 border border-muted-foreground/10",
+        "bg-muted text-muted-foreground hover:bg-muted/80 border border-border",
     };
   }
   if (status === "live") {
     return {
       label: "Join Live Session",
-      variantClasses: "bg-[#2563eb] text-white hover:bg-[#1d4ed8] shadow-sm",
+      variantClasses: "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
     };
   }
   return {
     label: "Watch Recording",
-    variantClasses: "bg-black text-white hover:bg-black/90 shadow-sm",
+    variantClasses: "bg-foreground text-background hover:bg-foreground/90 shadow-sm",
   };
 }
 
@@ -162,8 +164,8 @@ export default function SessionsTab({ course }: SessionsTabProps) {
               className={cn(
                 "px-4 py-1.5 rounded-full text-xs md:text-sm font-medium border transition-colors",
                 filter === f.key
-                  ? "bg-[#0f172a] text-white border-transparent shadow-sm"
-                  : "bg-[#f4f4f5] text-[#4b5563] border-transparent hover:bg-[#e4e4e7]"
+                  ? "bg-foreground text-background border-transparent shadow-sm"
+                  : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
               )}
             >
               {f.label}
@@ -177,7 +179,7 @@ export default function SessionsTab({ course }: SessionsTabProps) {
           <Input
             type="text"
             placeholder="Search sessions..."
-            className="pl-9 rounded-full text-xs md:text-sm"
+            className="pl-9 rounded-full text-xs md:text-sm bg-background border-border"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -188,7 +190,7 @@ export default function SessionsTab({ course }: SessionsTabProps) {
       <div className="relative">
         {/* Vertical line */}
         <div className="absolute left-[14px] top-0 bottom-0 hidden sm:block">
-          <div className="w-[2px] h-full bg-slate-200" />
+          <div className="w-[2px] h-full bg-border" />
         </div>
 
         <div className="flex flex-col gap-6">
@@ -217,24 +219,24 @@ export default function SessionsTab({ course }: SessionsTabProps) {
                 <div className="flex flex-col items-center pt-1">
                   <div
                     className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center bg-white border shadow-sm z-10",
-                      status === "upcoming" && "border-[#4f46e5]/40",
-                      status === "live" && "border-[#dc2626]/40",
-                      status === "completed" && "border-[#16a34a]/40"
+                      "w-8 h-8 rounded-full flex items-center justify-center bg-card border border-border shadow-sm z-10",
+                      status === "upcoming" && "border-indigo-500/40",
+                      status === "live" && "border-red-500/40",
+                      status === "completed" && "border-green-500/40"
                     )}
                   >
                     {statusIcon(status)}
                   </div>
                   {/* Line segment (mobile only, because main line is hidden on xs) */}
-                  <div className="block sm:hidden flex-1 w-[2px] bg-slate-200 mt-1" />
+                  <div className="block sm:hidden flex-1 w-[2px] bg-border mt-1" />
                 </div>
 
                 {/* Card */}
-                <div className="flex-1 bg-card rounded-xl md:rounded-2xl border border-[#e5e7eb] shadow-sm px-3 py-3 md:px-6 md:py-5">
+                <div className="flex-1 bg-card rounded-xl md:rounded-2xl border border-border shadow-sm px-3 py-3 md:px-6 md:py-5">
                   {/* Title row */}
                   <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs md:text-base font-semibold text-[#020617]">
+                      <span className="text-xs md:text-base font-semibold text-foreground">
                         {sessionNumber}: {session.topic}
                       </span>
                       <span
@@ -250,9 +252,9 @@ export default function SessionsTab({ course }: SessionsTabProps) {
                   </div>
 
                   {/* Date / time row */}
-                  <div className="mt-2 mb-2 inline-flex items-center gap-1 md:gap-2 rounded-full bg-slate-100 px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium text-[#4b5563]">
+                  <div className="mt-2 mb-2 inline-flex items-center gap-1 md:gap-2 rounded-full bg-muted px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-medium text-muted-foreground">
                     <span className="font-semibold">{session.date}</span>
-                    <span className="text-slate-400">|</span>
+                    <span className="text-muted-foreground/50">|</span>
                     <span>{session.time}</span>
                   </div>
 

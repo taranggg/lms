@@ -18,46 +18,15 @@ import SessionsTab from "@/components/student/course-detail/SessionsTab";
 import AttendanceTab from "@/components/student/course-detail/AttendanceTab";
 import StudentNavbar from "@/components/student/StudentNavbar";
 
+import { students } from "@/mock/student/students_mock";
+import { courses } from "@/mock/course/courses_mock";
+
 function useStudentData(studentId: string) {
-  const [student, setStudent] = React.useState<Record<string, unknown> | null>(
-    null
-  );
-
-  React.useEffect(() => {
-    async function fetchStudent() {
-      if (!studentId) return;
-      try {
-        const mod = await import(
-          `@/mock/student/student${studentId.replace("stu", "")}.json`
-        );
-        setStudent(mod.default);
-      } catch {
-        setStudent(null);
-      }
-    }
-    fetchStudent();
-  }, [studentId]);
-
-  return student;
+  return students.find((s) => s.studentId === studentId) || null;
 }
 
 function useCourseData(courseId: string) {
-  const [course, setCourse] = React.useState<Course | null>(null);
-
-  React.useEffect(() => {
-    async function fetchCourse() {
-      if (!courseId) return;
-      try {
-        const mod = await import(`@/mock/course/${courseId}.json`);
-        setCourse(mod.default as Course);
-      } catch {
-        setCourse(null);
-      }
-    }
-    fetchCourse();
-  }, [courseId]);
-
-  return course;
+  return courses.find((c) => c.id === courseId) || null;
 }
 
 export default function StudentCourseDetail() {
@@ -126,9 +95,14 @@ export default function StudentCourseDetail() {
 
         {/* Title Section */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--card-foreground)] break-words">
-            {course.name}
-          </h1>
+            {course.code && (
+              <span className="inline-block px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 mb-2 border border-slate-200 dark:border-slate-700">
+                Code: {course.code}
+              </span>
+            )}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--card-foreground)] break-words">
+              {course.name}
+            </h1>
           <p className="text-[var(--muted-foreground)] text-sm sm:text-base mt-1 break-words max-w-3xl">
             {course.description ||
               "Master the art of creating intuitive and beautiful user experiences."}

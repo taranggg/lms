@@ -23,12 +23,12 @@ import PerformanceGauge from "@/components/dashboard/PerformanceGauge";
 import Leaderboard, {
   type LeaderboardEntry,
 } from "@/components/dashboard/Leaderboard";
-import TodoList, { type TodoItem } from "@/components/dashboard/TodoList";
+import TodoList, { type TodoMainTask as TodoItem } from "@/components/dashboard/TodoList";
 import WeeklyCalendar from "@/components/ui/WeeklyCalendar";
 import StudentProfileForm, { type StudentProfile } from "./StudentProfileForm";
 import MobileBottomNav, {
   type MobileNavItem,
-} from "@/components/student/MobileBottomNav";
+} from "@/components/dashboard/MobileBottomNav";
 
 export interface HourSpent {
   month: string;
@@ -72,27 +72,41 @@ function CenterSection({
     );
   });
 
+  /* Update container class for internal scrolling structure */
   const containerClass =
-    "grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8 px-4 md:px-6 xl:px-10 pb-10 pt-4";
+    "grid grid-cols-1 xl:grid-cols-3 gap-8 md:gap-10 px-6 md:px-8 xl:px-12 pb-20 pt-8";
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col h-full overflow-hidden relative">
+       {/* Background Blobs */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px]" />
+        <div className="absolute top-[20%] right-[-5%] w-[400px] h-[400px] bg-secondary/10 rounded-full blur-[100px]" />
+      </div>
+
       <Header name={student.name} onSearch={setSearch} />
-      <div className={containerClass}>
-        <div className="xl:col-span-3 flex flex-col gap-8">
-          {/* Courses strip */}
-          <div className="-mx-4 md:mx-0">
-            <div className="overflow-x-auto scrollbar-hide px-4 md:px-0">
-              <CourseCards courses={filteredCourses} studentId={studentId} />
+      <div className="flex-1 overflow-y-auto">
+        <div className={containerClass}>
+          <div className="xl:col-span-3 flex flex-col gap-10">
+            {/* Courses strip */}
+            <div className="-mx-6 md:mx-0">
+              <div className="overflow-x-auto scrollbar-hide px-6 md:px-0 pb-4">
+                <CourseCards courses={filteredCourses} studentId={studentId} />
+              </div>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+              <HoursSpentChart data={hoursSpent} />
+              <PerformanceGauge points={8966} rank="5th in Leaderboard" />
+            </div>
+
+            {/* <Leaderboard entries={leaderboard} /> */}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            <HoursSpentChart data={hoursSpent} />
-            <PerformanceGauge points={8966} rank="5th in Leaderboard" />
-          </div>
+           {/* ------------------ TABLET SECTION (Right content moved to bottom) ------------------ */}
+          <div className="flex flex-col gap-10 lg:hidden xl:col-span-3"></div>
 
-          {/* <Leaderboard entries={leaderboard} /> */}
+
         </div>
       </div>
     </div>
@@ -276,7 +290,7 @@ function MobileOverview({
   });
 
   return (
-    <div className="flex-1 flex flex-col bg-background">
+    <div className="flex-1 flex flex-col m-4 bg-background">
       <MobileHeader studentName={student.name} onSearch={setSearch} />
 
       <div className="flex-1 px-3 pt-2 pb-20 space-y-6">
@@ -375,12 +389,12 @@ export default function StudentDashboardComponent({
   ];
 
   return (
-    <div className="flex bg-background min-h-screen">
+    <div className="flex bg-background h-screen overflow-hidden">
       {/* Desktop + Tablet */}
-      <div className="hidden md:flex w-full">
+      <div className="hidden lg:flex w-full">
         <Sidebar items={sidebarItems} />
 
-        <div className="flex flex-1">
+        <div className="flex flex-1 min-w-0">
           {activePage === "Overview" && (
             <>
               <CenterSection
@@ -390,7 +404,7 @@ export default function StudentDashboardComponent({
                 leaderboard={leaderboard}
                 studentId={studentId}
               />
-              <div className="flex">
+              <div className="hidden lg:flex">
                 <div className="w-px bg-border mx-2 h-screen" />
                 <RightSection
                   student={student}
@@ -403,13 +417,13 @@ export default function StudentDashboardComponent({
           )}
 
           {activePage === "Courses" && (
-            <div className="flex-1 px-4 md:px-6 xl:px-10 py-6">
+            <div className="flex-1 px-4 md:px-6 xl:px-10 py-6 overflow-y-auto">
               <StudentCoursesPage courses={courses} studentId={studentId} />
             </div>
           )}
 
           {activePage === "Resources" && (
-            <div className="flex-1 px-4 md:px-6 xl:px-10 py-6">
+            <div className="flex-1 px-4 md:px-6 xl:px-10 py-6 overflow-y-auto">
               <StudentResourcesPage
                 resources={courses.flatMap((c) => c.resources ?? [])}
               />
@@ -419,7 +433,7 @@ export default function StudentDashboardComponent({
       </div>
 
       {/* Mobile + Bottom Nav */}
-      <div className="flex flex-col w-full md:hidden min-h-screen pb-14">
+      <div className="flex flex-col w-full lg:hidden h-full overflow-y-auto pb-32">
         {activePage === "Overview" && (
           <MobileOverview
             student={student}
@@ -431,13 +445,13 @@ export default function StudentDashboardComponent({
         )}
 
         {activePage === "Courses" && (
-          <div className="flex-1 px-3 pt-4 pb-14">
+          <div className="flex-1 px-3 pt-4 pb-32">
             <StudentCoursesPage courses={courses} studentId={studentId} />
           </div>
         )}
 
         {activePage === "Resources" && (
-          <div className="flex-1 px-3 pt-4 pb-14">
+          <div className="flex-1 px-3 pt-4 pb-32">
             <StudentResourcesPage
               resources={courses.flatMap((c) => c.resources ?? [])}
             />

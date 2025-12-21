@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import type { CourseCard } from "@/components/dashboard/CourseCards";
+import { students } from "@/mock/student/students_mock";
+import { courses as allCourses } from "@/mock/course/courses_mock";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import StudentDashboardComponent, {
@@ -30,19 +32,16 @@ export default function StudentDashboard() {
           router.push("/student/login");
           return;
         }
-        const mod = await import(
-          `@/mock/student/student${sid.replace("stu", "")}.json`
-        );
-        const studentData = mod.default;
+        // Find student in mock array
+        const studentData = students.find((s) => s.studentId === sid) || null;
         setStudent(studentData);
-
-        // Load course details dynamically
-        const courseIds = studentData.courses;
-        const coursePromises = courseIds.map((id: string) =>
-          import(`@/mock/course/${id}.json`).then((c) => c.default)
-        );
-        const courseDetails = await Promise.all(coursePromises);
-        setCourses(courseDetails);
+        // Find course details from mock array
+        if (studentData) {
+          const courseDetails = studentData.courses
+            .map((id: string) => allCourses.find((c) => c.id === id))
+            .filter(Boolean);
+          setCourses(courseDetails as CourseCard[]);
+        }
         setLoading(false);
       }
     }

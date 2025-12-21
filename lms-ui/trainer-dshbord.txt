@@ -1,0 +1,14 @@
+Elements:
+1. Batch cards list
+    -CRUD operations
+    -Batch details
+    -Student list
+    -Attendance
+    -Assignments
+    -Exams
+    -Results
+    -Progress
+2. Profile of trainer
+3. Attendance of Report
+4. student list of all batches
+
