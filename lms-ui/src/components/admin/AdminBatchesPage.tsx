@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
   Search,
@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import NoData from "@/components/common/NoData";
+
+
 import {
   Dialog,
   DialogContent,
@@ -25,83 +28,121 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CreateBatchForm from "@/components/admin/forms/CreateBatchForm";
-
-// Mock Data
-const MOCK_BATCHES = [
-  {
-    id: 1,
-    name: "React Mastery 2024",
-    branch: "Main Branch",
-    schedule: "Mon, Wed, Fri • 10:00 AM",
-    trainer: "Sarah Wilson",
-    students: 24,
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "Node.js Advanced",
-    branch: "Downtown Branch",
-    schedule: "Tue, Thu • 2:00 PM",
-    trainer: "Mike Chen",
-    students: 18,
-    status: "Active",
-  },
-  {
-    id: 3,
-    name: "UI/UX Design Fundamentals",
-    branch: "Main Branch",
-    schedule: "Weekends • 11:00 AM",
-    trainer: "Emily Davis",
-    students: 30,
-    status: "Upcoming",
-  },
-  {
-    id: 4,
-    name: "Python for Data Science",
-    branch: "Main Branch",
-    schedule: "Mon, Wed • 6:00 PM",
-    trainer: "Alex Thompson",
-    students: 22,
-    status: "Active",
-  },
-];
+import { useAuth } from "@/Context/AuthContext";
+import { getAllBatches } from "@/Services/Batch";
+import { getAllBranches } from "@/Services/Branch";
+import { getAllTrainers } from "@/Services/Trainer";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminBatchesPage() {
+  const { token } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBranch, setFilterBranch] = useState("All");
-  const [filterTrainer, setFilterTrainer] = useState("All");
+  const [filterTrainer, setFilterTrainer] = useState("All"); // Trainer ID or "All"
   const [mounted, setMounted] = useState(false);
   const [isCreateBatchOpen, setIsCreateBatchOpen] = useState(false);
+
+  // Data states
+  const [batches, setBatches] = useState<any[]>([]);
+  const [branches, setBranches] = useState<any[]>([]);
+  const [trainers, setTrainers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  const fetchData = async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const [batchesRes, branchesRes, trainersRes] = await Promise.all([
+        getAllBatches(token),
+        getAllBranches(token),
+        getAllTrainers(token),
+      ]);
+
+      // Normalize data (handle if API returns { data: [...] } or just [...])
+      const batchesData = Array.isArray(batchesRes) ? batchesRes : batchesRes?.data || [];
+      const branchesData = Array.isArray(branchesRes) ? branchesRes : branchesRes?.data || [];
+      const trainersData = Array.isArray(trainersRes) ? trainersRes : trainersRes?.data || [];
+
+      setBatches(batchesData);
+      setBranches(branchesData);
+      setTrainers(trainersData);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      toast.error("Failed to load batches data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [token]);
+
+  // Handle successful creation
+  const handleBatchCreated = () => {
+    setIsCreateBatchOpen(false);
+    fetchData(); // Refresh list
+  };
 
   // Reset trainer filter when branch changes
   React.useEffect(() => {
     setFilterTrainer("All");
   }, [filterBranch]);
 
-  // Derive available trainers for the selected branch
-  const availableTrainers = React.useMemo(() => {
-    if (filterBranch === "All") return [];
-    const trainers = new Set(
-      MOCK_BATCHES.filter((b) => b.branch === filterBranch).map((b) => b.trainer)
-    );
-    return Array.from(trainers);
-  }, [filterBranch]);
+  // Filter Logic
+  const filteredBatches = batches.filter((batch) => {
+    // 1. Search Query
+    const batchName = batch.name || "";
+    const matchesSearch = batchName.toLowerCase().includes(searchQuery.toLowerCase());
 
-  const filteredBatches = MOCK_BATCHES.filter((batch) => {
-    const matchesSearch = batch.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesBranch =
-      filterBranch === "All" || batch.branch === filterBranch;
-    const matchesTrainer =
-      filterTrainer === "All" || batch.trainer === filterTrainer;
+    // 2. Branch Filter
+    // Check if batch.branch is an object or ID string
+    const batchBranchId = typeof batch.branch === "string" ? batch.branch : batch.branch?._id;
+    const matchesBranch = filterBranch === "All" || batchBranchId === filterBranch;
+
+    // 3. Trainer Filter
+    // Check if batch.trainer is an object or ID string
+    // Note: Some batches might have multiple trainers or none, adjust as per API
+    // Assuming single trainer for now based on previous mock
+    const batchTrainerId = typeof batch.trainer === "string" ? batch.trainer : batch.trainer?._id;
+    const matchesTrainer = filterTrainer === "All" || batchTrainerId === filterTrainer;
 
     return matchesSearch && matchesBranch && matchesTrainer;
   });
+
+  // Derive available trainers based on selected branch
+  const availableTrainers = React.useMemo(() => {
+    if (filterBranch === "All") return trainers;
+    // Filter trainers who belong to the selected branch
+    return trainers.filter((t) => {
+        const tBranchId = typeof t.branch === "string" ? t.branch : t.branch?._id;
+        return tBranchId === filterBranch;
+    });
+  }, [filterBranch, trainers]);
+
+  // Helper to get Branch Name by ID
+  const getBranchName = (branchIdOrObj: any) => {
+      if(!branchIdOrObj) return "Unknown Branch";
+      if(typeof branchIdOrObj === 'object' && branchIdOrObj.name) return branchIdOrObj.name;
+      const found = branches.find(b => b._id === branchIdOrObj);
+      return found ? found.name : "Unknown Branch";
+  };
+  
+  // Helper to get Trainer Name by ID
+  const getTrainerName = (trainerIdOrObj: any) => {
+      if(!trainerIdOrObj) return "Unassigned";
+      if(typeof trainerIdOrObj === 'object' && trainerIdOrObj.name) return trainerIdOrObj.name;
+      const found = trainers.find(t => t._id === trainerIdOrObj);
+      return found ? found.name : "Unassigned";
+  };
+
+
+  if (!mounted) return null;
 
   return (
     <div className="relative min-h-[calc(100vh-2rem)] flex flex-col gap-8">
@@ -127,133 +168,133 @@ export default function AdminBatchesPage() {
           </div>
           
           {/* Branch Filter */}
-          {!mounted ? (
-             <Button variant="outline" className="gap-2">
-              <Filter size={16} />
-              <span>{filterBranch === "All" ? "Branch" : filterBranch}</span>
-            </Button>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <Filter size={16} />
-                  <span>{filterBranch === "All" ? "Branch" : filterBranch}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setFilterBranch("All")}>
-                  All Branches
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterBranch("Main Branch")}>
-                  Main Branch
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFilterBranch("Downtown Branch")}>
-                  Downtown Branch
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Filter size={16} />
+                <span>
+                    {filterBranch === "All" 
+                        ? "All Branches" 
+                        : getBranchName(filterBranch)}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setFilterBranch("All")}>
+                All Branches
+              </DropdownMenuItem>
+              {branches.map((branch) => (
+                  <DropdownMenuItem key={branch._id} onClick={() => setFilterBranch(branch._id)}>
+                      {branch.name}
+                  </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Trainer Filter */}
-          {filterBranch !== "All" && (
-            <>
-              {!mounted ? (
-                <Button variant="outline" className="gap-2">
-                  <Users size={16} />
-                  <span>{filterTrainer === "All" ? "Trainer" : filterTrainer}</span>
-                </Button>
-              ) : (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-2">
-                      <Users size={16} />
-                      <span>{filterTrainer === "All" ? "Trainer" : filterTrainer}</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setFilterTrainer("All")}>
-                      All Trainers
-                    </DropdownMenuItem>
-                    {availableTrainers.map((trainer) => (
-                      <DropdownMenuItem
-                        key={trainer}
-                        onClick={() => setFilterTrainer(trainer)}
-                      >
-                        {trainer}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-            </>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Users size={16} />
+                <span>
+                    {filterTrainer === "All" 
+                        ? "All Trainers" 
+                        : getTrainerName(filterTrainer)}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setFilterTrainer("All")}>
+                All Trainers
+              </DropdownMenuItem>
+              {availableTrainers.map((trainer) => (
+                <DropdownMenuItem
+                  key={trainer._id}
+                  onClick={() => setFilterTrainer(trainer._id)}
+                >
+                  {trainer.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
       {/* Grid of Batches */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {filteredBatches.map((batch) => (
-          <div
-            key={batch.id}
-            className="bg-card text-card-foreground rounded-xl border shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 p-6 space-y-4 cursor-pointer"
-          >
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-lg leading-none tracking-tight">
-                        {batch.name}
-                    </h3>
-                    <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
-                        batch.status === "Active"
-                            ? "bg-green-50 text-green-700 border-green-200"
-                            : "bg-yellow-50 text-yellow-700 border-yellow-200"
-                        }`}
-                    >
-                        {batch.status}
-                    </span>
+      {loading ? (
+           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <Skeleton key={i} className="h-[200px] w-full rounded-xl" />
+              ))}
+           </div>
+      ) : filteredBatches.length === 0 ? (
+          <NoData 
+            message="No Batches Found" 
+            description="Try adjusting your search or filters to find what you're looking for."
+          />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filteredBatches.map((batch) => (
+            <div
+                key={batch._id}
+                className="bg-card text-card-foreground rounded-xl border shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 p-6 space-y-4 cursor-pointer"
+            >
+                <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-lg leading-none tracking-tight">
+                            {batch.name}
+                        </h3>
+                        <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
+                            batch.status === "Active"
+                                ? "bg-green-50 text-green-700 border-green-200"
+                                : "bg-yellow-50 text-yellow-700 border-yellow-200"
+                            }`}
+                        >
+                            {batch.status || "Active"}
+                        </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                        {getBranchName(batch.branch)}
+                    </p>
                 </div>
-                <p className="text-sm text-muted-foreground">{batch.branch}</p>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 -mr-2"
-              >
-                <MoreVertical size={16} />
-              </Button>
-            </div>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 -mr-2"
+                >
+                    <MoreVertical size={16} />
+                </Button>
+                </div>
 
-            <div className="space-y-2">
-                <div className="flex items-center text-sm">
-                    <Calendar className="mr-2 h-4 w-4 text-blue-500" />
-                    {batch.schedule}
+                <div className="space-y-2">
+                    <div className="flex items-center text-sm">
+                        <Calendar className="mr-2 h-4 w-4 text-blue-500" />
+                        {batch.schedule || "To be scheduled"}
+                    </div>
+                    <div className="flex items-center text-sm">
+                        <GraduationCap className="mr-2 h-4 w-4 text-purple-500" />
+                        {getTrainerName(batch.trainer)}
+                    </div>
                 </div>
-                 <div className="flex items-center text-sm">
-                    <GraduationCap className="mr-2 h-4 w-4 text-purple-500" />
-                    {batch.trainer}
-                </div>
-            </div>
 
-            <div className="pt-4 flex items-center justify-between border-t">
-                 <div className="flex items-center text-sm text-muted-foreground">
-                    <Users className="mr-2 h-4 w-4 text-orange-500" />
-                    {batch.students} Students
-                </div>
-                 <div className="flex -space-x-2">
-                   {[1,2,3].map(i => (
-                       <div key={i} className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[8px] font-medium">
-                           S{i}
-                       </div>
-                   ))}
-                   <div className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px]">
-                     +
-                   </div>
+                <div className="pt-4 flex items-center justify-between border-t">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                        <Users className="mr-2 h-4 w-4 text-orange-500" />
+                        {batch.students ? batch.students.length : 0} Students
+                    </div>
+                    {/* Student Avatars (Placeholder logic for now) */}
+                    <div className="flex -space-x-2">
+                        <div className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px]">
+                            +
+                        </div>
+                    </div>
                 </div>
             </div>
-          </div>
-        ))}
-      </div>
+            ))}
+        </div>
+      )}
 
       {/* FAB with Dialog */}
       <Dialog open={isCreateBatchOpen} onOpenChange={setIsCreateBatchOpen}>
@@ -267,7 +308,7 @@ export default function AdminBatchesPage() {
             <DialogTitle>Create New Batch</DialogTitle>
           </DialogHeader>
           <div className="mt-4">
-            <CreateBatchForm onSuccess={() => setIsCreateBatchOpen(false)} />
+            <CreateBatchForm onSuccess={handleBatchCreated} />
           </div>
         </DialogContent>
       </Dialog>
