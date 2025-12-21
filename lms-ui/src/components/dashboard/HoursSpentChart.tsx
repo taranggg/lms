@@ -18,15 +18,31 @@ Chart.register(
   Legend
 );
 
+import { useTheme } from "next-themes";
+
 export default function HoursSpentChart({
   data,
 }: {
   data: { month: string; study: number; exams: number }[];
 }) {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
+  const { theme } = useTheme();
+  // Chart instance ref to destroy/update
+  const chartInstanceRef = useRef<Chart | null>(null);
+
   useEffect(() => {
     if (!chartRef.current) return;
-    const chart = new Chart(chartRef.current, {
+    
+    // Destroy previous instance
+    if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+    }
+
+    const isDark = theme === 'dark';
+    const textColor = isDark ? "#e2e8f0" : "#64748b"; // slate-200 : slate-500
+    const gridColor = isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)";
+
+    chartInstanceRef.current = new Chart(chartRef.current, {
       type: "bar",
       data: {
         labels: data.map((d) => d.month),
@@ -34,7 +50,7 @@ export default function HoursSpentChart({
           {
             label: "Study",
             data: data.map((d) => d.study),
-            backgroundColor: "#ff9800",
+            backgroundColor: "#fbbf24", // amber-400
             borderRadius: 8,
             barPercentage: 0.6,
             categoryPercentage: 0.6,
@@ -42,7 +58,7 @@ export default function HoursSpentChart({
           {
             label: "Exams",
             data: data.map((d) => d.exams),
-            backgroundColor: "#f5f5f5",
+            backgroundColor: isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(226, 232, 240, 1)", // slate-200
             borderRadius: 8,
             barPercentage: 0.6,
             categoryPercentage: 0.6,
@@ -51,12 +67,13 @@ export default function HoursSpentChart({
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             display: true,
             position: "top",
             labels: {
-              color: "#ff9800",
+              color: "#fbbf24",
               font: { size: 14, weight: "bold" },
               boxWidth: 16,
               boxHeight: 16,
@@ -64,10 +81,10 @@ export default function HoursSpentChart({
           },
           tooltip: {
             enabled: true,
-            backgroundColor: "#23234f",
-            titleColor: "#fff",
-            bodyColor: "#fff",
-            borderColor: "#fff",
+            backgroundColor: isDark ? "#1e293b" : "#0f172a",
+            titleColor: "#f8fafc",
+            bodyColor: "#f8fafc",
+            borderColor: isDark ? "#334155" : "transparent",
             borderWidth: 1,
             callbacks: {
               label: function (context) {
@@ -75,7 +92,7 @@ export default function HoursSpentChart({
               },
             },
             padding: 12,
-            cornerRadius: 8,
+            cornerRadius: 12,
           },
         },
         scales: {
@@ -84,8 +101,8 @@ export default function HoursSpentChart({
               display: false,
             },
             ticks: {
-              color: "#23234f",
-              font: { size: 14 },
+              color: textColor,
+              font: { size: 12 },
             },
           },
           y: {
@@ -94,27 +111,37 @@ export default function HoursSpentChart({
             ticks: {
               stepSize: 20,
               callback: (value) => `${value} Hr`,
-              color: "#23234f",
-              font: { size: 14 },
+              color: textColor,
+              font: { size: 12 },
             },
             grid: {
-              color: "#eee",
+              color: (context) => context.tick.value === 0 ? 'transparent' : gridColor,
             },
+            border: {
+                display: false
+            }
           },
         },
         layout: {
-          padding: 20,
+          padding: 10,
         },
       },
     });
-    return () => chart.destroy();
-  }, [data]);
+
+    return () => {
+        if (chartInstanceRef.current) {
+            chartInstanceRef.current.destroy();
+        }
+    };
+  }, [data, theme]); // Re-render when theme changes
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow flex-1">
-      <div className="font-semibold mb-2">Hours Spent</div>
-      <div className="text-sm text-gray-500 mb-4">Study vs Exams</div>
-      <canvas ref={chartRef} height={260} />
+    <div className="bg-white/50 dark:bg-card/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2rem] p-8 shadow-sm flex-1">
+      <div className="font-bold text-xl mb-1 text-slate-800 dark:text-slate-100">Hours Spent</div>
+      <div className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-medium">Study vs Exams</div>
+      <div className="relative w-full h-[260px]">
+        <canvas ref={chartRef} />
+      </div>
     </div>
   );
 }

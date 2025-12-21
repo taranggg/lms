@@ -46,7 +46,13 @@ export default function TrainerBatchCard({
   const mockAvatars = [1, 2, 3];
 
   return (
-    <div className="group rounded-[2rem] p-6 bg-white dark:bg-card border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-all duration-300 relative w-full flex flex-col gap-4">
+    <div 
+        className="group rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 relative w-full flex flex-col gap-4 border border-white/20 dark:border-white/10"
+        style={{
+            background: `linear-gradient(145deg, ${batch.color}25, ${batch.color}05)`, // Tinted glass effect
+            backdropFilter: 'blur(12px)',
+        }}
+    >
        {/* Header: Title & Actions */}
        <div className="flex justify-between items-start">
           <div className="flex flex-col gap-1">
@@ -57,14 +63,14 @@ export default function TrainerBatchCard({
                 <span
                   className={`text-[10px] px-2.5 py-0.5 rounded-full font-medium border ${
                     batch.active
-                      ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/50"
-                      : "bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800"
+                      ? "bg-green-50/50 text-green-700 border-green-200/50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30"
+                      : "bg-slate-50/50 text-slate-500 border-slate-200/50 dark:bg-slate-800/30 dark:text-slate-400 dark:border-slate-700/30"
                   }`}
                 >
                   {batch.active ? "Active" : "Archived"}
                 </span>
              </div>
-             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+             <p className="text-sm text-slate-600 dark:text-slate-300 font-medium opacity-80">
                Main Branch
              </p>
           </div>
@@ -74,7 +80,7 @@ export default function TrainerBatchCard({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 -mr-2 text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 rounded-full"
+                className="h-8 w-8 -mr-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 rounded-full hover:bg-white/20 dark:hover:bg-white/10"
               >
                 <MoreVertical size={18} />
               </Button>
@@ -135,35 +141,39 @@ export default function TrainerBatchCard({
        <Link href={`/trainer/${trainerId}/${batch.id}`} className="flex flex-col gap-3 cursor-pointer">
           {/* Info Rows */}
           <div className="flex flex-col gap-2.5 mt-1">
-             <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                <Calendar size={16} className="text-blue-500" />
+             <div className="flex items-center gap-3 text-slate-700 dark:text-slate-200">
+                <div className="p-1.5 rounded-lg bg-white/40 dark:bg-white/10">
+                    <Calendar size={14} className="text-blue-600 dark:text-blue-400" />
+                </div>
                 <span className="text-sm font-medium">{batch.schedule}</span>
              </div>
-             <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                <GraduationCap size={16} className="text-purple-500" />
+             <div className="flex items-center gap-3 text-slate-700 dark:text-slate-200">
+                <div className="p-1.5 rounded-lg bg-white/40 dark:bg-white/10">
+                    <GraduationCap size={14} className="text-purple-600 dark:text-purple-400" />
+                </div>
                 <span className="text-sm font-medium">{batch.instructor || "Instructor Name"}</span>
              </div>
           </div>
        </Link>
 
        {/* Divider */}
-       <div className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
+       <div className="h-px w-full bg-slate-200/50 dark:bg-white/10 my-1" />
 
        {/* Footer: Stats & Avatars */}
        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
              <Users size={18} className="text-orange-500" />
              <span className="text-sm font-medium">{batch.students} Students</span>
           </div>
 
           <div className="flex -space-x-2 items-center">
              {mockAvatars.map((i) => (
-                <div key={i} className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-card flex items-center justify-center text-[10px] font-bold text-slate-500">
+                <div key={i} className="w-7 h-7 rounded-full bg-white dark:bg-slate-800 border-2 border-white/50 dark:border-white/10 flex items-center justify-center text-[10px] font-bold text-slate-600 dark:text-slate-300 shadow-sm">
                    S{i}
                 </div>
              ))}
-             <div className="w-7 h-7 rounded-full bg-slate-50 dark:bg-slate-900 border-2 border-white dark:border-card flex items-center justify-center text-[10px] items-center justify-center">
-                <span className="mb-0.5">+</span>
+             <div className="w-7 h-7 rounded-full bg-slate-50 dark:bg-slate-700 border-2 border-white/50 dark:border-white/10 flex items-center justify-center text-[10px] items-center justify-center shadow-sm">
+                <span className="mb-0.5 text-slate-600 dark:text-slate-300">+</span>
              </div>
           </div>
        </div>

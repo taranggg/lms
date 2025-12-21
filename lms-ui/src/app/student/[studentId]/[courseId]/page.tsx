@@ -96,7 +96,7 @@ export default function StudentCourseDetail() {
         {/* Title Section */}
         <div className="mb-6 sm:mb-8">
             {course.code && (
-              <span className="inline-block px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium bg-slate-100 text-slate-600 mb-2 border border-slate-200">
+              <span className="inline-block px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 mb-2 border border-slate-200 dark:border-slate-700">
                 Code: {course.code}
               </span>
             )}
