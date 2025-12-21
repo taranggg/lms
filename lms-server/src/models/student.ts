@@ -11,6 +11,7 @@ export interface Student extends mongoose.Document {
   firstLogin: boolean;
   email: string;
   status: "Active" | "Completed";
+  gender: string;
 }
 
 const studentSchema = new mongoose.Schema<Student>({
@@ -48,6 +49,11 @@ const studentSchema = new mongoose.Schema<Student>({
   },
   profilePicture: {
     type: String,
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female", "Other"],
+    required: true,
   },
   type: {
     type: String,
