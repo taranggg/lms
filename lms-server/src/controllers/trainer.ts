@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import TrainerModel from "../models/trainer.js";
 import EmailModel from "../models/email.js";
 import fs from "fs";
@@ -39,21 +40,66 @@ export async function getAllTrainers(req: Request, res: Response) {
   try {
     const { branch, domain, page = 1, limit = 10 } = req.query;
 
-    const query: any = {};
-    if (branch) query.branch = branch;
-    if (domain) query.domain = domain;
+    const pipeline: any[] = [];
+
+    // Match stage
+    const matchStage: any = {};
+    if (branch)
+      matchStage.branch = new mongoose.Types.ObjectId(branch as string);
+    if (domain)
+      matchStage.domain = new mongoose.Types.ObjectId(domain as string);
+
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+
+    // Lookup and Unwind stages
+    pipeline.push(
+      {
+        $lookup: {
+          from: "branches",
+          localField: "branch",
+          foreignField: "_id",
+          as: "branch",
+        },
+      },
+      { $unwind: "$branch" },
+      {
+        $lookup: {
+          from: "domains",
+          localField: "domain",
+          foreignField: "_id",
+          as: "domain",
+        },
+      },
+      { $unwind: "$domain" },
+      {
+        $lookup: {
+          from: "emails",
+          localField: "email",
+          foreignField: "_id",
+          as: "email",
+        },
+      },
+      { $unwind: "$email" }
+    );
 
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
     const skip = (pageNumber - 1) * limitNumber;
 
-    const trainers = await TrainerModel.find(query)
-      .skip(skip)
-      .limit(limitNumber)
-      .populate("branch")
-      .populate("domain");
+    // Facet for pagination and total count
+    pipeline.push({
+      $facet: {
+        data: [{ $skip: skip }, { $limit: limitNumber }],
+        totalCount: [{ $count: "count" }],
+      },
+    });
 
-    const total = await TrainerModel.countDocuments(query);
+    const result = await TrainerModel.aggregate(pipeline);
+
+    const trainers = result[0].data;
+    const total = result[0].totalCount[0] ? result[0].totalCount[0].count : 0;
 
     res.status(200).json({
       data: trainers,

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import MaterialModel from "../models/materials.js";
-
+import fs from "fs";
+import MaterialBatchLinkModel from "../models/materialbatchlink.js";
 export const createMaterial = async (req: Request, res: Response) => {
   try {
     const files = req.files as Express.Multer.File[];
@@ -20,6 +21,10 @@ export const createMaterial = async (req: Request, res: Response) => {
     res.status(201).json(createdMaterials);
   } catch (error) {
     console.error("Error creating material:", error);
+    //@ts-ignore
+    req.files.forEach((file: Express.Multer.File) => {
+      fs.unlinkSync(`${process.cwd()}/assets/materials/${file.filename}`);
+    });
     res.status(500).json({ error: "Failed to create material" });
   }
 };
@@ -93,5 +98,23 @@ export const deleteMaterial = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error deleting material:", error);
     res.status(500).json({ error: "Failed to delete material" });
+  }
+};
+
+export const assignMaterialsToBatch = async (req: Request, res: Response) => {
+  try {
+    const { batchId, materials } = req.body;
+    materials.forEach(async (materialId: string) => {
+      await MaterialBatchLinkModel.create({
+        batch: batchId,
+        material: materialId,
+      });
+    });
+    res
+      .status(200)
+      .json({ message: "Materials assigned to batch successfully" });
+  } catch (error) {
+    console.error("Error assigning materials to batch:", error);
+    res.status(500).json({ error: "Failed to assign materials to batch" });
   }
 };
