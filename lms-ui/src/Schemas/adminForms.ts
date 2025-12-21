@@ -10,6 +10,7 @@ export const addTrainerSchema = z.object({
     .min(10, "Mobile number must be at least 10 digits")
     .regex(/^\d+$/, "Must be only digits"),
   designation: z.string().min(1, "Designation is required"),
+  gender: z.string().min(1, "Gender is required"),
 });
 
 export type AddTrainerFormValues = z.infer<typeof addTrainerSchema>;

@@ -26,7 +26,9 @@ import {
   addTrainerSchema,
 } from "@/Schemas/adminForms";
 import { addTrainer } from "@/Apis/Trainer";
+import { getAllDomains } from "@/Apis/Domain";
 import { useAuth } from "@/Context/AuthContext";
+import { useEffect, useState } from "react";
 
 interface AddTrainerFormProps {
   onSuccess: () => void;
@@ -38,11 +40,15 @@ interface AddTrainerFormProps {
 
 export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
   const { token } = useAuth();
+  const [domains, setDomains] = useState<any[]>([]);
+  const [isLoadingDomains, setIsLoadingDomains] = useState(false);
+
   const form = useForm<AddTrainerFormValues>({
     resolver: zodResolver(addTrainerSchema),
     defaultValues: {
       name: "",
       email: "",
+      gender: "",
       branch: "",
       domain: "",
       mobileNumber: "",
@@ -51,6 +57,25 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
   });
 
   const isLoading = form.formState.isSubmitting;
+
+  useEffect(() => {
+    const fetchDomains = async () => {
+      if (!token) return;
+      setIsLoadingDomains(true);
+      try {
+        const res = await getAllDomains(token);
+        const domainList = Array.isArray(res) ? res : (res.data || []);
+        setDomains(domainList);
+      } catch (error) {
+        console.error("Failed to fetch domains", error);
+        toast.error("Failed to load domains");
+      } finally {
+        setIsLoadingDomains(false);
+      }
+    };
+    fetchDomains();
+  }, [token]);
+
 
   async function onSubmit(data: AddTrainerFormValues) {
     if (!token) {
@@ -101,7 +126,30 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gender</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Gender" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
              <FormField
             control={form.control}
             name="branch"
@@ -131,9 +179,26 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Domain</FormLabel>
-                <FormControl>
-                  <Input placeholder="Full Stack, Data Science, etc." {...field} />
-                </FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                       <SelectValue placeholder={isLoadingDomains ? "Loading..." : "Select Domain"} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                     {isLoadingDomains ? (
+                        <SelectItem value="loading" disabled>Loading domains...</SelectItem>
+                     ) : domains.length > 0 ? (
+                        domains.map((domain) => (
+                           <SelectItem key={domain._id} value={domain._id}>
+                             {domain.name}
+                           </SelectItem>
+                        ))
+                     ) : (
+                        <SelectItem value="none" disabled>No domains found</SelectItem>
+                     )}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
