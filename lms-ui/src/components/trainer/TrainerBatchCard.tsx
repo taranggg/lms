@@ -70,6 +70,7 @@ export default function TrainerBatchCard({
                   {batch.active ? "Active" : "Archived"}
                 </span>
              </div>
+               <p className="text-sm text-slate-500 dark:text-slate-400">
                {batch.branch}
              </p>
           </div>
