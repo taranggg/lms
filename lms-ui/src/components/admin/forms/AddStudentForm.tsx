@@ -65,9 +65,9 @@ export default function AddStudentForm({ onSuccess }: AddStudentFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 font-medium">Name</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Jane Doe" {...field} className="glass-input" />
+                <Input placeholder="Jane Doe" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -79,9 +79,9 @@ export default function AddStudentForm({ onSuccess }: AddStudentFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700 font-medium">Email</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="jane@example.com" {...field} className="glass-input" />
+                <Input placeholder="jane@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -92,7 +92,6 @@ export default function AddStudentForm({ onSuccess }: AddStudentFormProps) {
           <Button 
             type="submit" 
             disabled={isLoading}
-            className="btn-primary"
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add Student

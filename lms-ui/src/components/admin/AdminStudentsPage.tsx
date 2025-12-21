@@ -106,51 +106,40 @@ export default function AdminStudentsPage() {
 
   return (
     <div className="relative min-h-[calc(100vh-2rem)] flex flex-col gap-8">
-      {/* Background Blobs */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div className="absolute top-[-20%] left-[10%] w-[600px] h-[600px] bg-indigo-200/30 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[20%] right-[-10%] w-[500px] h-[500px] bg-teal-200/30 rounded-full blur-[100px]" />
-      </div>
-
+      
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            Students
-          </h1>
-          <p className="text-gray-500 font-medium">
+          <h1 className="text-3xl font-bold tracking-tight">Students</h1>
+          <p className="text-muted-foreground">
             Monitor student progress and attendance
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white/40 backdrop-blur-md p-2 rounded-2xl border border-white/50 shadow-sm">
+        <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
             <Input
               placeholder="Search students..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-transparent border-none focus-visible:ring-0 w-[200px] placeholder:text-gray-400"
+              className="pl-10 w-[200px]"
             />
           </div>
-          <div className="h-6 w-px bg-gray-300" />
           {!mounted ? (
-            <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
+            <Button variant="outline" className="gap-2">
               <Filter size={16} />
               <span>{filterStatus === "All" ? "Status" : filterStatus}</span>
-            </button>
+            </Button>
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
+                <Button variant="outline" className="gap-2">
                   <Filter size={16} />
                   <span>{filterStatus === "All" ? "Status" : filterStatus}</span>
-                </button>
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-white/90 backdrop-blur-xl"
-              >
+              <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setFilterStatus("All")}>
                   All Status
                 </DropdownMenuItem>
@@ -174,29 +163,26 @@ export default function AdminStudentsPage() {
         {filteredStudents.map((student) => (
           <div
             key={student.id}
-            className="group relative bg-white/40 backdrop-blur-xl rounded-3xl border border-white/50 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            className="bg-card text-card-foreground rounded-xl border shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 p-6 cursor-pointer"
           >
-            {/* Color Accent Top Bar */}
-           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary to-secondary" />
-
             <div className="flex justify-between items-start mb-6">
               <div className="flex gap-4 items-center">
                 <div className="relative">
                     <img 
                         src={student.avatar} 
                         alt={student.name}
-                        className="w-14 h-14 rounded-2xl object-cover shadow-sm border-2 border-white"
+                        className="w-14 h-14 rounded-2xl object-cover shadow-sm bg-muted"
                     />
-                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-                        student.status === 'Active' ? 'bg-[var(--status-active)]' : 
-                        student.status === 'Completed' ? 'bg-[var(--status-completed)]' : 'bg-[var(--status-inactive)]'
+                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background ${
+                        student.status === 'Active' ? 'bg-green-500' : 
+                        student.status === 'Completed' ? 'bg-blue-500' : 'bg-gray-400'
                     }`} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-800 text-lg leading-tight">
+                  <h3 className="font-bold text-lg leading-tight">
                     {student.name}
                   </h3>
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mt-0.5">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mt-0.5">
                      <GraduationCap size={12} />
                      <span className="truncate max-w-[150px]">{student.course}</span>
                   </div>
@@ -205,32 +191,32 @@ export default function AdminStudentsPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-white/50 rounded-full"
+                className="h-8 w-8 -mr-2 text-muted-foreground"
               >
-                <MoreVertical size={18} />
+                <MoreVertical size={16} />
               </Button>
             </div>
 
             {/* Progress & Attendance Stats */}
             <div className="grid grid-cols-2 gap-4 mb-6">
                  <div>
-                    <div className="flex justify-between text-xs font-semibold text-gray-600 mb-1.5">
+                    <div className="flex justify-between text-xs font-semibold text-muted-foreground mb-1.5">
                         <span>Progress</span>
                         <span>{student.progress}%</span>
                     </div>
-                    <div className="h-2 w-full bg-gray-200/50 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                         <div 
-                            className="h-full bg-gradient-to-r from-primary to-secondary" 
+                            className="h-full bg-primary" 
                             style={{ width: `${student.progress}%` }} 
                         />
                     </div>
                  </div>
                  <div>
-                    <div className="flex justify-between text-xs font-semibold text-gray-600 mb-1.5">
+                    <div className="flex justify-between text-xs font-semibold text-muted-foreground mb-1.5">
                         <span>Attendance</span>
                         <span>{student.attendance}%</span>
                     </div>
-                    <div className="h-2 w-full bg-gray-200/50 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                         <div 
                             className="h-full bg-primary" 
                             style={{ width: `${student.attendance}%` }} 
@@ -239,14 +225,14 @@ export default function AdminStudentsPage() {
                  </div>
             </div>
 
-            <div className="flex items-center gap-3 text-sm text-gray-600 bg-white/30 p-2.5 rounded-xl hover:bg-white/50 transition-colors cursor-pointer group/item mb-4">
+            <div className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer group/item mb-4">
                <Mail size={16} className="text-blue-500 group-hover/item:scale-110 transition-transform" />
                <span className="truncate">{student.email}</span>
             </div>
 
-            <div className="pt-4 border-t border-white/30 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
-                    <BookOpen size={14} />
+            <div className="pt-4 border-t flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    <BookOpen size={14} className="text-primary" />
                     <span>{student.branch}</span>
                 </div>
                 <button className="text-xs font-bold text-primary hover:underline">
@@ -260,18 +246,13 @@ export default function AdminStudentsPage() {
       {/* FAB with Dialog */}
       <Dialog open={isAddStudentOpen} onOpenChange={setIsAddStudentOpen}>
         <DialogTrigger asChild>
-          <button className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-full shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all duration-300 z-50 group">
-            <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
-            <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                Add New Student
-            </span>
+          <button className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform duration-200 z-50">
+            <Plus size={24} />
           </button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px] bg-white/80 backdrop-blur-xl border-white/40 shadow-2xl">
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-              Add New Student
-            </DialogTitle>
+            <DialogTitle>Add New Student</DialogTitle>
           </DialogHeader>
           <div className="mt-4">
             <AddStudentForm onSuccess={() => setIsAddStudentOpen(false)} />

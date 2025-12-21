@@ -99,51 +99,41 @@ export default function AdminTrainersPage() {
 
   return (
     <div className="relative min-h-[calc(100vh-2rem)] flex flex-col gap-8">
-      {/* Background Blobs */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div className="absolute top-[-10%] right-[20%] w-[500px] h-[500px] bg-pink-200/30 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[10%] left-[-10%] w-[400px] h-[400px] bg-cyan-200/30 rounded-full blur-[100px]" />
-      </div>
-
+      
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-                  <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            Trainers
-          </h1>
-          <p className="text-gray-500 font-medium">
+          <h1 className="text-3xl font-bold tracking-tight">Trainers</h1>
+          <p className="text-muted-foreground">
             Manage your expert instructors
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white/40 backdrop-blur-md p-2 rounded-2xl border border-white/50 shadow-sm">
+        <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
             <Input
               placeholder="Search trainers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-transparent border-none focus-visible:ring-0 w-[200px] placeholder:text-gray-400"
+              className="pl-10 w-[200px]"
             />
           </div>
-          <div className="h-6 w-px bg-gray-300" />
+          
           {!mounted ? (
-            <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
+            <Button variant="outline" className="gap-2">
               <Filter size={16} />
               <span>{filterStatus === "All" ? "Status" : filterStatus}</span>
-            </button>
+            </Button>
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/50 rounded-lg text-sm font-medium text-gray-600 transition-colors">
-                  <Filter size={16} />
-                  <span>{filterStatus === "All" ? "Status" : filterStatus}</span>
-                </button>
+                <Button variant="outline" className="gap-2">
+                   <Filter size={16} />
+                   <span>{filterStatus === "All" ? "Status" : filterStatus}</span>
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-white/90 backdrop-blur-xl"
-              >
+              <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setFilterStatus("All")}>
                   All Status
                 </DropdownMenuItem>
@@ -164,26 +154,23 @@ export default function AdminTrainersPage() {
         {filteredTrainers.map((trainer) => (
           <div
             key={trainer.id}
-            className="group relative bg-white/40 backdrop-blur-xl rounded-3xl border border-white/50 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            className="bg-card text-card-foreground rounded-xl border shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 p-5 space-y-4 cursor-pointer"
           >
-            {/* Gradient Bar */}
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-secondary" />
-
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex gap-4 items-center">
+            <div className="flex justify-between items-start">
+              <div className="flex gap-3 items-center">
                 <div className="relative">
                     <img 
                         src={trainer.avatar} 
                         alt={trainer.name}
-                        className="w-14 h-14 rounded-2xl object-cover shadow-sm border-2 border-white"
+                        className="w-12 h-12 rounded-xl object-cover shadow-sm bg-muted"
                     />
-                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${trainer.status === 'Active' ? 'bg-[var(--status-active)]' : 'bg-[var(--status-inactive)]'}`} />
+                    <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-background ${trainer.status === 'Active' ? 'bg-green-500' : 'bg-gray-400'}`} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-800 text-lg leading-tight">
+                  <h3 className="font-bold text-base leading-tight">
                     {trainer.name}
                   </h3>
-                  <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md mt-1 inline-block">
                     {trainer.specialization}
                   </span>
                 </div>
@@ -191,40 +178,41 @@ export default function AdminTrainersPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-white/50 rounded-full"
+                className="h-8 w-8 -mr-2 text-muted-foreground"
               >
-                <MoreVertical size={18} />
+                <MoreVertical size={16} />
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-6">
-                 <div className="bg-white/50 rounded-xl p-3 flex flex-col items-center justify-center text-center">
-                    <span className="text-2xl font-bold text-gray-800">{trainer.rating}</span>
-                    <span className="text-xs text-gray-500 font-medium">Avg Rating</span>
+            <div className="flex gap-4 text-sm">
+                 <div className="flex flex-col">
+                    <span className="text-lg font-bold leading-none">{trainer.rating}</span>
+                    <span className="text-[10px] text-muted-foreground font-medium">Rating</span>
                  </div>
-                 <div className="bg-white/50 rounded-xl p-3 flex flex-col items-center justify-center text-center">
-                    <span className="text-2xl font-bold text-gray-800">{trainer.students}</span>
-                    <span className="text-xs text-gray-500 font-medium">Students</span>
+                 <div className="w-px bg-border my-1" />
+                 <div className="flex flex-col">
+                    <span className="text-lg font-bold leading-none">{trainer.students}</span>
+                    <span className="text-[10px] text-muted-foreground font-medium">Students</span>
                  </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm text-gray-600 bg-white/30 p-2.5 rounded-xl hover:bg-white/50 transition-colors cursor-pointer group/item">
-                <Mail size={16} className="text-blue-500 group-hover/item:scale-110 transition-transform" />
-                <span className="truncate">{trainer.email}</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer group/item">
+                <Mail size={14} className="text-blue-500 group-hover/item:scale-110 transition-transform" />
+                <span className="truncate text-xs">{trainer.email}</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-gray-600 bg-white/30 p-2.5 rounded-xl hover:bg-white/50 transition-colors cursor-pointer group/item">
-                <Phone size={16} className="text-green-500 group-hover/item:scale-110 transition-transform" />
-                <span>{trainer.phone}</span>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer group/item">
+                <Phone size={14} className="text-green-500 group-hover/item:scale-110 transition-transform" />
+                <span className="text-xs">{trainer.phone}</span>
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-white/30 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-gray-600 font-medium">
-                    <BookOpen size={16} className="text-gray-400" />
-                    <span>{trainer.activeBatches} Active Batches</span>
+            <div className="pt-3 border-t flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
+                    <BookOpen size={14} className="text-primary" />
+                    <span>{trainer.activeBatches} Batches</span>
                 </div>
-            <button className="text-xs font-bold text-primary hover:underline">
+                <button className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wide">
                     View Profile
                 </button>
             </div>
@@ -235,18 +223,13 @@ export default function AdminTrainersPage() {
       {/* FAB with Dialog */}
       <Dialog open={isAddTrainerOpen} onOpenChange={setIsAddTrainerOpen}>
         <DialogTrigger asChild>
-          <button className="fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-full shadow-2xl flex items-center justify-center hover:scale-110 hover:rotate-90 transition-all duration-300 z-50 group">
-            <Plus size={28} className="group-hover:rotate-90 transition-transform duration-300" />
-            <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                Add New Trainer
-            </span>
+          <button className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform duration-200 z-50">
+            <Plus size={24} />
           </button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px] bg-white/80 backdrop-blur-xl border-white/40 shadow-2xl">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-              Add New Trainer
-            </DialogTitle>
+            <DialogTitle>Add New Trainer</DialogTitle>
           </DialogHeader>
           <div className="mt-4">
             <AddTrainerForm onSuccess={() => setIsAddTrainerOpen(false)} />
