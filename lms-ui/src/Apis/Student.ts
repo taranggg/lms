@@ -30,6 +30,7 @@ export const getAllStudents = async (
     batch?: string;
     course?: string;
     search?: string;
+    trainer?: string;
   }
 ) => {
   try {

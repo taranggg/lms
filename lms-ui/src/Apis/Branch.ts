@@ -29,12 +29,16 @@ export const addBranch = async (data: BranchData, token: string) => {
   }
 };
 
-export const getAllBranches = async (token: string) => {
+export const getAllBranches = async (
+  token: string,
+  filters?: { search?: string }
+) => {
   try {
     const response = await axiosInstance.get(ApiPaths.BRANCH.GET_ALL, {
       headers: {
         authorization: `Bearer ${token}`,
       },
+      params: filters,
     });
     return response.data;
   } catch (error) {

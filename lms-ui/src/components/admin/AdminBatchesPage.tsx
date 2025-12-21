@@ -39,7 +39,7 @@ export default function AdminBatchesPage() {
   const { token } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBranch, setFilterBranch] = useState("All");
-  const [filterTrainer, setFilterTrainer] = useState("All"); // Trainer ID or "All"
+  const [filterTrainer, setFilterTrainer] = useState("All");
   const [mounted, setMounted] = useState(false);
   const [isCreateBatchOpen, setIsCreateBatchOpen] = useState(false);
 
@@ -53,77 +53,64 @@ export default function AdminBatchesPage() {
     setMounted(true);
   }, []);
 
-  const fetchData = async () => {
+  // Fetch Branches and Trainers only once on mount
+  useEffect(() => {
+    const fetchMetadata = async () => {
+        if (!token) return;
+        try {
+            const [branchesRes, trainersRes] = await Promise.all([
+                getAllBranches(token),
+                getAllTrainers(token),
+            ]);
+            const branchesData = Array.isArray(branchesRes) ? branchesRes : branchesRes?.data || [];
+            const trainersData = Array.isArray(trainersRes) ? trainersRes : trainersRes?.data || [];
+            setBranches(branchesData);
+            setTrainers(trainersData);
+        } catch (error) {
+            console.error("Failed to fetch metadata", error);
+        }
+    };
+    fetchMetadata();
+  }, [token]);
+
+  const fetchBatches = async () => {
     if (!token) return;
     setLoading(true);
     try {
-      const [batchesRes, branchesRes, trainersRes] = await Promise.all([
-        getAllBatches(token),
-        getAllBranches(token),
-        getAllTrainers(token),
-      ]);
+      const filters: any = {};
+      if (filterBranch !== "All") filters.branch = filterBranch;
+      if (filterTrainer !== "All") filters.trainer = filterTrainer;
+      if (searchQuery) filters.search = searchQuery;
 
-      // Normalize data (handle if API returns { data: [...] } or just [...])
+      const batchesRes = await getAllBatches(token, filters);
       const batchesData = Array.isArray(batchesRes) ? batchesRes : batchesRes?.data || [];
-      const branchesData = Array.isArray(branchesRes) ? branchesRes : branchesRes?.data || [];
-      const trainersData = Array.isArray(trainersRes) ? trainersRes : trainersRes?.data || [];
-
       setBatches(batchesData);
-      setBranches(branchesData);
-      setTrainers(trainersData);
     } catch (error) {
-      console.error("Failed to fetch data:", error);
+      console.error("Failed to fetch batches:", error);
       toast.error("Failed to load batches data");
     } finally {
       setLoading(false);
     }
   };
 
+  // Debounce search query to avoid too many API calls
   useEffect(() => {
-    fetchData();
-  }, [token]);
+      const timer = setTimeout(() => {
+          fetchBatches();
+      }, 500); // Debounce duration
+      return () => clearTimeout(timer);
+  }, [token, filterBranch, filterTrainer, searchQuery]);
 
   // Handle successful creation
   const handleBatchCreated = () => {
     setIsCreateBatchOpen(false);
-    fetchData(); // Refresh list
+    fetchBatches(); // Refresh list
   };
 
   // Reset trainer filter when branch changes
   React.useEffect(() => {
     setFilterTrainer("All");
   }, [filterBranch]);
-
-  // Filter Logic
-  const filteredBatches = batches.filter((batch) => {
-    // 1. Search Query
-    const batchName = batch.name || "";
-    const matchesSearch = batchName.toLowerCase().includes(searchQuery.toLowerCase());
-
-    // 2. Branch Filter
-    // Check if batch.branch is an object or ID string
-    const batchBranchId = typeof batch.branch === "string" ? batch.branch : batch.branch?._id;
-    const matchesBranch = filterBranch === "All" || batchBranchId === filterBranch;
-
-    // 3. Trainer Filter
-    // Check if batch.trainer is an object or ID string
-    // Note: Some batches might have multiple trainers or none, adjust as per API
-    // Assuming single trainer for now based on previous mock
-    const batchTrainerId = typeof batch.trainer === "string" ? batch.trainer : batch.trainer?._id;
-    const matchesTrainer = filterTrainer === "All" || batchTrainerId === filterTrainer;
-
-    return matchesSearch && matchesBranch && matchesTrainer;
-  });
-
-  // Derive available trainers based on selected branch
-  const availableTrainers = React.useMemo(() => {
-    if (filterBranch === "All") return trainers;
-    // Filter trainers who belong to the selected branch
-    return trainers.filter((t) => {
-        const tBranchId = typeof t.branch === "string" ? t.branch : t.branch?._id;
-        return tBranchId === filterBranch;
-    });
-  }, [filterBranch, trainers]);
 
   // Helper to get Branch Name by ID
   const getBranchName = (branchIdOrObj: any) => {
@@ -141,6 +128,14 @@ export default function AdminBatchesPage() {
       return found ? found.name : "Unassigned";
   };
 
+  // Derive available trainers based on selected branch for the Filter Dropdown
+  const availableTrainers = React.useMemo(() => {
+    if (filterBranch === "All") return trainers;
+    return trainers.filter((t) => {
+        const tBranchId = typeof t.branch === "string" ? t.branch : t.branch?._id;
+        return tBranchId === filterBranch;
+    });
+  }, [filterBranch, trainers]);
 
   if (!mounted) return null;
 
@@ -227,14 +222,14 @@ export default function AdminBatchesPage() {
                   <Skeleton key={i} className="h-[200px] w-full rounded-xl" />
               ))}
            </div>
-      ) : filteredBatches.length === 0 ? (
+      ) : batches.length === 0 ? (
           <NoData 
             message="No Batches Found" 
             description="Try adjusting your search or filters to find what you're looking for."
           />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredBatches.map((batch) => (
+            {batches.map((batch) => (
             <div
                 key={batch._id}
                 className="bg-card text-card-foreground rounded-xl border shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 p-6 space-y-4 cursor-pointer"
@@ -243,17 +238,21 @@ export default function AdminBatchesPage() {
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-lg leading-none tracking-tight">
-                            {batch.name}
+                            {batch.title}
                         </h3>
-                        <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
-                            batch.status === "Active"
-                                ? "bg-green-50 text-green-700 border-green-200"
-                                : "bg-yellow-50 text-yellow-700 border-yellow-200"
-                            }`}
-                        >
-                            {batch.status || "Active"}
-                        </span>
+                        {/* Status removed from UI based on new schema? Using placeholder or removing badge if no status */}
+                        {batch.status && (
+                             <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
+                                batch.status === "Active" || batch.status === "Running"
+                                    ? "bg-green-50 text-green-700 border-green-200"
+                                    : "bg-yellow-50 text-yellow-700 border-yellow-200"
+                                }`}
+                            >
+                                {batch.status}
+                            </span>
+                        )}
+                       
                     </div>
                     <p className="text-sm text-muted-foreground">
                         {getBranchName(batch.branch)}
@@ -271,7 +270,11 @@ export default function AdminBatchesPage() {
                 <div className="space-y-2">
                     <div className="flex items-center text-sm">
                         <Calendar className="mr-2 h-4 w-4 text-blue-500" />
-                        {batch.schedule || "To be scheduled"}
+                        {batch.type}
+                    </div>
+                     <div className="flex items-center text-sm">
+                         {/* Displaying time range if available */}
+                         {(batch.startTime && batch.endTime) ? `${batch.startTime} - ${batch.endTime}` : "Time N/A"}
                     </div>
                     <div className="flex items-center text-sm">
                         <GraduationCap className="mr-2 h-4 w-4 text-purple-500" />

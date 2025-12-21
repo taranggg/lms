@@ -27,12 +27,22 @@ export const createBatch = async (data: BatchData, token: string) => {
   }
 };
 
-export const getAllBatches = async (token: string) => {
+export const getAllBatches = async (
+  token: string,
+  filters?: {
+    branch?: string;
+    trainer?: string;
+    type?: string;
+    status?: string;
+    search?: string;
+  }
+) => {
   try {
     const response = await axiosInstance.get(ApiPaths.BATCH.GET_ALL, {
       headers: {
         authorization: `Bearer ${token}`,
       },
+      params: filters,
     });
     return response.data;
   } catch (error) {

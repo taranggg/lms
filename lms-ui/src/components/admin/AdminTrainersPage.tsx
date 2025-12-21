@@ -47,21 +47,33 @@ export default function AdminTrainersPage() {
     setMounted(true);
   }, []);
 
-  const fetchData = async () => {
+  // Fetch Branches Metadata only once
+  useEffect(() => {
+    const fetchMetadata = async () => {
+        if (!token) return;
+        try {
+            const branchesRes = await getAllBranches(token);
+            const branchesData = Array.isArray(branchesRes) ? branchesRes : branchesRes?.data || [];
+            setBranches(branchesData);
+        } catch (error) {
+            console.error("Failed to fetch branches metadata", error);
+        }
+    };
+    fetchMetadata();
+  }, [token]);
+
+  const fetchTrainers = async () => {
     if(!token) return;
     setLoading(true);
     try {
-      const [trainersRes, branchesRes] = await Promise.all([
-          getAllTrainers(token),
-          getAllBranches(token)
-      ]);
+      const filters: any = {};
+      if (filterBranch !== "All") filters.branch = filterBranch;
+      if (searchQuery) filters.search = searchQuery;  // or 'domain' if that's what backend expects for simple search, but 'search' is standard
 
+      const trainersRes = await getAllTrainers(token, filters);
       const trainersData = Array.isArray(trainersRes) ? trainersRes : trainersRes?.data || [];
-      const branchesData = Array.isArray(branchesRes) ? branchesRes : branchesRes?.data || [];
       
       setTrainers(trainersData);
-      setBranches(branchesData);
-
     } catch (error) {
        console.error("Failed to fetch trainer data", error);
        toast.error("Failed to load trainers");
@@ -70,9 +82,13 @@ export default function AdminTrainersPage() {
     }
   };
 
+  // Debounce search query and re-fetch on filter change
   useEffect(() => {
-    fetchData();
-  }, [token]);
+      const timer = setTimeout(() => {
+        fetchTrainers();
+      }, 500);
+      return () => clearTimeout(timer);
+  }, [token, filterBranch, searchQuery]);
 
   // Helper to get Branch Name by ID
   const getBranchName = (branchIdOrObj: any) => {
@@ -82,21 +98,9 @@ export default function AdminTrainersPage() {
     return found ? found.name : "N/A";
   };
   
-  // Filter Logic
-  const filteredTrainers = trainers.filter((trainer) => {
-    const trainerName = trainer.name || "";
-    const matchesSearch = trainerName.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Branch Filter
-    const trainerBranchId = typeof trainer.branch === "string" ? trainer.branch : trainer.branch?._id;
-    const matchesBranch = filterBranch === "All" || trainerBranchId === filterBranch;
-
-    return matchesSearch && matchesBranch;
-  });
-
   const handleSuccess = () => {
       setIsAddTrainerOpen(false);
-      fetchData();
+      fetchTrainers();
   }
 
   if(!mounted) return null;
@@ -152,14 +156,14 @@ export default function AdminTrainersPage() {
                 <Skeleton key={i} className="h-[200px] w-full rounded-xl" />
             ))}
         </div>
-      ) : filteredTrainers.length === 0 ? (
+      ) : trainers.length === 0 ? (
           <NoData 
             message="No Trainers Found" 
             description="We couldn't find any trainers matching your search."
           />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredTrainers.map((trainer) => (
+            {trainers.map((trainer) => (
             <div
                 key={trainer._id}
                 className="bg-card text-card-foreground rounded-xl border shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 p-5 space-y-4 cursor-pointer"

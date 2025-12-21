@@ -14,7 +14,7 @@ export const ApiPaths = {
     DELETE: "/api/v1/branch/deleteBranch",
   },
   TRAINER: {
-    CREATE: "/api/v1/trainer/createTrainer",
+    CREATE: "/api/v1/trainer/addTrainer",
     GET_ALL: "/api/v1/trainer/getAllTrainers",
     GET_BY_ID: "/api/v1/trainer/getTrainerById",
     UPDATE: "/api/v1/trainer/updateTrainer",

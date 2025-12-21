@@ -8,6 +8,7 @@ import {
   Mail,
   BookOpen,
   GraduationCap,
+  Users,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -30,6 +31,7 @@ import { useAuth } from "@/Context/AuthContext";
 import { getAllStudents } from "@/Apis/Student";
 import { getAllBranches } from "@/Apis/Branch";
 import { getAllBatches } from "@/Apis/Batch";
+import { getAllTrainers } from "@/Apis/Trainer";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -38,36 +40,57 @@ export default function AdminStudentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBranch, setFilterBranch] = useState("All");
   const [filterBatch, setFilterBatch] = useState("All");
+  const [filterTrainer, setFilterTrainer] = useState("All");
   const [mounted, setMounted] = useState(false);
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
 
   const [students, setStudents] = useState<any[]>([]);
   const [branches, setBranches] = useState<any[]>([]);
   const [batches, setBatches] = useState<any[]>([]);
+  const [trainers, setTrainers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  const fetchData = async () => {
+  // Fetch Metadata (Branches, Batches, Trainers) only once
+  useEffect(() => {
+    const fetchMetadata = async () => {
+        if (!token) return;
+        try {
+            const [branchesRes, batchesRes, trainersRes] = await Promise.all([
+                getAllBranches(token),
+                getAllBatches(token),
+                getAllTrainers(token),
+            ]);
+            const branchesData = Array.isArray(branchesRes) ? branchesRes : branchesRes?.data || [];
+            const batchesData = Array.isArray(batchesRes) ? batchesRes : batchesRes?.data || [];
+            const trainersData = Array.isArray(trainersRes) ? trainersRes : trainersRes?.data || [];
+            
+            setBranches(branchesData);
+            setBatches(batchesData);
+            setTrainers(trainersData);
+        } catch (error) {
+           console.error("Failed to fetch metadata", error);
+        }
+    };
+    fetchMetadata();
+  }, [token]);
+
+  const fetchStudents = async () => {
     if (!token) return;
     setLoading(true);
     try {
-      const [studentsRes, branchesRes, batchesRes] = await Promise.all([
-        getAllStudents(token),
-        getAllBranches(token),
-        getAllBatches(token),
-      ]);
+      const filters: any = {};
+      if (filterBranch !== "All") filters.branch = filterBranch;
+      if (filterBatch !== "All") filters.batch = filterBatch;
+      if (filterTrainer !== "All") filters.trainer = filterTrainer;
+      if (searchQuery) filters.search = searchQuery;
 
+      const studentsRes = await getAllStudents(token, filters);
       const studentsData = Array.isArray(studentsRes) ? studentsRes : studentsRes?.data || [];
-      const branchesData = Array.isArray(branchesRes) ? branchesRes : branchesRes?.data || [];
-      const batchesData = Array.isArray(batchesRes) ? batchesRes : batchesRes?.data || [];
-      
       setStudents(studentsData);
-      setBranches(branchesData);
-      setBatches(batchesData);
-
     } catch (error) {
       console.error("Failed to fetch student data", error);
       toast.error("Failed to load students");
@@ -76,18 +99,23 @@ export default function AdminStudentsPage() {
     }
   };
 
+  // Debounce search query and re-fetch on filter change
   useEffect(() => {
-    fetchData();
-  }, [token]);
+      const timer = setTimeout(() => {
+          fetchStudents();
+      }, 500); 
+      return () => clearTimeout(timer);
+  }, [token, filterBranch, filterBatch, filterTrainer, searchQuery]);
 
   const handleSuccess = () => {
       setIsAddStudentOpen(false);
-      fetchData(); // Refresh list
+      fetchStudents(); // Refresh list
   };
 
   // Reset filters
   useEffect(() => {
       setFilterBatch("All");
+      setFilterTrainer("All");
   }, [filterBranch]);
 
   // Helper getters
@@ -105,6 +133,14 @@ export default function AdminStudentsPage() {
       return found ? found.name : "N/A";
   };
 
+  // Helper to get Trainer Name by ID
+  const getTrainerName = (trainerIdOrObj: any) => {
+      if(!trainerIdOrObj) return "Unassigned";
+      if(typeof trainerIdOrObj === 'object' && trainerIdOrObj.name) return trainerIdOrObj.name;
+      const found = trainers.find(t => t._id === trainerIdOrObj);
+      return found ? found.name : "Unassigned";
+  };
+
   // Derived Filters
   const availableBatches = React.useMemo(() => {
     if(filterBranch === "All") return batches;
@@ -114,23 +150,14 @@ export default function AdminStudentsPage() {
     });
   }, [filterBranch, batches]);
 
-
-  // Filter Logic (Client Side for now as per Mock Logic transition)
-  const filteredStudents = students.filter((student) => {
-    const studentName = student.name || "";
-    const matchesSearch = studentName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (student.email && student.email.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    // Branch Filter
-    const studentBranchId = typeof student.branch === "string" ? student.branch : student.branch?._id;
-    const matchesBranch = filterBranch === "All" || studentBranchId === filterBranch;
-    
-    // Batch Filter
-    const studentBatchId = typeof student.batch === "string" ? student.batch : student.batch?._id;
-    const matchesBatch = filterBatch === "All" || studentBatchId === filterBatch;
-
-    return matchesSearch && matchesBranch && matchesBatch;
-  });
+  // Derive available trainers based on selected branch
+  const availableTrainers = React.useMemo(() => {
+    if (filterBranch === "All") return trainers;
+    return trainers.filter((t) => {
+        const tBranchId = typeof t.branch === "string" ? t.branch : t.branch?._id;
+        return tBranchId === filterBranch;
+    });
+  }, [filterBranch, trainers]);
 
   if (!mounted) return null;
 
@@ -196,6 +223,26 @@ export default function AdminStudentsPage() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Trainer Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Users size={16} />
+                <span>{filterTrainer === "All" ? "Trainer" : getTrainerName(filterTrainer)}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setFilterTrainer("All")}>
+                All Trainers
+              </DropdownMenuItem>
+              {availableTrainers.map((t) => (
+                  <DropdownMenuItem key={t._id} onClick={() => setFilterTrainer(t._id)}>
+                      {t.name}
+                  </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -206,14 +253,14 @@ export default function AdminStudentsPage() {
                   <Skeleton key={i} className="h-[200px] w-full rounded-xl" />
               ))}
            </div>
-      ) : filteredStudents.length === 0 ? (
+      ) : students.length === 0 ? (
           <NoData 
             message="No Students Found" 
             description="We couldn't find any students matching your search."
           />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredStudents.map((student) => (
+            {students.map((student) => (
             <div
                 key={student._id}
                 className="bg-card text-card-foreground rounded-xl border shadow-sm hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 p-6 cursor-pointer"

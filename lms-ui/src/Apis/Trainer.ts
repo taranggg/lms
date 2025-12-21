@@ -34,6 +34,7 @@ export const getAllTrainers = async (
     domain?: string;
     page?: string;
     limit?: string;
+    search?: string;
   }
 ) => {
   try {
