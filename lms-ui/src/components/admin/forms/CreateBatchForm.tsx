@@ -23,17 +23,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
-import {
   CreateBatchFormValues,
   createBatchSchema,
 } from "@/Schemas/adminForms";
 import { createBatch } from "@/Apis/Batch";
 import { getAllTrainers } from "@/Apis/Trainer";
 import { getAllBranches } from "@/Apis/Branch";
-
 
 import { useAuth } from "@/Context/AuthContext";
 
@@ -56,43 +51,67 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
   const form = useForm<CreateBatchFormValues>({
     resolver: zodResolver(createBatchSchema),
     defaultValues: {
-      name: "",
+      title: "",
       branch: "",
       trainer: "",
       startDate: "",
-      schedule: "",
+      endDate: "",
+      startTime: "",
+      endTime: "",
+      type: "Weekdays",
     },
   });
 
+  const selectedBranch = form.watch("branch");
   const isLoading = form.formState.isSubmitting;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
         if (!token) return;
-        setIsLoadingTrainers(true);
         setIsLoadingBranches(true);
         try {
-            const [trainersRes, branchesRes] = await Promise.all([
-                getAllTrainers(token),
-                getAllBranches(token)
-            ]);
-            
-            const trainerList = Array.isArray(trainersRes) ? trainersRes : (trainersRes.trainers || []);
-            setTrainers(trainerList);
-
+            const branchesRes = await getAllBranches(token);
             const branchList = Array.isArray(branchesRes) ? branchesRes : (branchesRes.data || []);
             setBranches(branchList);
-
         } catch (error) {
             console.error("Failed to fetch data", error);
             toast.error("Failed to load form data");
         } finally {
-            setIsLoadingTrainers(false);
             setIsLoadingBranches(false);
         }
     };
-    fetchData();
+    fetchInitialData();
   }, [token]);
+
+  useEffect(() => {
+      const fetchTrainersByBranch = async () => {
+          if (!token || !selectedBranch) {
+              setTrainers([]);
+              return;
+          }
+          
+          setIsLoadingTrainers(true);
+          try {
+              const trainersRes = await getAllTrainers(token, { branch: selectedBranch });
+              const trainerList = Array.isArray(trainersRes) ? trainersRes : (trainersRes.trainers || trainersRes.data || []);
+              setTrainers(trainerList);
+          } catch (error) {
+              console.error("Failed to fetch trainers", error);
+              setTrainers([]);
+          } finally {
+              setIsLoadingTrainers(false);
+          }
+      };
+
+      // Reset trainer selection when branch changes
+      form.setValue("trainer", ""); 
+      
+      if (selectedBranch) {
+          fetchTrainersByBranch();
+      } else {
+          setTrainers([]);
+      }
+  }, [selectedBranch, token, form.setValue]);
 
   async function onSubmit(data: CreateBatchFormValues) {
     if (!token) {
@@ -116,10 +135,10 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
         
         <FormField
             control={form.control}
-            name="name"
+            name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Batch Name</FormLabel>
+                <FormLabel>Batch Title</FormLabel>
                 <FormControl>
                   <Input placeholder="React Mastery 2024" {...field} />
                 </FormControl>
@@ -129,13 +148,13 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
           />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <FormField
+            <FormField
             control={form.control}
             name="branch"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Branch</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Branch" />
@@ -166,7 +185,7 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Trainer</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value} disabled={!selectedBranch}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Trainer" />
@@ -177,7 +196,7 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
                         <SelectItem value="loading" disabled>Loading trainers...</SelectItem>
                     ) : trainers.length > 0 ? (
                         trainers.map((trainer) => (
-                            <SelectItem key={trainer._id} value={trainer.name}>
+                            <SelectItem key={trainer._id} value={trainer._id}>
                                 {trainer.name}
                             </SelectItem>
                         ))
@@ -209,36 +228,66 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
 
           <FormField
             control={form.control}
-            name="schedule"
+            name="endDate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Schedule</FormLabel>
+                <FormLabel>End Date</FormLabel>
                 <FormControl>
-                  <ToggleGroup
-                    type="multiple"
-                    className="justify-start gap-2 flex-wrap"
-                    value={field.value ? field.value.split(", ") : []}
-                    onValueChange={(value) => {
-                      const daysOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-                      const sortedDays = value.sort(
-                        (a, b) => daysOrder.indexOf(a) - daysOrder.indexOf(b)
-                      );
-                      field.onChange(sortedDays.join(", "));
-                    }}
-                  >
-                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-                      <ToggleGroupItem
-                        key={day}
-                        value={day}
-                        aria-label={`Toggle ${day}`}
-                        variant="outline"
-                        className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-                      >
-                        {day}
-                      </ToggleGroupItem>
-                    ))}
-                  </ToggleGroup>
+                  <Input type="date" {...field} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="startTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start Time</FormLabel>
+                  <FormControl>
+                    <Input type="time" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="endTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>End Time</FormLabel>
+                  <FormControl>
+                    <Input type="time" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Type</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Weekdays">Weekdays</SelectItem>
+                    <SelectItem value="Weekends">Weekends</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

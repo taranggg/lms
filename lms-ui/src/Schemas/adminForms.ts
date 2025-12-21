@@ -23,11 +23,14 @@ export const addStudentSchema = z.object({
 export type AddStudentFormValues = z.infer<typeof addStudentSchema>;
 
 export const createBatchSchema = z.object({
-  name: z.string().min(2, "Batch name is required"),
+  title: z.string().min(2, "Batch title is required"),
   branch: z.string().min(1, "Branch is required"),
-  trainer: z.string().optional(), // Trainer name or ID
-  startDate: z.string().optional(), // Optional for now
-  schedule: z.string().optional(), // Optional for now
+  trainer: z.string().min(1, "Trainer is required"),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().optional(),
+  startTime: z.string().min(1, "Start time is required"),
+  endTime: z.string().min(1, "End time is required"),
+  type: z.enum(["Weekdays", "Weekends"]),
 });
 
 export type CreateBatchFormValues = z.infer<typeof createBatchSchema>;

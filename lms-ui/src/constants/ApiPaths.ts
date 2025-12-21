@@ -14,12 +14,11 @@ export const ApiPaths = {
     DELETE: "/api/v1/branch/deleteBranch",
   },
   TRAINER: {
-    ADD: "/api/v1/trainer/addTrainer",
+    CREATE: "/api/v1/trainer/createTrainer",
     GET_ALL: "/api/v1/trainer/getAllTrainers",
     GET_BY_ID: "/api/v1/trainer/getTrainerById",
     UPDATE: "/api/v1/trainer/updateTrainer",
     DELETE: "/api/v1/trainer/deleteTrainer",
-    GET_BY_BRANCH: "/api/v1/trainer/getTrainersByBranch",
   },
   COURSES_AND_TOPICS: {
     CREATE_COURSE: "/api/v1/coursesandtopics/createCourse",

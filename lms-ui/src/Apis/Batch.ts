@@ -3,7 +3,15 @@ import { ApiPaths } from "@/constants/ApiPaths";
 
 // Placeholder interface - expand as needed based on actual API payload
 export interface BatchData {
-  [key: string]: any;
+  title: string;
+  branch: string;
+  trainer: string;
+  startDate: string;
+  endDate?: string;
+  startTime: string;
+  endTime: string;
+  type: "Weekdays" | "Weekends";
+  [key: string]: any; // Keep index signature for flexibility if needed
 }
 
 export const createBatch = async (data: BatchData, token: string) => {

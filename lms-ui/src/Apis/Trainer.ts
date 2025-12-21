@@ -13,7 +13,7 @@ export interface TrainerData {
 export const addTrainer = async (data: TrainerData, token: string) => {
   try {
     const response = await axiosInstance.post(
-      ApiPaths.TRAINER.ADD,
+      ApiPaths.TRAINER.CREATE,
       data,
       {
         headers: {
@@ -27,12 +27,21 @@ export const addTrainer = async (data: TrainerData, token: string) => {
   }
 };
 
-export const getAllTrainers = async (token: string) => {
+export const getAllTrainers = async (
+  token: string,
+  params?: {
+    branch?: string;
+    domain?: string;
+    page?: string;
+    limit?: string;
+  }
+) => {
   try {
     const response = await axiosInstance.get(ApiPaths.TRAINER.GET_ALL, {
       headers: {
         authorization: `Bearer ${token}`,
       },
+      params,
     });
     return response.data;
   } catch (error) {
@@ -81,22 +90,6 @@ export const deleteTrainer = async (id: string, token: string) => {
   try {
     const response = await axiosInstance.delete(
       `${ApiPaths.TRAINER.DELETE}/${id}`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getTrainersByBranch = async (branch: string, token: string) => {
-  try {
-    const response = await axiosInstance.get(
-      `${ApiPaths.TRAINER.GET_BY_BRANCH}/${branch}`,
       {
         headers: {
           authorization: `Bearer ${token}`,
