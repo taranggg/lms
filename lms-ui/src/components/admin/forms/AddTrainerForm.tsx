@@ -26,7 +26,9 @@ import {
   addTrainerSchema,
 } from "@/Schemas/adminForms";
 import { addTrainer } from "@/Apis/Trainer";
-import { getAllDomains } from "@/Apis/Domain";
+import { getAllBranches } from "@/Apis/Branch";
+
+
 import { useAuth } from "@/Context/AuthContext";
 import { useEffect, useState } from "react";
 
@@ -41,7 +43,9 @@ interface AddTrainerFormProps {
 export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
   const { token } = useAuth();
   const [domains, setDomains] = useState<any[]>([]);
+  const [branches, setBranches] = useState<any[]>([]);
   const [isLoadingDomains, setIsLoadingDomains] = useState(false);
+  const [isLoadingBranches, setIsLoadingBranches] = useState(false);
 
   const form = useForm<AddTrainerFormValues>({
     resolver: zodResolver(addTrainerSchema),
@@ -59,21 +63,31 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
   const isLoading = form.formState.isSubmitting;
 
   useEffect(() => {
-    const fetchDomains = async () => {
+    const fetchData = async () => {
       if (!token) return;
       setIsLoadingDomains(true);
+      setIsLoadingBranches(true);
       try {
-        const res = await getAllDomains(token);
-        const domainList = Array.isArray(res) ? res : (res.data || []);
+        const [domainsRes, branchesRes] = await Promise.all([
+            getAllDomains(token),
+            getAllBranches(token)
+        ]);
+        
+        const domainList = Array.isArray(domainsRes) ? domainsRes : (domainsRes.data || []);
         setDomains(domainList);
+
+        const branchList = Array.isArray(branchesRes) ? branchesRes : (branchesRes.data || []);
+        setBranches(branchList);
+
       } catch (error) {
-        console.error("Failed to fetch domains", error);
-        toast.error("Failed to load domains");
+        console.error("Failed to fetch data", error);
+        toast.error("Failed to load form data");
       } finally {
         setIsLoadingDomains(false);
+        setIsLoadingBranches(false);
       }
     };
-    fetchDomains();
+    fetchData();
   }, [token]);
 
 
@@ -163,9 +177,17 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Main Branch">Main Branch</SelectItem>
-                    <SelectItem value="Downtown Branch">Downtown Branch</SelectItem>
-                    <SelectItem value="Online">Online</SelectItem>
+                     {isLoadingBranches ? (
+                        <SelectItem value="loading" disabled>Loading branches...</SelectItem>
+                     ) : branches.length > 0 ? (
+                        branches.map((branch) => (
+                           <SelectItem key={branch._id} value={branch._id}>
+                             {branch.name}
+                           </SelectItem>
+                        ))
+                     ) : (
+                        <SelectItem value="none" disabled>No branches found</SelectItem>
+                     )}
                   </SelectContent>
                 </Select>
                 <FormMessage />

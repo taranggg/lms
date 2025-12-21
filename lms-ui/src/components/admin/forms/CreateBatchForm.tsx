@@ -32,6 +32,9 @@ import {
 } from "@/Schemas/adminForms";
 import { createBatch } from "@/Apis/Batch";
 import { getAllTrainers } from "@/Apis/Trainer";
+import { getAllBranches } from "@/Apis/Branch";
+
+
 import { useAuth } from "@/Context/AuthContext";
 
 interface CreateBatchFormProps {
@@ -46,7 +49,9 @@ interface TrainerOption {
 export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
   const { token } = useAuth();
   const [trainers, setTrainers] = useState<TrainerOption[]>([]);
+  const [branches, setBranches] = useState<any[]>([]);
   const [isLoadingTrainers, setIsLoadingTrainers] = useState(false);
+  const [isLoadingBranches, setIsLoadingBranches] = useState(false);
 
   const form = useForm<CreateBatchFormValues>({
     resolver: zodResolver(createBatchSchema),
@@ -62,26 +67,31 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
   const isLoading = form.formState.isSubmitting;
 
   useEffect(() => {
-    const fetchTrainers = async () => {
+    const fetchData = async () => {
         if (!token) return;
         setIsLoadingTrainers(true);
+        setIsLoadingBranches(true);
         try {
-            const res = await getAllTrainers(token);
-            // Assuming res is the array or res.data is the array. 
-            // Based on previous Service code: `return res.data;`
-            // Let's assume res.data is the list of trainers or res is the list.
-            // If the API returns { trainers: [...] } or just [...], we'll need to adapt.
-            // Safe bet: check if Array.isArray(res) or res.trainers.
-            const trainerList = Array.isArray(res) ? res : (res.trainers || []);
+            const [trainersRes, branchesRes] = await Promise.all([
+                getAllTrainers(token),
+                getAllBranches(token)
+            ]);
+            
+            const trainerList = Array.isArray(trainersRes) ? trainersRes : (trainersRes.trainers || []);
             setTrainers(trainerList);
+
+            const branchList = Array.isArray(branchesRes) ? branchesRes : (branchesRes.data || []);
+            setBranches(branchList);
+
         } catch (error) {
-            console.error("Failed to fetch trainers", error);
-            toast.error("Failed to load trainers");
+            console.error("Failed to fetch data", error);
+            toast.error("Failed to load form data");
         } finally {
             setIsLoadingTrainers(false);
+            setIsLoadingBranches(false);
         }
     };
-    fetchTrainers();
+    fetchData();
   }, [token]);
 
   async function onSubmit(data: CreateBatchFormValues) {
@@ -132,9 +142,17 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Main Branch">Main Branch</SelectItem>
-                    <SelectItem value="Downtown Branch">Downtown Branch</SelectItem>
-                    <SelectItem value="Online">Online</SelectItem>
+                     {isLoadingBranches ? (
+                        <SelectItem value="loading" disabled>Loading branches...</SelectItem>
+                     ) : branches.length > 0 ? (
+                        branches.map((branch) => (
+                           <SelectItem key={branch._id} value={branch._id}>
+                             {branch.name}
+                           </SelectItem>
+                        ))
+                     ) : (
+                        <SelectItem value="none" disabled>No branches found</SelectItem>
+                     )}
                   </SelectContent>
                 </Select>
                 <FormMessage />

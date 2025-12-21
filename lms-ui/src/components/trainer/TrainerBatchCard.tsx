@@ -29,8 +29,8 @@ export interface Batch {
   students: number;
   active: boolean;
   color: string;
-  logo?: string;
   instructor?: string;
+  branch?: string;
 }
 
 interface TrainerBatchCardProps {
@@ -71,7 +71,7 @@ export default function TrainerBatchCard({
                 </span>
              </div>
              <p className="text-sm text-slate-600 dark:text-slate-300 font-medium opacity-80">
-               Main Branch
+               {batch.branch || "Main Branch"}
              </p>
           </div>
 
