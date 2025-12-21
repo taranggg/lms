@@ -175,73 +175,66 @@ export default function TodoList({
   };
 
   return (
-    <div className="bg-card rounded-xl shadow p-6 mt-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="font-semibold text-lg">To Do List</div>
+    <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-6">
+        <div className="font-bold text-lg text-foreground">To Do List</div>
         <Button
-          className="w-8 h-8 flex items-center justify-center rounded-full text-xl shadow"
+          className="w-8 h-8 rounded-full p-0 bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary shadow-none"
           onClick={() => setModalOpen(true)}
           aria-label="Add Task"
-          variant="default"
         >
-          <Plus size={20} />
+          <Plus size={18} />
         </Button>
       </div>
-      <ul className="space-y-6">
+      <ul className="relative space-y-0">
+        <div className="absolute left-[9px] top-2 bottom-2 w-[1px] bg-gray-200 dark:bg-gray-800 -z-10" />
+        
         {items.map((item, idx) => (
-          <li key={idx} className="pb-2 border-b last:border-b-0">
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                checked={item.checked}
-                onChange={() => handleToggleMain(idx)}
-                className={`w-5 h-5 rounded border-2 border-gray-300 focus:ring-2 focus:ring-teal-400 transition accent-teal-500 ${
-                  item.checked ? "bg-teal-500 border-teal-500" : ""
-                }`}
-              />
+          <li key={idx} className="pb-6 last:pb-0 group">
+            <div className="flex items-start gap-4">
+              <div 
+                 className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 cursor-pointer transition-colors bg-white dark:bg-black ${
+                     item.checked ? "border-primary bg-primary text-primary-foreground" : "border-gray-300 dark:border-gray-600 hover:border-primary"
+                 }`}
+                 onClick={() => handleToggleMain(idx)}
+              >
+                  {item.checked && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+              </div>
+              
               <div className="flex-1">
-                <div className="flex items-center">
+                <div className="flex flex-col">
                   <span
-                    className={`font-medium text-base ${
+                    className={`font-semibold text-sm transition-all ${
                       item.checked
-                        ? "line-through text-gray-400"
-                        : "text-gray-900"
+                        ? "text-muted-foreground line-through decoration-primary/50"
+                        : "text-foreground"
                     }`}
                   >
                     {item.label}
                   </span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-muted-foreground">
+                        {item.category}
+                    </span>
+                    <span className="text-[10px] items-center px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 font-medium">
+                        {item.dateTime}
+                    </span>
+                   </div>
+                   
+                   {/* Subtasks */}
+                   {item.subtasks && item.subtasks.length > 0 && (
+                       <div className="mt-3 pl-2 border-l-2 border-primary/10 space-y-2">
+                           {item.subtasks.map((sub, sIdx) => (
+                               <div key={sIdx} className="flex items-center gap-2 text-xs">
+                                   <div className={`w-1.5 h-1.5 rounded-full ${sub.checked ? "bg-primary" : "bg-gray-300"}`} />
+                                   <span className={sub.checked ? "line-through text-muted-foreground" : "text-muted-foreground"}>
+                                       {sub.label}
+                                   </span>
+                               </div>
+                           ))}
+                       </div>
+                   )}
                 </div>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-gray-400 font-medium">
-                    {item.category}
-                  </span>
-                  <span className="text-xs text-orange-500 font-semibold">
-                    {item.dateTime}
-                  </span>
-                </div>
-                {item.subtasks && item.subtasks.length > 0 && (
-                  <ul className="mt-3 ml-6 space-y-2">
-                    {item.subtasks.map((sub, subIdx) => (
-                      <li key={subIdx} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={sub.checked}
-                          onChange={() => handleToggleSub(idx, subIdx)}
-                          className="w-4 h-4 rounded border-2 border-gray-300 accent-teal-500"
-                        />
-                        <span
-                          className={`text-sm ${
-                            sub.checked
-                              ? "line-through text-gray-400"
-                              : "text-gray-700"
-                          }`}
-                        >
-                          {sub.label}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
             </div>
           </li>
