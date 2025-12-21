@@ -18,7 +18,7 @@ import {
   AddStudentFormValues,
   addStudentSchema,
 } from "@/Schemas/adminForms";
-import { createStudent } from "@/Services/Student";
+import { createStudent } from "@/Apis/Student";
 import { useAuth } from "@/Context/AuthContext";
 
 interface AddStudentFormProps {

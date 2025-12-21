@@ -58,6 +58,7 @@ export default function TrainerDashboard() {
     color: "#e0f2fe", // Default color
     logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", // Mock logo
     instructor: trainer.name,
+    branch: "Online", // Mock dynamic branch
   }));
 
   return (

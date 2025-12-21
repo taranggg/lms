@@ -2,11 +2,7 @@
 
 import React, { createContext, useReducer } from "react";
 
-let token = "";
 
-if (typeof window != "undefined") {
-  token = localStorage.getItem("accessToken") || "";
-}
 
 export interface AuthContextType {
   token: string | null;
@@ -23,7 +19,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 );
 
 function reducer(state: string | null, action: Action) {
-  console.log(action);
+  
 
   switch (action.type) {
     case "SIGN_IN":
@@ -43,6 +39,16 @@ export const AuthContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, null);
+
+  React.useEffect(() => {
+    // Check localStorage on client mount to handle hydration correctly.
+    // We cannot read localStorage during the initial render because it would cause
+    // a mismatch between server-rendered HTML and client-rendered HTML.
+    const storedToken = localStorage.getItem("accessToken");
+    if (storedToken) {
+      dispatch({ type: "SIGN_IN", payload: storedToken });
+    }
+  }, []);
 
   return (
     <AuthContext.Provider value={{ token: state, dispatch }}>
