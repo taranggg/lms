@@ -4,7 +4,7 @@ export interface Trainer extends mongoose.Document {
   name: string;
   email: mongoose.Types.ObjectId;
   branch: mongoose.Types.ObjectId;
-  domain: string;
+  domain: mongoose.Types.ObjectId;
   mobileNumber: string;
   designation: string;
 }
@@ -22,7 +22,11 @@ const trainerSchema = new mongoose.Schema<Trainer>(
       ref: "Branch",
       required: true,
     },
-    domain: { type: String, required: true },
+    domain: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Domain",
+      required: true,
+    },
     mobileNumber: { type: String, required: true },
     designation: { type: String, required: true },
   },

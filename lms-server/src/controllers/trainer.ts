@@ -25,8 +25,30 @@ export async function createTrainer(req: Request, res: Response) {
 
 export async function getAllTrainers(req: Request, res: Response) {
   try {
-    const trainers = await TrainerModel.find();
-    res.status(200).json(trainers);
+    const { branch, domain, page = 1, limit = 10 } = req.query;
+
+    const query: any = {};
+    if (branch) query.branch = branch;
+    if (domain) query.domain = domain;
+
+    const pageNumber = parseInt(page as string);
+    const limitNumber = parseInt(limit as string);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const trainers = await TrainerModel.find(query)
+      .skip(skip)
+      .limit(limitNumber)
+      .populate("branch")
+      .populate("domain");
+
+    const total = await TrainerModel.countDocuments(query);
+
+    res.status(200).json({
+      data: trainers,
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to get trainers" });
@@ -36,7 +58,9 @@ export async function getAllTrainers(req: Request, res: Response) {
 export async function getTrainerById(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const trainer = await TrainerModel.findById(id);
+    const trainer = await TrainerModel.findById(id)
+      .populate("branch")
+      .populate("domain");
     if (!trainer) {
       return res.status(404).json({ error: "Trainer not found" });
     }
@@ -76,16 +100,5 @@ export async function deleteTrainer(req: Request, res: Response) {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to delete trainer" });
-  }
-}
-
-export async function getTrainersByBranch(req: Request, res: Response) {
-  try {
-    const { branch } = req.params;
-    const trainers = await TrainerModel.find({ branch });
-    res.status(200).json(trainers);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to get trainers" });
   }
 }

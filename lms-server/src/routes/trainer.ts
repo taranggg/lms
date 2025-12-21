@@ -4,7 +4,6 @@ import {
   deleteTrainer,
   getAllTrainers,
   getTrainerById,
-  getTrainersByBranch,
   updateTrainer,
 } from "../controllers/trainer.js";
 import { adminAuthenticator } from "../middlewares/adminAuthenticator.js";
@@ -16,10 +15,5 @@ trainerRouter.get("/getAllTrainers", adminAuthenticator, getAllTrainers);
 trainerRouter.get("/getTrainerById/:id", adminAuthenticator, getTrainerById);
 trainerRouter.put("/updateTrainer/:id", adminAuthenticator, updateTrainer);
 trainerRouter.delete("/deleteTrainer/:id", adminAuthenticator, deleteTrainer);
-trainerRouter.get(
-  "/getTrainersByBranch/:branch",
-  adminAuthenticator,
-  getTrainersByBranch
-);
 
 export default trainerRouter;

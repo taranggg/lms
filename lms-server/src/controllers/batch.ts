@@ -13,8 +13,32 @@ export const createBatch = async (req: Request, res: Response) => {
 
 export const getAllBatches = async (req: Request, res: Response) => {
   try {
-    const batches = await BatchModel.find();
-    res.status(200).json(batches);
+    const { branch, trainer, status, type, page = 1, limit = 10 } = req.query;
+
+    const query: any = {};
+    if (branch) query.branch = branch;
+    if (trainer) query.trainer = trainer;
+    if (status) query.status = status;
+    if (type) query.type = type;
+
+    const pageNumber = parseInt(page as string);
+    const limitNumber = parseInt(limit as string);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const batches = await BatchModel.find(query)
+      .skip(skip)
+      .limit(limitNumber)
+      .populate("branch")
+      .populate("trainer");
+
+    const total = await BatchModel.countDocuments(query);
+
+    res.status(200).json({
+      data: batches,
+      total,
+      page: pageNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    });
   } catch (error) {
     res.status(500).json("Batch retrieval has failed! Please Try Again!");
   }
@@ -22,7 +46,9 @@ export const getAllBatches = async (req: Request, res: Response) => {
 
 export const getBatchById = async (req: Request, res: Response) => {
   try {
-    const batch = await BatchModel.findById(req.params.id);
+    const batch = await BatchModel.findById(req.params.id)
+      .populate("branch")
+      .populate("trainer");
     if (!batch) {
       return res.status(404).json("Batch not found!");
     }
@@ -55,19 +81,6 @@ export const deleteBatch = async (req: Request, res: Response) => {
     res.status(200).json(batch);
   } catch (error) {
     res.status(500).json("Batch deletion has failed! Please Try Again!");
-  }
-};
-
-export const getBatchesByFilters = async (req: Request, res: Response) => {
-  try {
-    const batches = await BatchModel.find({
-      branch: req.query.branchId,
-      trainer: req.query.trainerId,
-      type: req.query.type,
-    });
-    res.status(200).json(batches);
-  } catch (error) {
-    res.status(500).json("Batch retrieval has failed! Please Try Again!");
   }
 };
 
