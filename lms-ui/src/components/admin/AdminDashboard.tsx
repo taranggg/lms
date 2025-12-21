@@ -126,7 +126,7 @@ export default function AdminDashboardComponent() {
       
       // If no branch is selected (or all), keep it as ALL_BRANCH_ID. 
       // If previously selected branch doesn't exist anymore, reset to ALL.
-      if (selectedBranchId !== ALL_BRANCH_ID && !processedBranches.find(b => b._id === selectedBranchId)) {
+      if (selectedBranchId !== ALL_BRANCH_ID && !processedBranches.find((b: DashboardBranch) => b._id === selectedBranchId)) {
           setSelectedBranchId(ALL_BRANCH_ID);
       }
 
@@ -225,9 +225,9 @@ export default function AdminDashboardComponent() {
             </div>
             <div className="flex items-center gap-2 text-muted-foreground mt-1">
                <MapPin size={14} />
-               <p className="text-sm">
+               <div className="text-sm">
                    {loading ? <Skeleton className="h-4 w-32" /> : (currentData.address || " ")}
-               </p>
+               </div>
             </div>
           </div>
           
