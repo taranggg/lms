@@ -169,16 +169,30 @@ export default function AdminTrainersPage() {
                     <div className="relative">
                          {/* Placeholder Avatar logic */}
                          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-xl font-bold text-primary">
-                             {trainer.name?.charAt(0) || "T"}
+                             {(() => {
+                                 const name = trainer.name;
+                                 if (typeof name === 'string') return name.charAt(0);
+                                 if (typeof name === 'object' && name !== null) return (name.first?.[0] || "T");
+                                 return "T";
+                             })()}
                          </div>
                         <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-background bg-green-500`} />
                     </div>
-                    <div>
+                  <div>
                     <h3 className="font-bold text-base leading-tight">
-                        {trainer.name}
+                        {typeof trainer.name === 'object' && trainer.name !== null 
+                            ? `${trainer.name.first || ''} ${trainer.name.last || ''}`.trim() || "Unknown Trainer"
+                            : trainer.name || "Unknown Trainer"
+                        }
                     </h3>
                     <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md mt-1 inline-block">
-                        {typeof trainer.domain === 'object' ? trainer.domain.name : trainer.domain || "Instructor"}
+                        {(() => {
+                            if (!trainer.domain) return "Instructor";
+                            if (typeof trainer.domain === 'object') {
+                                return trainer.domain.name || "Instructor";
+                            }
+                            return trainer.domain;
+                        })()}
                     </span>
                     </div>
                 </div>
@@ -213,7 +227,12 @@ export default function AdminTrainersPage() {
                 <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer group/item">
                     <Mail size={14} className="text-blue-500 group-hover/item:scale-110 transition-transform" />
-                    <span className="truncate text-xs">{trainer.email}</span>
+                    <span className="truncate text-xs">
+                        {typeof trainer.email === 'object' && trainer.email !== null 
+                            ? trainer.email.email 
+                            : trainer.email
+                        }
+                    </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer group/item">
                     <Phone size={14} className="text-green-500 group-hover/item:scale-110 transition-transform" />
@@ -242,7 +261,7 @@ export default function AdminTrainersPage() {
             <Plus size={24} className="group-hover:rotate-90 transition-transform duration-300" />
           </button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px]" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Add New Trainer</DialogTitle>
           </DialogHeader>

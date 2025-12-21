@@ -66,7 +66,7 @@ export default function AddBranchForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-background/90 backdrop-blur-xl border border-border">
+      <DialogContent className="sm:max-w-md bg-background/90 backdrop-blur-xl border border-border" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Add New Branch</DialogTitle>
         </DialogHeader>

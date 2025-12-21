@@ -1,5 +1,6 @@
 Version 1:
    -Interactive and crazy ass Calander
+   -Trainer Rating
 
 Version 2:
   -Full custome themeing with color and font pllet like tweakcn

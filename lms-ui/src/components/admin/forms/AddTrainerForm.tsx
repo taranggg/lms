@@ -27,10 +27,12 @@ import {
 } from "@/Schemas/adminForms";
 import { addTrainer } from "@/Apis/Trainer";
 import { getAllBranches } from "@/Apis/Branch";
+import { getAllDomains } from "@/Apis/Domain";
 
 
 import { useAuth } from "@/Context/AuthContext";
 import { useEffect, useState } from "react";
+
 
 interface AddTrainerFormProps {
   onSuccess: () => void;

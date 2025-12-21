@@ -303,7 +303,7 @@ export default function AdminBatchesPage() {
             <Plus size={24} className="group-hover:rotate-90 transition-transform duration-300" />
           </button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px]" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Create New Batch</DialogTitle>
           </DialogHeader>
