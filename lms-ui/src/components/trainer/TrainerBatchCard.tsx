@@ -42,148 +42,131 @@ export default function TrainerBatchCard({
   batch,
   trainerId,
 }: TrainerBatchCardProps) {
+  // Mock student avatars for the UI demo as requested in reference
+  const mockAvatars = [1, 2, 3];
+
   return (
-    <div
-      className="rounded-xl p-3 flex flex-col md:flex-row gap-3 shadow-sm bg-white border border-slate-100 hover:shadow-md transition-all relative w-full items-start"
-      style={{
-        background: `linear-gradient(100deg, ${batch.color}15 0%, white 40%)`,
-        borderLeft: `4px solid ${batch.color}`,
-      }}
-    >
-      {/* Absolute Menu for Space Saving */}
-      <div className="absolute top-2 right-2 md:static md:order-last">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-slate-400 hover:text-slate-600"
-            >
-              <MoreVertical size={14} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>Batch Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Edit className="w-4 h-4 mr-2" />
-              Edit Batch
-            </DropdownMenuItem>
-            <Link href={`/trainer/${trainerId}/${batch.id}?tab=students`}>
-              <DropdownMenuItem>
-                <Users className="w-4 h-4 mr-2" />
-                Student List
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/trainer/${trainerId}/${batch.id}?tab=attendance`}>
-              <DropdownMenuItem>
-                <Calendar className="w-4 h-4 mr-2" />
-                Attendance
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/trainer/${trainerId}/${batch.id}?tab=assignments`}>
-              <DropdownMenuItem>
-                <BookOpen className="w-4 h-4 mr-2" />
-                Assignments
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/trainer/${trainerId}/${batch.id}?tab=exams`}>
-              <DropdownMenuItem>
-                <FileText className="w-4 h-4 mr-2" />
-                Exams
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/trainer/${trainerId}/${batch.id}?tab=results`}>
-              <DropdownMenuItem>
-                <GraduationCap className="w-4 h-4 mr-2" />
-                Results
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/trainer/${trainerId}/${batch.id}?tab=progress`}>
-              <DropdownMenuItem>
-                <BarChart className="w-4 h-4 mr-2" />
-                Progress
-              </DropdownMenuItem>
-            </Link>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 focus:text-red-600">
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete Batch
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {/* Main Content Group */}
-      <Link href={`/trainer/${trainerId}/${batch.id}`} className="flex-1 min-w-0 pr-8 md:pr-0 cursor-pointer block">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-white shadow-sm text-xl shrink-0">
-            {batch.logo ? (
-              <img
-                src={batch.logo}
-                alt="logo"
-                className="w-full h-full object-cover rounded-lg"
-              />
-            ) : (
-              <span role="img" aria-label="logo">
-                🎓
-              </span>
-            )}
+    <div className="group rounded-[2rem] p-6 bg-white dark:bg-card border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-all duration-300 relative w-full flex flex-col gap-4">
+       {/* Header: Title & Actions */}
+       <div className="flex justify-between items-start">
+          <div className="flex flex-col gap-1">
+             <div className="flex items-center gap-3">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                  {batch.name}
+                </h3>
+                <span
+                  className={`text-[10px] px-2.5 py-0.5 rounded-full font-medium border ${
+                    batch.active
+                      ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/50"
+                      : "bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800"
+                  }`}
+                >
+                  {batch.active ? "Active" : "Archived"}
+                </span>
+             </div>
+             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+               Main Branch
+             </p>
           </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-base text-slate-800 leading-tight mb-0.5 truncate pr-2">
-              {batch.name}
-            </h3>
-            {batch.instructor && (
-              <p className="text-[10px] text-slate-500 font-medium">
-                Trainer: {batch.instructor}
-              </p>
-            )}
 
-            {/* Mobile/Compact Tablet: Stats below text */}
-            <div className="grid grid-cols-2 gap-2 mt-3 xl:flex xl:items-center xl:gap-4">
-              <div className="flex items-center gap-1.5 p-1.5 px-2 rounded-lg bg-slate-50/80 border border-slate-100">
-                <Calendar size={12} className="text-slate-400" />
-                <div className="flex flex-col">
-                  <span className="text-[9px] text-slate-400 font-semibold uppercase leading-none mb-0.5">
-                    Schedule
-                  </span>
-                  <span
-                    className="text-[11px] font-medium text-slate-700 truncate max-w-[80px]"
-                    title={batch.schedule}
-                  >
-                    {batch.schedule}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 p-1.5 px-2 rounded-lg bg-slate-50/80 border border-slate-100">
-                <Users size={12} className="text-slate-400" />
-                <div className="flex flex-col">
-                  <span className="text-[9px] text-slate-400 font-semibold uppercase leading-none mb-0.5">
-                    Students
-                  </span>
-                  <span className="text-[11px] font-medium text-slate-700">
-                    {batch.students} Active
-                  </span>
-                </div>
-              </div>
-            </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 -mr-2 text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 rounded-full"
+              >
+                <MoreVertical size={18} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>Batch Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Batch
+              </DropdownMenuItem>
+              <Link href={`/trainer/${trainerId}/${batch.id}?tab=students`}>
+                <DropdownMenuItem>
+                   <Users className="w-4 h-4 mr-2" />
+                   Student List
+                </DropdownMenuItem>
+              </Link>
+              <Link href={`/trainer/${trainerId}/${batch.id}?tab=attendance`}>
+                 <DropdownMenuItem>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Attendance
+                 </DropdownMenuItem>
+              </Link>
+              <Link href={`/trainer/${trainerId}/${batch.id}?tab=assignments`}>
+                <DropdownMenuItem>
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Assignments
+                </DropdownMenuItem>
+              </Link>
+              <Link href={`/trainer/${trainerId}/${batch.id}?tab=exams`}>
+                <DropdownMenuItem>
+                  <FileText className="w-4 h-4 mr-2" />
+                  Exams
+                </DropdownMenuItem>
+              </Link>
+              <Link href={`/trainer/${trainerId}/${batch.id}?tab=results`}>
+                <DropdownMenuItem>
+                  <GraduationCap className="w-4 h-4 mr-2" />
+                  Results
+                </DropdownMenuItem>
+              </Link>
+              <Link href={`/trainer/${trainerId}/${batch.id}?tab=progress`}>
+                <DropdownMenuItem>
+                  <BarChart className="w-4 h-4 mr-2" />
+                  Progress
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Batch
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+       </div>
+
+       {/* Link Wrapper for clickable body */}
+       <Link href={`/trainer/${trainerId}/${batch.id}`} className="flex flex-col gap-3 cursor-pointer">
+          {/* Info Rows */}
+          <div className="flex flex-col gap-2.5 mt-1">
+             <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                <Calendar size={16} className="text-blue-500" />
+                <span className="text-sm font-medium">{batch.schedule}</span>
+             </div>
+             <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                <GraduationCap size={16} className="text-purple-500" />
+                <span className="text-sm font-medium">{batch.instructor || "Instructor Name"}</span>
+             </div>
           </div>
-        </div>
-      </Link>
+       </Link>
 
-      {/* Right Section: Status Badge (Desktop) */}
-      <div className="flex items-center md:flex-col md:items-end md:justify-center gap-2 mt-2 md:mt-0 md:h-auto">
-        <span
-          className={`text-[10px] px-2 py-1 rounded-full font-semibold border ${
-            batch.active
-              ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-              : "bg-slate-50 text-slate-500 border-slate-100"
-          }`}
-        >
-          {batch.active ? "Active" : "Archived"}
-        </span>
-      </div>
+       {/* Divider */}
+       <div className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
+
+       {/* Footer: Stats & Avatars */}
+       <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+             <Users size={18} className="text-orange-500" />
+             <span className="text-sm font-medium">{batch.students} Students</span>
+          </div>
+
+          <div className="flex -space-x-2 items-center">
+             {mockAvatars.map((i) => (
+                <div key={i} className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-card flex items-center justify-center text-[10px] font-bold text-slate-500">
+                   S{i}
+                </div>
+             ))}
+             <div className="w-7 h-7 rounded-full bg-slate-50 dark:bg-slate-900 border-2 border-white dark:border-card flex items-center justify-center text-[10px] items-center justify-center">
+                <span className="mb-0.5">+</span>
+             </div>
+          </div>
+       </div>
     </div>
   );
 }

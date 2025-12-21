@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -87,8 +86,8 @@ export default function TrainerSidebar({
 
       {/* Profile Section (Replaces Settings) */}
       <div className="mt-auto mb-2">
-        <HoverCard openDelay={0} closeDelay={200}>
-          <HoverCardTrigger asChild>
+        <Popover>
+          <PopoverTrigger asChild>
             <div
               className={`flex items-center gap-3 px-2 py-2 rounded-xl cursor-pointer hover:bg-primary/5 transition-colors border border-transparent hover:border-primary/10 ${
                 collapsed ? "justify-center" : ""
@@ -111,8 +110,8 @@ export default function TrainerSidebar({
                 </div>
               )}
             </div>
-          </HoverCardTrigger>
-          <HoverCardContent
+          </PopoverTrigger>
+          <PopoverContent
             align="end"
             side="right"
             className="w-64 p-4 ml-4 shadow-xl border-border bg-popover"
@@ -128,15 +127,9 @@ export default function TrainerSidebar({
                 <div>
                   <h4 className="font-semibold text-popover-foreground">{trainerName}</h4>
                   <p className="text-xs text-muted-foreground">{trainerDesignation}</p>
-                  <p className="text-xs text-muted-foreground">{trainerDesignation}</p>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between px-1">
-                 <span className="text-sm font-medium text-popover-foreground">Theme</span>
-                 <ModeToggle />
-              </div>
-
               <Button
                 variant="destructive"
                 size="sm"
@@ -149,8 +142,8 @@ export default function TrainerSidebar({
                 Sign Out
               </Button>
             </div>
-          </HoverCardContent>
-        </HoverCard>
+          </PopoverContent>
+        </Popover>
       </div>
     </aside>
   );
