@@ -16,7 +16,7 @@ const TrainerLoginContent = () => {
 
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse: TokenResponse) => {
-            setIsLoading(true);
+            // isLoading is already true from the button click
             try {
                  const res = await TrainerGoogleLogin(tokenResponse.access_token);
                  dispatch({ type: "SIGN_IN", payload: res.token });
@@ -30,6 +30,9 @@ const TrainerLoginContent = () => {
         },
         onError: () => {
              toast.error("Google Login Failed");
+             setIsLoading(false);
+        },
+        onNonOAuthError: () => {
              setIsLoading(false);
         }
     });
@@ -73,7 +76,13 @@ const TrainerLoginContent = () => {
 
                 {/* Login Button Area */}
                 <div className="w-full flex justify-center pb-2">
-                     <SlideToLogin onSuccess={() => login()} isLoading={isLoading} />
+                     <SlideToLogin 
+                        onSuccess={() => {
+                            setIsLoading(true);
+                            login();
+                        }} 
+                        isLoading={isLoading} 
+                     />
                 </div>
 
                 {/* Footer */}
