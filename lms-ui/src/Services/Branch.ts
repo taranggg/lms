@@ -1,4 +1,5 @@
 import axiosInstance from "@/Utils/Axiosinstance";
+import { ApiPaths } from "@/constants/ApiPaths";
 
 export interface BranchData {
   name: string;
@@ -14,7 +15,7 @@ export interface BranchResponse extends BranchData {
 export const addBranch = async (data: BranchData, token: string) => {
   try {
     const response = await axiosInstance.post(
-      "/api/v1/branch/addBranch",
+      ApiPaths.BRANCH.CREATE,
       data,
       {
         headers: {
@@ -30,7 +31,7 @@ export const addBranch = async (data: BranchData, token: string) => {
 
 export const getAllBranches = async (token: string) => {
   try {
-    const response = await axiosInstance.get("/api/v1/branch/getAllBranches", {
+    const response = await axiosInstance.get(ApiPaths.BRANCH.GET_ALL, {
       headers: {
         authorization: `Bearer ${token}`,
       },
@@ -48,7 +49,7 @@ export const updateBranch = async (
 ) => {
   try {
     const response = await axiosInstance.put(
-      `/api/v1/branch/updateBranch/${id}`,
+      `${ApiPaths.BRANCH.UPDATE}/${id}`,
       data,
       {
         headers: {
@@ -65,7 +66,7 @@ export const updateBranch = async (
 export const deleteBranch = async (id: string, token: string) => {
   try {
     const response = await axiosInstance.delete(
-      `/api/v1/branch/deleteBranch/${id}`,
+      `${ApiPaths.BRANCH.DELETE}/${id}`,
       {
         headers: {
           authorization: `Bearer ${token}`,

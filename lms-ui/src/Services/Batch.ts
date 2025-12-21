@@ -1,4 +1,5 @@
 import axiosInstance from "@/Utils/Axiosinstance";
+import { ApiPaths } from "@/constants/ApiPaths";
 
 // Placeholder interface - expand as needed based on actual API payload
 export interface BatchData {
@@ -7,7 +8,7 @@ export interface BatchData {
 
 export const createBatch = async (data: BatchData, token: string) => {
   try {
-    const response = await axiosInstance.post("/api/v1/batch/createBatch", data, {
+    const response = await axiosInstance.post(ApiPaths.BATCH.CREATE, data, {
       headers: {
         authorization: `Bearer ${token}`,
       },
@@ -20,7 +21,7 @@ export const createBatch = async (data: BatchData, token: string) => {
 
 export const getAllBatches = async (token: string) => {
   try {
-    const response = await axiosInstance.get("/api/v1/batch/getAllBatches", {
+    const response = await axiosInstance.get(ApiPaths.BATCH.GET_ALL, {
       headers: {
         authorization: `Bearer ${token}`,
       },
@@ -33,7 +34,7 @@ export const getAllBatches = async (token: string) => {
 
 export const getBatchById = async (id: string, token: string) => {
   try {
-    const response = await axiosInstance.get(`/api/v1/batch/getBatchById/${id}`, {
+    const response = await axiosInstance.get(`${ApiPaths.BATCH.GET_BY_ID}/${id}`, {
       headers: {
         authorization: `Bearer ${token}`,
       },
@@ -51,7 +52,7 @@ export const updateBatch = async (
 ) => {
   try {
     const response = await axiosInstance.put(
-      `/api/v1/batch/updateBatch/${id}`,
+      `${ApiPaths.BATCH.UPDATE}/${id}`,
       data,
       {
         headers: {
@@ -68,7 +69,7 @@ export const updateBatch = async (
 export const deleteBatch = async (id: string, token: string) => {
   try {
     const response = await axiosInstance.delete(
-      `/api/v1/batch/deleteBatch/${id}`,
+      `${ApiPaths.BATCH.DELETE}/${id}`,
       {
         headers: {
           authorization: `Bearer ${token}`,
@@ -86,7 +87,7 @@ export const getBatchesByFilters = async (
   token: string
 ) => {
   try {
-    const response = await axiosInstance.get("/api/v1/batch/getBatchesByFilters", {
+    const response = await axiosInstance.get(ApiPaths.BATCH.GET_BY_FILTERS, {
       headers: {
         authorization: `Bearer ${token}`,
       },
@@ -104,7 +105,7 @@ export const assignBatchToStudent = async (
 ) => {
   try {
     const response = await axiosInstance.post(
-      "/api/v1/batch/assignBatchToStudent",
+      ApiPaths.BATCH.ASSIGN_TO_STUDENT,
       data,
       {
         headers: {

@@ -1,4 +1,5 @@
 import axiosInstance from "@/Utils/Axiosinstance";
+import { ApiPaths } from "@/constants/ApiPaths";
 
 export interface StudentData {
   name: string;
@@ -8,7 +9,7 @@ export interface StudentData {
 export const createStudent = async (data: StudentData, token: string) => {
   try {
     const response = await axiosInstance.post(
-      "/api/v1/student/createStudent",
+      ApiPaths.STUDENT.CREATE,
       data,
       {
         headers: {
@@ -32,7 +33,7 @@ export const getAllStudents = async (
   }
 ) => {
   try {
-    const response = await axiosInstance.get("/api/v1/student/getAllStudents", {
+    const response = await axiosInstance.get(ApiPaths.STUDENT.GET_ALL, {
       headers: {
         authorization: `Bearer ${token}`,
       },
@@ -47,7 +48,7 @@ export const getAllStudents = async (
 export const getStudentById = async (id: string, token: string) => {
   try {
     const response = await axiosInstance.get(
-      `/api/v1/student/getStudentById/${id}`,
+      `${ApiPaths.STUDENT.GET_BY_ID}/${id}`,
       {
         headers: {
           authorization: `Bearer ${token}`,
@@ -63,7 +64,7 @@ export const getStudentById = async (id: string, token: string) => {
 export const getStudentByBranch = async (branch: string, token: string) => {
   try {
     const response = await axiosInstance.get(
-      `/api/v1/student/getStudentByBranch/${branch}`,
+      `${ApiPaths.STUDENT.GET_BY_BRANCH}/${branch}`,
       {
         headers: {
           authorization: `Bearer ${token}`,
@@ -83,7 +84,7 @@ export const updateStudent = async (
 ) => {
   try {
     const response = await axiosInstance.put(
-      `/api/v1/student/updateStudent/${id}`,
+      `${ApiPaths.STUDENT.UPDATE}/${id}`,
       data,
       {
         headers: {
@@ -100,7 +101,7 @@ export const updateStudent = async (
 export const deleteStudent = async (id: string, token: string) => {
   try {
     const response = await axiosInstance.delete(
-      `/api/v1/student/deleteStudent/${id}`,
+      `${ApiPaths.STUDENT.DELETE}/${id}`,
       {
         headers: {
           authorization: `Bearer ${token}`,

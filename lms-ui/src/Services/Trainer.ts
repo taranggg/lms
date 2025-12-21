@@ -1,4 +1,5 @@
 import axiosInstance from "@/Utils/Axiosinstance";
+import { ApiPaths } from "@/constants/ApiPaths";
 
 export interface TrainerData {
   name: string;
@@ -12,7 +13,7 @@ export interface TrainerData {
 export const addTrainer = async (data: TrainerData, token: string) => {
   try {
     const response = await axiosInstance.post(
-      "/api/v1/trainer/addTrainer",
+      ApiPaths.TRAINER.ADD,
       data,
       {
         headers: {
@@ -28,7 +29,7 @@ export const addTrainer = async (data: TrainerData, token: string) => {
 
 export const getAllTrainers = async (token: string) => {
   try {
-    const response = await axiosInstance.get("/api/v1/trainer/getAllTrainers", {
+    const response = await axiosInstance.get(ApiPaths.TRAINER.GET_ALL, {
       headers: {
         authorization: `Bearer ${token}`,
       },
@@ -42,7 +43,7 @@ export const getAllTrainers = async (token: string) => {
 export const getTrainerById = async (id: string, token: string) => {
   try {
     const response = await axiosInstance.get(
-      `/api/v1/trainer/getTrainerById/${id}`,
+      `${ApiPaths.TRAINER.GET_BY_ID}/${id}`,
       {
         headers: {
           authorization: `Bearer ${token}`,
@@ -62,7 +63,7 @@ export const updateTrainer = async (
 ) => {
   try {
     const response = await axiosInstance.put(
-      `/api/v1/trainer/updateTrainer/${id}`,
+      `${ApiPaths.TRAINER.UPDATE}/${id}`,
       data,
       {
         headers: {
@@ -79,7 +80,7 @@ export const updateTrainer = async (
 export const deleteTrainer = async (id: string, token: string) => {
   try {
     const response = await axiosInstance.delete(
-      `/api/v1/trainer/deleteTrainer/${id}`,
+      `${ApiPaths.TRAINER.DELETE}/${id}`,
       {
         headers: {
           authorization: `Bearer ${token}`,
@@ -95,7 +96,7 @@ export const deleteTrainer = async (id: string, token: string) => {
 export const getTrainersByBranch = async (branch: string, token: string) => {
   try {
     const response = await axiosInstance.get(
-      `/api/v1/trainer/getTrainersByBranch/${branch}`,
+      `${ApiPaths.TRAINER.GET_BY_BRANCH}/${branch}`,
       {
         headers: {
           authorization: `Bearer ${token}`,
