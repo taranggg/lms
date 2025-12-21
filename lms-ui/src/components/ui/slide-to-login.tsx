@@ -3,12 +3,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ArrowRight, ChevronRight } from "lucide-react";
 
-interface SlideToLoginProps {
+export interface SlideToLoginProps {
   onSuccess: () => void;
   isLoading?: boolean;
+  text?: string;
+  icon?: React.ReactNode;
 }
 
-export function SlideToLogin({ onSuccess, isLoading = false }: SlideToLoginProps) {
+export function SlideToLogin({ onSuccess, isLoading = false, text = "Slide to sign in", icon }: SlideToLoginProps) {
   const [complete, setComplete] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
@@ -56,7 +58,7 @@ export function SlideToLogin({ onSuccess, isLoading = false }: SlideToLoginProps
   };
 
   // Google Logo SVG Component
-  const GoogleLogo = () => (
+  const DefaultGoogleLogo = () => (
     <svg className="w-5 h-5" viewBox="0 0 24 24">
       <path
         fill="#4285F4"
@@ -93,7 +95,7 @@ export function SlideToLogin({ onSuccess, isLoading = false }: SlideToLoginProps
             style={{ opacity: isDragging || complete ? 0 : 1 }}
         >
           <span className="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-primary animate-pulse">
-             Slide to sign in
+             {text}
           </span>
           <ArrowRight className="ml-2 w-4 h-4 text-gray-400 group-hover:text-primary" />
         </div>
@@ -117,11 +119,11 @@ export function SlideToLogin({ onSuccess, isLoading = false }: SlideToLoginProps
             onPointerDown={handleDragStart}
             onPointerMove={handleDrag}
         >
-             {/* Google Logo or Loading Spinner */}
+             {/* Logo or Loading Spinner */}
              {isLoading ? (
                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
              ) : (
-                <GoogleLogo />
+                icon || <DefaultGoogleLogo />
              )}
         </div>
       </div>

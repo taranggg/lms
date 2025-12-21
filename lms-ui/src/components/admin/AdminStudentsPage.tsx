@@ -246,8 +246,8 @@ export default function AdminStudentsPage() {
       {/* FAB with Dialog */}
       <Dialog open={isAddStudentOpen} onOpenChange={setIsAddStudentOpen}>
         <DialogTrigger asChild>
-          <button className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform duration-200 z-50">
-            <Plus size={24} />
+          <button className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center hover:scale-110 hover:shadow-2xl active:scale-95 transition-all duration-300 ease-in-out z-50 group">
+            <Plus size={24} className="group-hover:rotate-90 transition-transform duration-300" />
           </button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
