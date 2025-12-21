@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  assignMaterialsToBatch,
   createMaterial,
   deleteMaterial,
   getAllMaterials,
@@ -37,6 +38,12 @@ materialRouter.delete(
   "/deleteMaterial/:id",
   admintrainerAuthenticator,
   deleteMaterial
+);
+
+materialRouter.post(
+  "/assignMaterialsToBatch",
+  admintrainerAuthenticator,
+  assignMaterialsToBatch
 );
 
 export default materialRouter;
