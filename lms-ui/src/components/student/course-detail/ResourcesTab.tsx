@@ -106,6 +106,8 @@ function sortResources(
   return copy;
 }
 
+// ... (imports remain)
+
 export default function ResourcesTab({ course }: ResourcesTabProps) {
   const [filter, setFilter] = React.useState<FilterKey>("all");
   const [sortBy, setSortBy] = React.useState<SortKey>("newest");
@@ -130,19 +132,19 @@ export default function ResourcesTab({ course }: ResourcesTabProps) {
       {/* Header row */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#020817]">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             Course Materials
           </h1>
         </div>
 
         <div className="flex items-center gap-2 md:gap-3 self-start md:self-auto">
-          {/* Filter by (placeholder – you can wire real logic later) */}
+          {/* Filter by */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-full px-3 md:px-4 text-xs md:text-sm gap-2"
+                className="rounded-full px-3 md:px-4 text-xs md:text-sm gap-2 text-muted-foreground"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 <span>Filter by</span>
@@ -172,7 +174,7 @@ export default function ResourcesTab({ course }: ResourcesTabProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-full px-3 md:px-4 text-xs md:text-sm gap-2"
+                className="rounded-full px-3 md:px-4 text-xs md:text-sm gap-2 text-muted-foreground"
               >
                 <ArrowUpDown className="w-4 h-4" />
                 <span>Sort by</span>
@@ -204,10 +206,10 @@ export default function ResourcesTab({ course }: ResourcesTabProps) {
             size="sm"
             variant={filter === f.key ? "default" : "outline"}
             className={cn(
-              "rounded-full px-4 py-1 text-xs md:text-sm",
+              "rounded-full px-4 py-1 text-xs md:text-sm transition-colors",
               filter === f.key
-                ? "bg-[#020817] text-white hover:bg-[#020817]/90"
-                : "bg-[#f4f4f5] text-[#4b5563] border-transparent hover:bg-[#e4e4e7]"
+                ? "bg-foreground text-background hover:bg-foreground/90"
+                : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
             )}
             onClick={() => setFilter(f.key)}
           >
@@ -228,7 +230,7 @@ export default function ResourcesTab({ course }: ResourcesTabProps) {
               href={res.link}
               target="_blank"
               rel="noreferrer"
-              className="group relative overflow-hidden rounded-2xl aspect-[3/4] shadow-sm bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617] text-white"
+              className="group relative overflow-hidden rounded-2xl aspect-[3/4] shadow-sm bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white"
             >
               {/* Background image / placeholder */}
               <div className="absolute inset-0">
@@ -241,17 +243,17 @@ export default function ResourcesTab({ course }: ResourcesTabProps) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+                  <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950" />
                 )}
                 {/* dark overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
               </div>
 
               {/* Card content */}
               <div className="relative h-full flex flex-col justify-between p-3 md:p-4">
                 {/* Top: type pill */}
                 <div className="flex items-center gap-2 text-[11px] md:text-xs font-medium text-slate-100">
-                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
                     {icon}
                     <span>{typeLabel}</span>
                   </span>
@@ -259,10 +261,10 @@ export default function ResourcesTab({ course }: ResourcesTabProps) {
 
                 {/* Bottom: title + meta */}
                 <div className="space-y-1 md:space-y-2">
-                  <h3 className="text-sm md:text-base font-semibold leading-snug line-clamp-2">
+                  <h3 className="text-sm md:text-base font-semibold leading-snug line-clamp-2 text-slate-50">
                     {res.name}
                   </h3>
-                  <p className="text-[10px] md:text-xs text-slate-200/80 line-clamp-2">
+                  <p className="text-[10px] md:text-xs text-slate-300/80 line-clamp-2">
                     Uploaded {res.uploaded} by {res.by}
                   </p>
                 </div>

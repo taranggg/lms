@@ -8,7 +8,7 @@ import { Download, CheckCircle2, XCircle, Circle } from "lucide-react";
 type AttendanceStatus = "Present" | "Absent" | "Not Marked";
 
 interface AttendanceRecord {
-  date: string; // ISO-like date string, e.g. "2025-11-24"
+  date: string; 
   topic: string;
   status: AttendanceStatus | string;
 }
@@ -97,7 +97,6 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
     [course.attendance]
   );
 
-  // Derive stats if missing
   const presentCount =
     typeof stats.sessionsPresent === "number"
       ? stats.sessionsPresent
@@ -160,13 +159,13 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
       {/* Header row */}
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#020817]">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             My Attendance
           </h1>
         </div>
         <Button
           type="button"
-          className="self-start md:self-auto rounded-full px-4 md:px-5 py-2 text-xs md:text-sm gap-2 bg-[#020617] text-white hover:bg-[#020617]/90"
+          className="self-start md:self-auto rounded-full px-4 md:px-5 py-2 text-xs md:text-sm gap-2 bg-foreground text-background hover:bg-foreground/90"
         >
           <Download className="w-4 h-4" />
           <span>Export Report</span>
@@ -177,39 +176,39 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
         {/* Left column (summary + selected day) */}
         <div className="flex flex-col gap-4 md:gap-5">
           {/* Overall attendance card */}
-          <Card className="rounded-2xl md:rounded-3xl shadow-sm border-[#e5e7eb]">
+          <Card className="rounded-2xl md:rounded-3xl shadow-sm border-border bg-card">
             <CardHeader className="pb-2 md:pb-3">
               <CardTitle className="text-xs md:text-sm font-semibold text-muted-foreground">
                 Overall Attendance
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 md:space-y-4">
-              <div className="text-2xl md:text-4xl font-bold text-[#020817]">
+              <div className="text-2xl md:text-4xl font-bold text-foreground">
                 {attendancePercent}%
               </div>
-              <div className="w-full h-1.5 md:h-2 rounded-full bg-[#e5e7eb] overflow-hidden">
+              <div className="w-full h-1.5 md:h-2 rounded-full bg-muted overflow-hidden">
                 <div
-                  className="h-1.5 md:h-2 rounded-full bg-[#10b981] transition-all duration-500"
+                  className="h-1.5 md:h-2 rounded-full bg-green-500 transition-all duration-500"
                   style={{ width: `${attendancePercent}%` }}
                 />
               </div>
               <div className="flex gap-2 md:gap-4 mt-1 md:mt-2">
-                <Card className="flex-1 rounded-xl md:rounded-2xl border-[#e5e7eb] shadow-xs">
+                <Card className="flex-1 rounded-xl md:rounded-2xl border-border bg-card shadow-sm">
                   <CardContent className="py-2 px-2 md:py-3 md:px-4 flex flex-col gap-0.5 md:gap-1">
                     <span className="text-[10px] md:text-xs text-muted-foreground">
                       Attended
                     </span>
-                    <span className="text-base md:text-xl font-semibold text-[#020817]">
+                    <span className="text-base md:text-xl font-semibold text-foreground">
                       {presentCount}
                     </span>
                   </CardContent>
                 </Card>
-                <Card className="flex-1 rounded-xl md:rounded-2xl border-[#e5e7eb] shadow-xs">
+                <Card className="flex-1 rounded-xl md:rounded-2xl border-border bg-card shadow-sm">
                   <CardContent className="py-2 px-2 md:py-3 md:px-4 flex flex-col gap-0.5 md:gap-1">
                     <span className="text-[10px] md:text-xs text-muted-foreground">
                       Missed
                     </span>
-                    <span className="text-base md:text-xl font-semibold text-[#020817]">
+                    <span className="text-base md:text-xl font-semibold text-foreground">
                       {absentCount}
                     </span>
                   </CardContent>
@@ -219,10 +218,10 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
           </Card>
 
           {/* Selected day card */}
-          <Card className="rounded-2xl md:rounded-3xl shadow-sm border-[#e5e7eb]">
+          <Card className="rounded-2xl md:rounded-3xl shadow-sm border-border bg-card">
             <CardContent className="py-3 px-3 md:py-5 md:px-5 space-y-2 md:space-y-4">
               <div>
-                <p className="text-[11px] md:text-sm font-semibold text-[#020817]">
+                <p className="text-[11px] md:text-sm font-semibold text-foreground">
                   {formatFullDate(selectedDate)}
                 </p>
                 <p className="text-[10px] md:text-xs text-muted-foreground mt-1">
@@ -235,16 +234,16 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
               </div>
 
               {selectedRecord && (
-                <div className="flex items-start gap-2 md:gap-3 rounded-xl md:rounded-2xl border border-[#e5e7eb] bg-[#f9fafb] px-2 py-2 md:px-3 md:py-3">
+                <div className="flex items-start gap-2 md:gap-3 rounded-xl md:rounded-2xl border border-border bg-muted/50 px-2 py-2 md:px-3 md:py-3">
                   <div className="mt-0.5">
                     {normalizeStatus(selectedRecord.status) === "Present" ? (
-                      <CheckCircle2 className="w-5 h-5 text-[#10b981]" />
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
                     ) : (
-                      <XCircle className="w-5 h-5 text-[#ef4444]" />
+                      <XCircle className="w-5 h-5 text-red-500" />
                     )}
                   </div>
                   <div className="space-y-0.5 md:space-y-1">
-                    <p className="text-[11px] md:text-sm font-semibold text-[#020817]">
+                    <p className="text-[11px] md:text-sm font-semibold text-foreground">
                       {selectedRecord.topic}
                     </p>
                     <p className="text-[10px] md:text-xs text-muted-foreground">
@@ -258,7 +257,7 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
         </div>
 
         {/* Right column (calendar) */}
-        <Card className="rounded-2xl md:rounded-3xl shadow-sm border-[#e5e7eb]">
+        <Card className="rounded-2xl md:rounded-3xl shadow-sm border-border bg-card">
           <CardContent className="p-3 md:p-6">
             {/* Month header + legend */}
             <div className="flex flex-col gap-2 md:gap-3 md:flex-row md:items-center md:justify-between mb-3 md:mb-5">
@@ -266,18 +265,18 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
                 <button
                   type="button"
                   onClick={() => handleMonthChange(-1)}
-                  className="w-7 h-7 rounded-full border border-[#e5e7eb] flex items-center justify-center text-xs text-muted-foreground hover:bg-[#f4f4f5]"
+                  className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-xs text-muted-foreground hover:bg-muted"
                   aria-label="Previous month"
                 >
                   ‹
                 </button>
-                <span className="text-xs md:text-base font-semibold text-[#020817]">
+                <span className="text-xs md:text-base font-semibold text-foreground">
                   {formatMonthYear(currentMonth)}
                 </span>
                 <button
                   type="button"
                   onClick={() => handleMonthChange(1)}
-                  className="w-7 h-7 rounded-full border border-[#e5e7eb] flex items-center justify-center text-xs text-muted-foreground hover:bg-[#f4f4f5]"
+                  className="w-7 h-7 rounded-full border border-border flex items-center justify-center text-xs text-muted-foreground hover:bg-muted"
                   aria-label="Next month"
                 >
                   ›
@@ -286,11 +285,11 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
 
               <div className="flex items-center gap-2 md:gap-4 text-[10px] md:text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#22c55e]" />
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
                   <span>Present</span>
                 </span>
                 <span className="inline-flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#f97373]" />
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
                   <span>Absent</span>
                 </span>
               </div>
@@ -320,18 +319,18 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
 
                 let bgClasses = "bg-transparent";
                 let borderClasses = "border-transparent";
-                let textClasses = "text-[#0f172a]";
+                let textClasses = "text-foreground";
 
                 if (status === "Present") {
-                  bgClasses = "bg-[#dcfce7]";
-                  textClasses = "text-[#166534]";
+                  bgClasses = "bg-green-100 dark:bg-green-900/40";
+                  textClasses = "text-green-700 dark:text-green-300";
                 } else if (status === "Absent") {
-                  bgClasses = "bg-[#fee2e2]";
-                  textClasses = "text-[#b91c1c]";
+                  bgClasses = "bg-red-100 dark:bg-red-900/40";
+                  textClasses = "text-red-700 dark:text-red-300";
                 }
 
                 if (isSelected) {
-                  borderClasses = "border-[#0ea5e9]";
+                  borderClasses = "border-sky-500";
                 }
 
                 return (
@@ -344,7 +343,7 @@ export default function AttendanceTab({ course }: AttendanceTabProps) {
                       bgClasses,
                       borderClasses,
                       textClasses,
-                      "hover:border-[#0ea5e9] hover:bg-sky-50"
+                      "hover:border-sky-500 hover:bg-sky-50 dark:hover:bg-sky-900/20"
                     )}
                   >
                     {day}
