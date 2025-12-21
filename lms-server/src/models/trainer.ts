@@ -10,6 +10,7 @@ export interface Trainer extends mongoose.Document {
   profilePicture: string;
   gender: string;
   googleRefreshToken?: string;
+  firstLogin: boolean;
 }
 
 const trainerSchema = new mongoose.Schema<Trainer>(
@@ -35,6 +36,7 @@ const trainerSchema = new mongoose.Schema<Trainer>(
     profilePicture: { type: String },
     gender: { type: String, enum: ["Male", "Female", "Other"], required: true },
     googleRefreshToken: { type: String, select: false },
+    firstLogin: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
