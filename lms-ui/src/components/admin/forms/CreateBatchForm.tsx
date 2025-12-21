@@ -30,8 +30,8 @@ import {
   CreateBatchFormValues,
   createBatchSchema,
 } from "@/Schemas/adminForms";
-import { createBatch } from "@/Services/Batch";
-import { getAllTrainers } from "@/Services/Trainer";
+import { createBatch } from "@/Apis/Batch";
+import { getAllTrainers } from "@/Apis/Trainer";
 import { useAuth } from "@/Context/AuthContext";
 
 interface CreateBatchFormProps {

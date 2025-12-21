@@ -15,10 +15,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { HashLoader } from "react-spinners";
 
 import AddBranchForm from "@/components/admin/AddBranchForm";
-import { getAllBranches, BranchResponse } from "@/Services/Branch";
-import { getAllBatches } from "@/Services/Batch";
-import { getAllTrainers } from "@/Services/Trainer";
-import { getAllStudents } from "@/Services/Student";
+import { getAllBranches, BranchResponse } from "@/Apis/Branch";
+import { getAllBatches } from "@/Apis/Batch";
+import { getAllTrainers } from "@/Apis/Trainer";
+import { getAllStudents } from "@/Apis/Student";
 import { useAuth } from "@/Context/AuthContext";
 import { toast } from "sonner";
 

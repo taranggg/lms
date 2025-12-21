@@ -27,8 +27,8 @@ import {
 } from "@/components/ui/dialog";
 import AddTrainerForm from "@/components/admin/forms/AddTrainerForm";
 import { useAuth } from "@/Context/AuthContext";
-import { getAllTrainers } from "@/Services/Trainer";
-import { getAllBranches } from "@/Services/Branch";
+import { getAllTrainers } from "@/Apis/Trainer";
+import { getAllBranches } from "@/Apis/Branch";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -178,7 +178,7 @@ export default function AdminTrainersPage() {
                         {trainer.name}
                     </h3>
                     <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md mt-1 inline-block">
-                        {trainer.domain || "Instructor"}
+                        {typeof trainer.domain === 'object' ? trainer.domain.name : trainer.domain || "Instructor"}
                     </span>
                     </div>
                 </div>

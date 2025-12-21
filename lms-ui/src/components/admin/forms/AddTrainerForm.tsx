@@ -25,7 +25,7 @@ import {
   AddTrainerFormValues,
   addTrainerSchema,
 } from "@/Schemas/adminForms";
-import { addTrainer } from "@/Services/Trainer";
+import { addTrainer } from "@/Apis/Trainer";
 import { useAuth } from "@/Context/AuthContext";
 
 interface AddTrainerFormProps {

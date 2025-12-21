@@ -29,9 +29,9 @@ import {
 } from "@/components/ui/dialog";
 import CreateBatchForm from "@/components/admin/forms/CreateBatchForm";
 import { useAuth } from "@/Context/AuthContext";
-import { getAllBatches } from "@/Services/Batch";
-import { getAllBranches } from "@/Services/Branch";
-import { getAllTrainers } from "@/Services/Trainer";
+import { getAllBatches } from "@/Apis/Batch";
+import { getAllBranches } from "@/Apis/Branch";
+import { getAllTrainers } from "@/Apis/Trainer";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 

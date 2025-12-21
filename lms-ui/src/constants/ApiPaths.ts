@@ -60,4 +60,11 @@ export const ApiPaths = {
     UPDATE: "/api/v1/material/updateMaterial",
     DELETE: "/api/v1/material/deleteMaterial",
   },
+  DOMAIN: {
+    CREATE: "/api/v1/domain/createDomain",
+    GET_ALL: "/api/v1/domain/getAllDomains",
+    GET_BY_ID: "/api/v1/domain/getDomainById",
+    UPDATE: "/api/v1/domain/updateDomain",
+    DELETE: "/api/v1/domain/deleteDomain",
+  },
 };

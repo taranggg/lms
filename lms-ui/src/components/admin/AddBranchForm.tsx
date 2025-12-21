@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { addBranch, BranchData } from "@/Services/Branch";
+import { addBranch, BranchData } from "@/Apis/Branch";
 import { useAuth } from "@/Context/AuthContext";
 
 const branchSchema = z.object({

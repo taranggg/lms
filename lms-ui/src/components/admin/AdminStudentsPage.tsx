@@ -27,9 +27,9 @@ import {
 } from "@/components/ui/dialog";
 import AddStudentForm from "@/components/admin/forms/AddStudentForm";
 import { useAuth } from "@/Context/AuthContext";
-import { getAllStudents } from "@/Services/Student";
-import { getAllBranches } from "@/Services/Branch";
-import { getAllBatches } from "@/Services/Batch";
+import { getAllStudents } from "@/Apis/Student";
+import { getAllBranches } from "@/Apis/Branch";
+import { getAllBatches } from "@/Apis/Batch";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
