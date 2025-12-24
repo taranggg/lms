@@ -6,6 +6,8 @@ import {
   updateBatch,
   deleteBatch,
   assignBatchToStudent,
+  createBatchMeetLink,
+  getBatchRecordings,
 } from "../controllers/batch.js";
 import { admintrainerAuthenticator } from "../middlewares/admintrainerAuthenticator.js";
 
@@ -20,6 +22,18 @@ batchRouter.post(
   "/assignBatchToStudent",
   admintrainerAuthenticator,
   assignBatchToStudent
+);
+
+batchRouter.post(
+  "/createBatchMeetLink",
+  admintrainerAuthenticator,
+  createBatchMeetLink
+);
+
+batchRouter.get(
+  "/getBatchRecordings/:batchId",
+  admintrainerAuthenticator,
+  getBatchRecordings
 );
 
 export default batchRouter;
