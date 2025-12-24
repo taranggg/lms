@@ -4,10 +4,12 @@
 /lms-ui/.env
 /lms-ui/package-lock.json
 /lms-ui/.next
+/lms-ui/pnpm-lock.yaml
 
 /lms-server/node_modules
 /lms-server/dist
 /lms-server/package-lock.json
+/lms-server/pnpm-lock.yaml
 /lms-server/src/config/config.env
 /lms-server/assets
 .env

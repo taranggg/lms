@@ -7,76 +7,8 @@ import { v4 as uuidv4 } from "uuid";
 
 export const createBatch = async (req: Request, res: Response) => {
   try {
-    const {
-      title,
-      branch,
-      trainer,
-      startDate,
-      startTime,
-      endTime,
-      status,
-      currentTopic,
-      type,
-    } = req.body;
-
-    const trainerData = await TrainerModel.findById(trainer).select(
-      "+googleRefreshToken"
-    );
-
-    let googleMeetLink = "";
-
-    if (trainerData?.googleRefreshToken) {
-      const oauth2Client = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        process.env.GOOGLE_REDIRECT_URI
-      );
-
-      oauth2Client.setCredentials({
-        refresh_token: trainerData.googleRefreshToken,
-      });
-
-      const calendar = google.calendar({ version: "v3", auth: oauth2Client });
-
-      const eventStartTime = new Date(`${startDate}T${startTime}:00`);
-      const eventEndTime = new Date(`${startDate}T${endTime}:00`);
-
-      const event = {
-        summary: title,
-        description: `Batch: ${title}`,
-        start: {
-          dateTime: eventStartTime.toISOString(),
-          timeZone: "Asia/Kolkata",
-        },
-        end: {
-          dateTime: eventEndTime.toISOString(),
-          timeZone: "Asia/Kolkata",
-        },
-        conferenceData: {
-          createRequest: {
-            requestId: uuidv4(),
-            conferenceSolutionKey: { type: "hangoutsMeet" },
-          },
-        },
-      };
-
-      try {
-        const response = await calendar.events.insert({
-          calendarId: "primary",
-          requestBody: event,
-          conferenceDataVersion: 1,
-        });
-
-        googleMeetLink = response.data.hangoutLink || "";
-      } catch (calendarError) {
-        console.error("Error creating Google Meet link:", calendarError);
-        // Continue without link if fails, or handle as needed
-      }
-    }
-
     const batch = await BatchModel.create({
       ...req.body,
-      googleMeetLink,
     });
     res.status(201).json(batch);
   } catch (error) {
@@ -180,3 +112,149 @@ export const assignBatchToStudent = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed To Assign Batch To Student" });
   }
 };
+
+export async function createBatchMeetLink(req: Request, res: Response) {
+  try {
+    const { batchId, trainerId } = req.body;
+    const batchData = await BatchModel.findById(batchId);
+
+    if (!batchData) {
+      return res.status(404).json("Batch not found!");
+    }
+
+    const trainerData = await TrainerModel.findById(trainerId).select(
+      "+googleRefreshToken"
+    );
+
+    let googleMeetLink = "";
+
+    if (trainerData?.googleRefreshToken) {
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        process.env.GOOGLE_REDIRECT_URI
+      );
+
+      oauth2Client.setCredentials({
+        refresh_token: trainerData.googleRefreshToken,
+      });
+
+      const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+
+      const eventStartTime = new Date(
+        `${batchData.startDate}T${batchData.startTime}:00`
+      );
+      // Create a 1-hour event (or calculate based on endTime)
+      const eventEndTime = new Date(eventStartTime.getTime() + 60 * 60 * 1000);
+
+      // Construct RRULE for recurrence
+      // User Requirement: Batch endDate is only for records. Real batches may extend due to holidays/leaves.
+      // Solution: Set recurrence to a safe buffer (e.g., 6 months) from start date.
+      let recurrence: string[] = [];
+      const safeUntilDate = new Date(eventStartTime);
+      safeUntilDate.setMonth(safeUntilDate.getMonth() + 6);
+
+      // Format for RRULE: YYYYMMDDTHHMMSSZ (UTC)
+      const untilDate =
+        safeUntilDate.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+      if (batchData.type === "Weekdays") {
+        recurrence = [`RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH;UNTIL=${untilDate}`];
+      } else if (batchData.type === "Weekends") {
+        recurrence = [`RRULE:FREQ=WEEKLY;BYDAY=SA,SU;UNTIL=${untilDate}`];
+      }
+
+      const event = {
+        summary: batchData.title,
+        description: `Batch: ${batchData.title}`,
+        start: {
+          dateTime: eventStartTime.toISOString(),
+          timeZone: "Asia/Kolkata",
+        },
+        end: {
+          dateTime: eventEndTime.toISOString(),
+          timeZone: "Asia/Kolkata",
+        },
+        recurrence: recurrence,
+        conferenceData: {
+          createRequest: {
+            requestId: uuidv4(),
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
+        },
+      };
+
+      try {
+        const response = await calendar.events.insert({
+          calendarId: "primary",
+          requestBody: event,
+          conferenceDataVersion: 1,
+        });
+
+        googleMeetLink = response.data.hangoutLink || "";
+      } catch (calendarError) {
+        console.error("Error creating Google Meet link:", calendarError);
+        // Continue without link if fails, or handle as needed
+      }
+    }
+
+    await BatchModel.findByIdAndUpdate(batchId, {
+      googleMeetLink,
+    });
+    // ... (existing code)
+    res.status(201).json("Batch meet link created!");
+  } catch (error) {
+    res
+      .status(500)
+      .json("Batch meet link creation has failed! Please Try Again!");
+  }
+}
+
+export async function getBatchRecordings(req: Request, res: Response) {
+  try {
+    const { batchId } = req.params;
+    const batch = await BatchModel.findById(batchId);
+    if (!batch) {
+      return res.status(404).json({ message: "Batch not found" });
+    }
+
+    const trainer = await TrainerModel.findById(batch.trainer).select(
+      "+googleRefreshToken"
+    );
+    if (!trainer || !trainer.googleRefreshToken) {
+      return res
+        .status(401)
+        .json({ message: "Trainer not connected to Google" });
+    }
+
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URI
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token: trainer.googleRefreshToken,
+    });
+
+    const drive = google.drive({ version: "v3", auth: oauth2Client });
+
+    // Search for video files that contain the batch title in their name
+    // Adjust the query as needed. 'video/mp4' covers most Meet recordings.
+    // We also treat 'video/webm' just in case.
+    const query = `name contains '${batch.title}' and (mimeType = 'video/mp4' or mimeType = 'video/webm') and trashed = false`;
+
+    const response = await drive.files.list({
+      q: query,
+      fields:
+        "files(id, name, webViewLink, webContentLink, createdTime, thumbnailLink)",
+      orderBy: "createdTime desc",
+      pageSize: 20, // Limit to recent 20
+    });
+
+    res.status(200).json({ recordings: response.data.files });
+  } catch (error) {
+    console.error("Error fetching recordings:", error);
+    res.status(500).json({ message: "Failed to fetch recordings" });
+  }
+}

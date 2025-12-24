@@ -60,7 +60,13 @@ export async function trainerGoogleLogin(req: Request, res: Response) {
           expiresIn: "9h",
         }
       );
-      return res.status(200).json({ token: jwtToken });
+      const trainer = await TrainerModel.findOne({ email: isEmailExist._id });
+
+      return res.status(200).json({
+        token: jwtToken,
+        firstLogin: trainer?.firstLogin,
+        trainerId: trainer?._id,
+      });
     } else {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -85,6 +91,7 @@ export async function connectGoogle(req: Request, res: Response) {
     if (tokens.refresh_token) {
       await TrainerModel.findByIdAndUpdate(trainerId, {
         googleRefreshToken: tokens.refresh_token,
+        firstLogin: false,
       });
       res
         .status(200)
