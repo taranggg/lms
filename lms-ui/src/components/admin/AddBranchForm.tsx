@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { addBranch, BranchData } from "@/Services/Branch";
+import { addBranch, BranchData } from "@/Apis/Branch";
 import { useAuth } from "@/Context/AuthContext";
 
 const branchSchema = z.object({
@@ -66,7 +66,7 @@ export default function AddBranchForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-background/90 backdrop-blur-xl border border-border">
+      <DialogContent className="sm:max-w-md bg-background/90 backdrop-blur-xl border border-border" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Add New Branch</DialogTitle>
         </DialogHeader>

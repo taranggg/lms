@@ -16,7 +16,7 @@ const AdminLoginContent = () => {
 
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse: TokenResponse) => {
-            setIsLoading(true);
+            // isLoading is already true from the button click
             try {
                  // Note: tokenResponse returns 'access_token'. 
                  // If AdminGoogleLogin expects 'credential' (ID Token), we might need 'flow: "auth-code"' or adjust backend.
@@ -61,7 +61,7 @@ const AdminLoginContent = () => {
                  dispatch({ type: "SIGN_IN", payload: res.token });
                  toast.success("Welcome back! Login Successful");
                  router.push("/admin");
-            } catch (err: any) {
+             } catch (err: any) {
                 console.error(err);
                 toast.error(err.response?.statusText || "Login failed");
                 setIsLoading(false);
@@ -70,6 +70,10 @@ const AdminLoginContent = () => {
         onError: () => {
              toast.error("Google Login Failed");
              setIsLoading(false);
+        },
+        onNonOAuthError: () => {
+            // Handles cases like popup closed by user
+            setIsLoading(false);
         }
     });
 
@@ -112,7 +116,13 @@ const AdminLoginContent = () => {
 
                 {/* Login Button Area */}
                 <div className="w-full flex justify-center pb-2">
-                     <SlideToLogin onSuccess={() => login()} isLoading={isLoading} />
+                     <SlideToLogin 
+                        onSuccess={() => {
+                            setIsLoading(true);
+                            login();
+                        }} 
+                        isLoading={isLoading} 
+                     />
                 </div>
 
                 {/* Footer */}

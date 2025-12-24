@@ -1,43 +1,35 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TodoList, { TodoMainTask } from "@/components/dashboard/TodoList";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
-import { Users, BookOpen, GraduationCap, Building2, MapPin, Plus, Search, Bell, Moon } from "lucide-react";
+import { Users, BookOpen, GraduationCap, Building2, MapPin, Plus, Search, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdminRecentActivity from "@/components/admin/AdminRecentActivity";
+import { Skeleton } from "@/components/ui/skeleton";
+import { HashLoader } from "react-spinners";
 
 import AddBranchForm from "@/components/admin/AddBranchForm";
+import { getAllBranches, BranchResponse } from "@/Apis/Branch";
+import { getAllBatches } from "@/Apis/Batch";
+import { getAllTrainers } from "@/Apis/Trainer";
+import { getAllStudents } from "@/Apis/Student";
+import { useAuth } from "@/Context/AuthContext";
+import { toast } from "sonner";
 
-// Mock Data for Branches
-const BRANCHES = [
-  {
-    id: "1",
-    name: "Main Branch",
-    address: "123 Tech Park, Silicon Valley, CA",
-    stats: {
-      students: 1240,
-      batches: 24,
-      trainers: 18,
-    },
-  },
-  {
-    id: "2",
-    name: "Downtown Branch",
-    address: "456 Innovation Ave, New York, NY",
-    stats: {
-      students: 850,
-      batches: 15,
-      trainers: 12,
-    },
-  },
-];
+// Type definitions for internal state
+interface DashboardBranch extends BranchResponse {
+  stats: {
+    students: number;
+    batches: number;
+    trainers: number;
+  };
+}
 
 const MOCK_TODO_LIST: TodoMainTask[] = [
   {
@@ -67,8 +59,88 @@ const MOCK_TODO_LIST: TodoMainTask[] = [
 const ALL_BRANCH_ID = "all";
 
 export default function AdminDashboardComponent() {
-  const [selectedBranchId, setSelectedBranchId] = useState(BRANCHES[0].id);
+  const { token } = useAuth();
+  const [selectedBranchId, setSelectedBranchId] = useState(ALL_BRANCH_ID);
   const [isAddBranchOpen, setIsAddBranchOpen] = useState(false);
+  
+  const [branches, setBranches] = useState<DashboardBranch[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch all data
+  const fetchData = async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      // 1. Fetch raw data in parallel using Promise.allSettled to prevent one failure from blocking others
+      const results = await Promise.allSettled([
+        getAllBranches(token),
+        getAllBatches(token),
+        getAllTrainers(token),
+        getAllStudents(token)
+      ]);
+
+      const branchesData = results[0].status === 'fulfilled' ? results[0].value : [];
+      const batchesData = results[1].status === 'fulfilled' ? results[1].value : [];
+      const trainersData = results[2].status === 'fulfilled' ? results[2].value : [];
+      const studentsData = results[3].status === 'fulfilled' ? results[3].value : [];
+
+      if (results[0].status === 'rejected') {
+          console.error("Failed to fetch branches:", results[0].reason);
+          toast.error("Failed to fetch branches");
+      }
+
+      // Handle potential data wrapping (e.g. response.data.data) if API serves it that way
+      // But assuming services return the data array or object directly as response.data
+      
+      const safeBranches = Array.isArray(branchesData) ? branchesData : (branchesData?.data || []);
+      const safeBatches = Array.isArray(batchesData) ? batchesData : (batchesData?.data || []);
+      const safeTrainers = Array.isArray(trainersData) ? trainersData : (trainersData?.data || []);
+      const safeStudents = Array.isArray(studentsData) ? studentsData : (studentsData?.data || []);
+
+      const processedBranches = safeBranches.map((branch: BranchResponse) => {
+        const branchId = branch._id;
+
+        const studentCount = safeStudents.filter((s: any) => 
+            (typeof s.branch === 'string' ? s.branch === branchId : s.branch?._id === branchId)
+        ).length;
+
+        const batchCount = safeBatches.filter((b: any) => 
+            (typeof b.branch === 'string' ? b.branch === branchId : b.branch?._id === branchId)
+        ).length;
+
+        const trainerCount = safeTrainers.filter((t: any) => 
+            (typeof t.branch === 'string' ? t.branch === branchId : t.branch?._id === branchId)
+        ).length;
+
+        return {
+          ...branch,
+          stats: {
+            students: studentCount,
+            batches: batchCount,
+            trainers: trainerCount
+          }
+        };
+      });
+
+      setBranches(processedBranches);
+      
+      // If no branch is selected (or all), keep it as ALL_BRANCH_ID. 
+      // If previously selected branch doesn't exist anymore, reset to ALL.
+      if (selectedBranchId !== ALL_BRANCH_ID && !processedBranches.find((b: DashboardBranch) => b._id === selectedBranchId)) {
+          setSelectedBranchId(ALL_BRANCH_ID);
+      }
+
+    } catch (error) {
+      console.error("Failed to fetch dashboard data", error);
+      toast.error("Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [token]);
 
   // Logic to handle "All Branches" or specific branch
   const isAllSelected = selectedBranchId === ALL_BRANCH_ID;
@@ -78,7 +150,7 @@ export default function AdminDashboardComponent() {
       return {
         name: "All Branches",
         address: "Global Overview",
-        stats: BRANCHES.reduce(
+        stats: branches.reduce(
           (acc, curr) => ({
             students: acc.students + curr.stats.students,
             batches: acc.batches + curr.stats.batches,
@@ -89,13 +161,22 @@ export default function AdminDashboardComponent() {
       };
     }
     return (
-      BRANCHES.find((b) => b.id === selectedBranchId) || {
-        ...BRANCHES[0],
+      branches.find((b) => b._id === selectedBranchId) || {
         name: "Unknown",
         address: "",
+        stats: { students: 0, batches: 0, trainers: 0 },
       }
     );
-  }, [selectedBranchId, isAllSelected]);
+  }, [selectedBranchId, isAllSelected, branches]);
+
+  // Initial Loading State (Auth Check) works best with a Spinner
+  if (!token) {
+      return (
+          <div className="flex h-full w-full items-center justify-center">
+             <HashLoader color="#6366F1" size={40} />
+          </div>
+      );
+  }
 
   return (
     <div className="flex gap-8 h-full relative p-2">
@@ -113,12 +194,16 @@ export default function AdminDashboardComponent() {
           <div>
             <div className="flex items-center gap-3">
                <h1 className="text-3xl font-bold text-foreground tracking-tight">
-                 {currentData.name}
+                 {loading ? <Skeleton className="h-10 w-48" /> : currentData.name}
                </h1>
                {/* Branch Select Dropdown */}
+               {loading ? (
+                   <Skeleton className="h-10 w-10 rounded-full" />
+               ) : (
                 <Select
                     value={selectedBranchId}
                     onValueChange={setSelectedBranchId}
+                    disabled={loading}
                 >
                     <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0 group">
                       <div className="flex items-center gap-2">
@@ -129,17 +214,20 @@ export default function AdminDashboardComponent() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value={ALL_BRANCH_ID}>All Branches</SelectItem>
-                      {BRANCHES.map((b) => (
-                        <SelectItem key={b.id} value={b.id}>
+                      {branches.map((b) => (
+                        <SelectItem key={b._id} value={b._id}>
                           {b.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                 </Select>
+               )}
             </div>
             <div className="flex items-center gap-2 text-muted-foreground mt-1">
                <MapPin size={14} />
-               <p className="text-sm">{currentData.address}</p>
+               <div className="text-sm">
+                   {loading ? <Skeleton className="h-4 w-32" /> : (currentData.address || " ")}
+               </div>
             </div>
           </div>
           
@@ -149,6 +237,7 @@ export default function AdminDashboardComponent() {
                <Input 
                  placeholder="Search..." 
                  className="pl-9 bg-white/50 dark:bg-black/50 border-white/20 backdrop-blur-sm w-full md:w-64 rounded-full"
+                 disabled={loading}
                />
             </div>
             <Button variant="ghost" size="icon" className="rounded-full">
@@ -157,6 +246,7 @@ export default function AdminDashboardComponent() {
              <Button 
                 className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-10 px-4 shadow-lg shadow-primary/20"
                 onClick={() => setIsAddBranchOpen(true)}
+                disabled={loading}
             >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Branch
@@ -180,9 +270,15 @@ export default function AdminDashboardComponent() {
                 </span>
              </div>
              <div>
-                <h3 className="text-4xl font-extrabold text-foreground mb-1">
-                  {currentData.stats.students.toLocaleString()}
-                </h3>
+                <div className="mb-1">
+                    {loading ? (
+                        <Skeleton className="h-10 w-24" />
+                    ) : (
+                        <h3 className="text-4xl font-extrabold text-foreground">
+                            {(currentData.stats?.students || 0).toLocaleString()}
+                        </h3>
+                    )}
+                </div>
                 <p className="text-sm text-muted-foreground font-medium">Total Students</p>
              </div>
           </div>
@@ -201,9 +297,15 @@ export default function AdminDashboardComponent() {
                 </span>
              </div>
              <div>
-                <h3 className="text-4xl font-extrabold text-foreground mb-1">
-                  {currentData.stats.batches.toLocaleString()}
-                </h3>
+                <div className="mb-1">
+                    {loading ? (
+                        <Skeleton className="h-10 w-24" />
+                    ) : (
+                        <h3 className="text-4xl font-extrabold text-foreground">
+                            {(currentData.stats?.batches || 0).toLocaleString()}
+                        </h3>
+                    )}
+                </div>
                 <p className="text-sm text-muted-foreground font-medium">Total Batches</p>
              </div>
           </div>
@@ -222,9 +324,15 @@ export default function AdminDashboardComponent() {
                 </span>
              </div>
              <div>
-                <h3 className="text-4xl font-extrabold text-foreground mb-1">
-                  {currentData.stats.trainers.toLocaleString()}
-                </h3>
+                 <div className="mb-1">
+                    {loading ? (
+                        <Skeleton className="h-10 w-24" />
+                    ) : (
+                        <h3 className="text-4xl font-extrabold text-foreground">
+                            {(currentData.stats?.trainers || 0).toLocaleString()}
+                        </h3>
+                    )}
+                </div>
                 <p className="text-sm text-muted-foreground font-medium">Active Trainers</p>
              </div>
           </div>
@@ -247,8 +355,8 @@ export default function AdminDashboardComponent() {
                    detail: "React Basics batch concluded successfully.",
                  },
                  {
-                    type: "System Maintenance",
-                    detail: "Scheduled maintenance for server upgrade.",
+                   type: "System Maintenance",
+                   detail: "Scheduled maintenance for server upgrade.",
                  },
                ]}
              />
@@ -266,8 +374,7 @@ export default function AdminDashboardComponent() {
         open={isAddBranchOpen} 
         onOpenChange={setIsAddBranchOpen}
         onSuccess={() => {
-          // TODO: Refresh branch list
-          console.log("Branch added successfully");
+            fetchData();
         }}
       />
     </div>

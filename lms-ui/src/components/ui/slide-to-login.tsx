@@ -21,6 +21,14 @@ export function SlideToLogin({ onSuccess, isLoading = false, text = "Slide to si
   const minDrag = 0;
   // We'll calculate maxDrag dynamically
 
+  useEffect(() => {
+    if (!isLoading) {
+      setComplete(false);
+      setDragWidth(0);
+      setIsDragging(false);
+    }
+  }, [isLoading]);
+
   const handleDragStart = (e: React.PointerEvent) => {
     if (complete || isLoading) return;
     setIsDragging(true);

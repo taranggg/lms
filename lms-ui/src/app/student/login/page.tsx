@@ -13,7 +13,6 @@ export default function StudentLogin() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [resetKey, setResetKey] = useState(0);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -25,8 +24,8 @@ export default function StudentLogin() {
       
       if (trimmedId === "" || password.trim() === "") {
         toast.error("Please enter both Student ID and Password");
+        toast.error("Please enter both Student ID and Password");
         setLoading(false);
-        setResetKey(prev => prev + 1); // Reset slider
         return;
       }
 
@@ -39,8 +38,8 @@ export default function StudentLogin() {
       
       if (!validIds.includes(trimmedId)) {
         toast.error("Invalid Student ID");
+        toast.error("Invalid Student ID");
         setLoading(false);
-        setResetKey(prev => prev + 1); // Reset slider
         return;
       }
 
@@ -131,7 +130,6 @@ export default function StudentLogin() {
 
                 <div className="flex justify-center pt-2">
                     <SlideToLogin 
-                        key={resetKey} 
                         onSuccess={handleLogin} 
                         isLoading={loading}
                         text="Slide to Login"
