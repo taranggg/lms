@@ -11,7 +11,7 @@
     "watch:serve": "nodemon dist/server.js",
     "copy-assets": "copyfiles -u 1 src/**/*.env dist",
     "watch:assets": "nodemon -e env -w src --exec \"npm run copy-assets\"",
-    "dev": "concurrently \"npm run watch:ts\" \"npm run watch:serve\" \"npm run watch:assets\"",
+    "dev": "nodemon --watch src --ext ts,json,env --exec \"node --loader ts-node/esm\" src/server.ts",
     "swagger": "node --loader ts-node/esm swagger.ts",
     "test": "jest"
   },
