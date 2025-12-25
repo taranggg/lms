@@ -122,6 +122,9 @@ importers:
       jwt-decode:
         specifier: ^4.0.0
         version: 4.0.0
+      jwt-decoder:
+        specifier: ^0.0.0
+        version: 0.0.0
       lucide-react:
         specifier: ^0.554.0
         version: 0.554.0(react@19.2.0)
@@ -2165,6 +2168,10 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
+  green-jwt@0.0.8-alpha:
+    resolution: {integrity: sha512-d6/AbWDaIOlRBgkN2Dc8SgozOMkKRr7676SEddn8CijGwmzcfDcZmSAn4gS+Kjm+xPsEE14XkYDCIl8ghSZu8w==}
+    engines: {node: '>=0.8'}
+
   has-bigints@1.1.0:
     resolution: {integrity: sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg==}
     engines: {node: '>= 0.4'}
@@ -2388,6 +2395,10 @@ packages:
   jwt-decode@4.0.0:
     resolution: {integrity: sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==}
     engines: {node: '>=18'}
+
+  jwt-decoder@0.0.0:
+    resolution: {integrity: sha512-LP6MurVH5ZzynAMEAx7tmvXBWyWSq8TK9NAbfzpqcBfn2bW3FIs8HpxcUwKpbmrPIlRVOXjYa7yI2mDvx/uY9A==}
+    hasBin: true
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -5243,6 +5254,8 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
+  green-jwt@0.0.8-alpha: {}
+
   has-bigints@1.1.0: {}
 
   has-flag@4.0.0: {}
@@ -5454,6 +5467,10 @@ snapshots:
       object.values: 1.2.1
 
   jwt-decode@4.0.0: {}
+
+  jwt-decoder@0.0.0:
+    dependencies:
+      green-jwt: 0.0.8-alpha
 
   keyv@4.5.4:
     dependencies:

@@ -1,12 +1,11 @@
 "use client";
 import React from "react";
-import { useParams } from "next/navigation";
 import TrainerDashboardComponent, {
   type HourSpent,
 } from "@/components/trainer/TrainerDashboard";
 import { trainers } from "@/mock/trainer/trainers_courses";
 import { type TodoMainTask } from "@/components/dashboard/TodoList";
-import { type CourseCard } from "@/components/dashboard/CourseCards";
+import { useAuth } from "@/Context/AuthContext";
 
 // Mock data for missing props
 const mockHoursSpent: HourSpent[] = [
@@ -38,10 +37,24 @@ const mockTodoList: TodoMainTask[] = [
 ];
 
 export default function TrainerDashboard() {
-  const { trainerId } = useParams();
-  const trainer = trainers.find(
+  const { user } = useAuth();
+  
+  // Wait for user to be loaded
+  if (!user) {
+      return null; // Or a loading spinner
+  }
+
+  const trainerId = user.id;
+
+  let trainer = trainers.find(
     (t) => String(t.id) === String(trainerId)
   );
+
+  // Fallback to first mock trainer if not found (for development/hybrid mode)
+  if (!trainer) {
+    console.warn(`Trainer with ID ${trainerId} not found in mock data. Using fallback.`);
+    trainer = trainers[0];
+  }
 
   if (!trainer) {
     return <div className="p-8 text-center">Trainer not found.</div>;

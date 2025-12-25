@@ -1,11 +1,17 @@
 "use client";
 
 import React, { createContext, useReducer } from "react";
+import { jwtDecode } from "jwt-decode";
 
-
+interface User {
+  id: string;
+  role: string;
+  // add other fields if present in your token
+}
 
 export interface AuthContextType {
   token: string | null;
+  user: User | null;
   dispatch: React.Dispatch<Action>;
 }
 
@@ -18,16 +24,28 @@ export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
 
-function reducer(state: string | null, action: Action) {
-  
+interface LocalState {
+    token: string | null;
+    user: User | null;
+}
 
+function reducer(state: LocalState, action: Action): LocalState {
   switch (action.type) {
     case "SIGN_IN":
-      localStorage.setItem("accessToken", action.payload || "");
-      return action.payload;
+      if (action.payload) {
+        localStorage.setItem("accessToken", action.payload);
+        try {
+            const decoded = jwtDecode<User>(action.payload);
+            return { token: action.payload, user: decoded };
+        } catch (e) {
+            console.error("Invalid token", e);
+             return { token: action.payload, user: null };
+        }
+      }
+      return state;
     case "SIGN_OUT":
       localStorage.removeItem("accessToken");
-      return null;
+      return { token: null, user: null };
     default:
       return state;
   }
@@ -38,7 +56,7 @@ export const AuthContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [state, dispatch] = useReducer(reducer, null);
+  const [state, dispatch] = useReducer(reducer, { token: null, user: null });
 
   React.useEffect(() => {
     // Check localStorage on client mount to handle hydration correctly.
@@ -51,7 +69,7 @@ export const AuthContextProvider = ({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ token: state, dispatch }}>
+    <AuthContext.Provider value={{ token: state.token, user: state.user, dispatch }}>
       {children}
     </AuthContext.Provider>
   );
