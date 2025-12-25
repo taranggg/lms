@@ -141,8 +141,11 @@ export async function createBatchMeetLink(req: Request, res: Response) {
 
       const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
+      const startDateStr = new Date(batchData.startDate)
+        .toISOString()
+        .split("T")[0];
       const eventStartTime = new Date(
-        `${batchData.startDate}T${batchData.startTime}:00`
+        `${startDateStr}T${batchData.startTime}:00`
       );
       // Create a 1-hour event (or calculate based on endTime)
       const eventEndTime = new Date(eventStartTime.getTime() + 60 * 60 * 1000);
@@ -204,6 +207,7 @@ export async function createBatchMeetLink(req: Request, res: Response) {
     // ... (existing code)
     res.status(201).json("Batch meet link created!");
   } catch (error) {
+    console.error("Error creating batch meet link:", error);
     res
       .status(500)
       .json("Batch meet link creation has failed! Please Try Again!");
