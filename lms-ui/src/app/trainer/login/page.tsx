@@ -34,7 +34,7 @@ const TrainerLoginContent = () => {
           setShowGoogleModal(true);
           // Do not redirect yet
         } else {
-          router.push("/trainer/dashboard");
+          router.push(`/trainer/${res.trainerId}`);
         }
       } catch (err: any) {
         console.error(err);
@@ -100,7 +100,7 @@ const TrainerLoginContent = () => {
       <ConnectGoogleModal
         isOpen={showGoogleModal}
         trainerId={currentTrainerId}
-        onSuccess={() => router.push("/trainer/dashboard")}
+        onSuccess={() => router.push(`/trainer/${currentTrainerId}`)}
       />
     </div>
   );
