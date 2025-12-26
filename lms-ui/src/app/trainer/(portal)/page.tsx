@@ -83,18 +83,12 @@ export default function TrainerDashboardPage() {
   if (!trainerData) return null;
 
   const courses = trainerData.courses || [];
-  const batches = courses.map((c: any) => ({
-    id: c.id || c._id,
-    name: c.name || "Untitled Course",
-    code: c.code || "C-XXX",
-    schedule: c.schedule || "TBD",
-    students: c.studentsCount || 0,
-    active: true,
-    color: "#e0f2fe", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", 
-    instructor: trainerData.name,
-    branch: trainerData.branch?.name || "Online", 
-  }));
+
+  
+  // Note: batches data logic is now handled inside components (TrainerBatchesWithAttendance -> BatchList)
+  // We check courses length just for empty state logic if needed, OR we can let the components handle their empty states.
+  // But since the current design has a high-level empty check, let's keep it based on trainerData for now.
+  const hasBatches = courses.length > 0;
 
   const mobileNavItems: MobileNavItem[] = [
      { label: "Overview", icon: <Home className="w-5 h-5"/>, active: true, onClick: () => router.push("/trainer") },
@@ -122,11 +116,11 @@ export default function TrainerDashboardPage() {
 
           <div className="flex-1 overflow-y-auto px-4 md:px-6 xl:px-10 pb-20 md:pb-10 custom-scrollbar pt-2">
               <div className="max-w-[1200px] w-full mx-auto flex flex-col gap-8">
-                  {batches.length > 0 ? (
+                  {hasBatches ? (
                       <>
                         <UpcomingClassesList />
                         <ResourceUpdateList />
-                        <TrainerBatchesWithAttendance batches={batches} trainerId={trainerData._id} />
+                        <TrainerBatchesWithAttendance trainerId={trainerData._id} />
                       </>
                   ) : (
                       <div className="flex flex-col items-center justify-center min-h-[50vh]">

@@ -1,17 +1,20 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import TrainerBatchList, { type Batch } from "./TrainerBatchList";
+import BatchList from "@/components/batches/BatchList";
 import AttendanceReportWidget from "./AttendanceReportWidget";
+import { useAuth } from "@/Context/AuthContext";
 
 interface TrainerBatchesWithAttendanceProps {
-  batches: Batch[];
   trainerId: string;
 }
 
 export default function TrainerBatchesWithAttendance({
-  batches,
   trainerId,
 }: TrainerBatchesWithAttendanceProps) {
+  const { token } = useAuth();
+  
+  if (!token) return null;
+
   return (
     <div className="w-full mt-6 pb-10">
       <div className="flex flex-col gap-8">
@@ -22,8 +25,13 @@ export default function TrainerBatchesWithAttendance({
                     <CardTitle className="text-lg font-semibold text-slate-800">My Batches</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                   <div className="max-h-[600px] overflow-y-auto custom-scrollbar p-6">
-                      <TrainerBatchList batches={batches} trainerId={trainerId} />
+                   <div className="max-h-[800px] overflow-y-auto custom-scrollbar p-6">
+                      <BatchList 
+                        mode="trainer"
+                        token={token} 
+                        userId={trainerId}
+                        compact={true}
+                      />
                    </div>
                 </CardContent>
              </Card>
