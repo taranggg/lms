@@ -34,6 +34,9 @@ export function TrainerProfileDialog({
 }: TrainerProfileDialogProps) {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+  const { dispatch } = useAuth();
+  const router = useRouter();
+
   const handleLogout = () => {
     dispatch({ type: "SIGN_OUT", payload: null });
     router.push("/trainer/login");
