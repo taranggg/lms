@@ -19,6 +19,7 @@ import MobileBottomNav, { type MobileNavItem } from "@/components/dashboard/Mobi
 import TrainerBatchesPage from "./TrainerBatchesPage";
 import { EmptyStateModal } from "./TrainerEmptyState";
 import { Button } from "@/components/ui/button";
+import { NoData } from "@/components/ui/no-data";
 
 interface TrainerDashboardProps {
   trainer: {
@@ -54,14 +55,23 @@ function MobileOverview({
             </div>
 
             <div className="px-4 flex flex-col gap-6">
-                {/* 1. Upcoming Classes */}
-                <UpcomingClassesList />
+                {batches.length > 0 ? (
+                    <>
+                        {/* 1. Upcoming Classes */}
+                        <UpcomingClassesList />
 
-                {/* 2. Resource Updates */}
-                <ResourceUpdateList />
+                        {/* 2. Resource Updates */}
+                        <ResourceUpdateList />
 
-                {/* 3. Batches List (Vertical per request) */}
-                <TrainerBatchesWithAttendance batches={batches} trainerId={trainerId} />
+                        {/* 3. Batches List (Vertical per request) */}
+                        <TrainerBatchesWithAttendance batches={batches} trainerId={trainerId} />
+                    </>
+                ) : (
+                     <NoData 
+                        message="No Dashboard Data" 
+                        description="You need to be assigned to a batch to see your overview."
+                     />
+                )}
 
                 {/* 4. Todo List */}
                 <div className="pb-4">
@@ -80,7 +90,7 @@ export default function TrainerDashboardComponent({
   trainerId,
   token,
 }: TrainerDashboardProps) {
-  const [activePage, setActivePage] = React.useState<"Overview" | "Batches" | "Resources" | "Schedule" | "Assignments" | "Reports" | "Settings">("Overview");
+  const [activePage, setActivePage] = React.useState<"Overview" | "Batches" | "Resources" | "Schedule" | "Assignments">("Overview");
   const [showEmptyStateModal, setShowEmptyStateModal] = React.useState(false);
   const [search, setSearch] = React.useState("");
 
@@ -121,18 +131,6 @@ export default function TrainerDashboardComponent({
       active: activePage === "Assignments",
       onClick: () => setActivePage("Assignments"),
     },
-    {
-       label: "Reports",
-       icon: <BarChart size={20} />,
-       active: activePage === "Reports",
-       onClick: () => setActivePage("Reports"),
-    },
-    {
-        label: "Settings",
-        icon: <Settings size={20} />,
-        active: activePage === "Settings",
-        onClick: () => setActivePage("Settings"),
-    }
   ];
 
   // Derive mobile nav items from sidebar items for DRY principle
@@ -141,7 +139,7 @@ export default function TrainerDashboardComponent({
     icon: React.cloneElement(item.icon as React.ReactElement<{ className?: string }>, {
       className: "w-5 h-5",
     }),
-    active: item.active || (item.label === "Settings" && activePage === "Settings") || (item.label === "Reports" && activePage === "Reports") || (item.label === "Assignments" && activePage === "Assignments") || (item.label === "Schedule" && activePage === "Schedule"), // Fallback logic if 'active' isn't set explicitly for placeholders
+    active: item.active || (item.label === "Assignments" && activePage === "Assignments") || (item.label === "Schedule" && activePage === "Schedule"), // Fallback logic if 'active' isn't set explicitly for placeholders
     onClick: item.onClick ? item.onClick : () => setActivePage(item.label as any),
   }));
 
@@ -179,34 +177,29 @@ export default function TrainerDashboardComponent({
 
                  {/* Scrollable Main Content */}
                  <div className="flex-1 overflow-y-auto px-4 md:px-6 xl:px-10 pb-10 custom-scrollbar pt-2">
-                    <div className="max-w-[1200px] w-full mx-auto flex flex-col gap-8">
+                    <div className="max-w-[1200px] w-full mx-auto flex flex-col gap-8 h-full">
                         {activePage === "Overview" && (
                           <>
-                            {/* 1. Upcoming Classes */}
-                            <UpcomingClassesList />
-
-                            {/* 2. Resource Updates */}
-                            <ResourceUpdateList />
-
-                            {/* 3. Batches & Attendance */}
                             {batches.length > 0 ? (
-                                <TrainerBatchesWithAttendance batches={batches} trainerId={trainerId} />
+                                <>
+                                    {/* 1. Upcoming Classes */}
+                                    <UpcomingClassesList />
+
+                                    {/* 2. Resource Updates */}
+                                    <ResourceUpdateList />
+
+                                    {/* 3. Batches & Attendance */}
+                                    <TrainerBatchesWithAttendance batches={batches} trainerId={trainerId} />
+                                </>
                             ) : (
-                                <div className="rounded-xl border border-dashed border-border p-10 flex flex-col items-center justify-center text-center space-y-4 bg-muted/20">
-                                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                                        <div className="opacity-50">
-                                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <h3 className="font-semibold text-lg">No Batches Assigned</h3>
-                                        <p className="text-muted-foreground text-sm max-w-[400px]">
-                                            You currently don't have any active batches. Your schedule and student lists will appear here once a batch is allocated.
-                                        </p>
-                                    </div>
-                                    <Button variant="outline" onClick={() => setShowEmptyStateModal(true)}>
-                                       Check Allocation Status
-                                    </Button>
+                                <div className="flex-1 flex flex-col items-center justify-center min-h-[50vh]">
+                                   <NoData 
+                                      message="No Active Batches" 
+                                      description="You haven't been assigned to any batches yet."
+                                   />
+                                   <Button variant="outline" className="mt-4" onClick={() => setShowEmptyStateModal(true)}>
+                                       Check Status
+                                   </Button>
                                 </div>
                             )}
 
@@ -219,11 +212,23 @@ export default function TrainerDashboardComponent({
                         )}
                         
                         {activePage === "Batches" && (
-                          <TrainerBatchesPage batches={batches} trainerId={trainerId} />
+                          batches.length > 0 ? (
+                              <TrainerBatchesPage batches={batches} trainerId={trainerId} />
+                          ) : (
+                              <NoData message="No Batches Found" description="Your assigned batches will appear here." />
+                          )
                         )}
                         
                         {activePage === "Resources" && (
-                          <div className="p-10 text-muted-foreground text-center">Resources Page Placeholder</div>
+                          <NoData message="No Resources" description="Resources shared with your batches will appear here." />
+                        )}
+
+                        {activePage === "Schedule" && (
+                           <NoData message="No Schedule" description="Your class schedule will appear here." />
+                        )}
+
+                        {activePage === "Assignments" && (
+                           <NoData message="No Assignments" description="Student assignments will likely appear here." />
                         )}
                     </div>
                  </div>
@@ -257,8 +262,12 @@ export default function TrainerDashboardComponent({
          {activePage === "Batches" && (
              <div className="flex-1 flex flex-col p-4 overflow-y-auto pb-20">
                 <Header name={trainer.name} onSearch={setSearch} />
-                <div className="mt-6">
-                    <TrainerBatchesPage batches={batches} trainerId={trainerId} />
+                <div className="mt-6 flex-1">
+                    {batches.length > 0 ? (
+                        <TrainerBatchesPage batches={batches} trainerId={trainerId} />
+                    ) : (
+                         <NoData message="No Batches" />
+                    )}
                 </div>
              </div>
          )}
@@ -266,14 +275,18 @@ export default function TrainerDashboardComponent({
          {activePage === "Resources" && (
             <div className="flex-1 flex flex-col p-4 overflow-y-auto pb-20">
                  <Header name={trainer.name} onSearch={setSearch} />
-                 <div className="mt-6 text-center text-muted-foreground">Resources View</div>
+                 <div className="mt-6 flex-1 h-full">
+                     <NoData message="No Resources" />
+                 </div>
             </div>
          )}
 
-          {(activePage === "Schedule" || activePage === "Assignments" || activePage === "Reports" || activePage === "Settings") && (
+          {(activePage === "Schedule" || activePage === "Assignments") && (
              <div className="flex-1 flex flex-col p-4 overflow-y-auto pb-20">
                   <Header name={trainer.name} onSearch={setSearch} />
-                  <div className="mt-6 text-center text-muted-foreground">{activePage} View Placeholder</div>
+                  <div className="mt-6 flex-1 h-full">
+                       <NoData message={`No ${activePage}`} />
+                  </div>
              </div>
           )}
 
