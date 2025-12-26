@@ -69,7 +69,7 @@ export default function CreateBatchForm({ onSuccess, fixedTrainerId, fixedBranch
   // 1. Fetch Initial Data (Branches) - Only if branch not fixed
   useEffect(() => {
     const fetchBranches = async () => {
-        if (!token || fixedBranchId) return; // Skip if fixed
+        if (!token || fixedBranchId || fixedTrainerId) return; // Skip if fixed or if trainer is fixed (we derive branch)
         setIsLoadingBranches(true);
         try {
             const branchesRes = await getAllBranches(token);

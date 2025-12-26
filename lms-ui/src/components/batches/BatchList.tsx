@@ -26,6 +26,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
     DialogTrigger,
 } from "@/components/ui/dialog";
 import CreateBatchForm from "@/components/forms/CreateBatchForm";
@@ -353,6 +354,9 @@ export default function BatchList({ mode, token, userId, compact = false }: Batc
                 <DialogContent className="sm:max-w-[600px]">
                     <DialogHeader>
                         <DialogTitle>Create New Batch</DialogTitle>
+                        <DialogDescription>
+                            Enter the details for the new batch here. Click create when you're done.
+                        </DialogDescription>
                     </DialogHeader>
                     <div className="mt-4">
                         <CreateBatchForm 

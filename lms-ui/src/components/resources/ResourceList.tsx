@@ -9,6 +9,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
     DialogTrigger,
 } from "@/components/ui/dialog";
 import CreateResourceForm from "@/components/forms/CreateResourceForm";
@@ -211,6 +212,9 @@ export default function ResourceList({ mode, token, canCreate = false }: Resourc
                     <DialogContent className="sm:max-w-[600px]">
                         <DialogHeader>
                             <DialogTitle>Add New Resource</DialogTitle>
+                            <DialogDescription>
+                                Add a link, PDF, or video resource for your students.
+                            </DialogDescription>
                         </DialogHeader>
                         <div className="mt-4">
                             <CreateResourceForm onSuccess={handleSuccess} />
