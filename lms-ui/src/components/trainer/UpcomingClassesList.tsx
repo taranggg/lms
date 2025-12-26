@@ -79,7 +79,7 @@ export default function UpcomingClassesList() {
       </div>
       
       <ScrollArea className="w-full whitespace-nowrap pb-4">
-        <div className="flex w-max space-x-5 p-1">
+        <div className="flex w-max space-x-5 p-6">
           {sortedClasses.map((session) => {
             const baseColor = getBatchColor(session.batch);
             const isCompleted = session.status === "completed";

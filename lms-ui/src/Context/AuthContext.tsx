@@ -12,6 +12,7 @@ interface User {
 export interface AuthContextType {
   token: string | null;
   user: User | null;
+  isLoading: boolean;
   dispatch: React.Dispatch<Action>;
 }
 
@@ -57,6 +58,7 @@ export const AuthContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [state, dispatch] = useReducer(reducer, { token: null, user: null });
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
     // Check localStorage on client mount to handle hydration correctly.
@@ -66,10 +68,11 @@ export const AuthContextProvider = ({
     if (storedToken) {
       dispatch({ type: "SIGN_IN", payload: storedToken });
     }
+    setIsLoading(false);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ token: state.token, user: state.user, dispatch }}>
+    <AuthContext.Provider value={{ token: state.token, user: state.user, isLoading, dispatch }}>
       {children}
     </AuthContext.Provider>
   );

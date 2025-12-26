@@ -37,7 +37,7 @@ export default function AttendanceReportWidget() {
         </Select>
       </CardHeader>
       <CardContent className="h-[250px] w-full pt-4">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minHeight={200}>
           <BarChart data={data}>
             <XAxis
               dataKey="name"

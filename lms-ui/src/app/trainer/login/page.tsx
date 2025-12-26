@@ -27,6 +27,9 @@ const TrainerLoginContent = () => {
       try {
         const res = await TrainerGoogleLogin(tokenResponse.access_token);
         dispatch({ type: "SIGN_IN", payload: res.token });
+        if (res.trainerId) {
+            localStorage.setItem("trainerId", res.trainerId);
+        }
         toast.success("Login Successful");
 
         if (res.firstLogin && res.trainerId) {

@@ -3,9 +3,11 @@ import React from "react";
 import TrainerDashboardComponent, {
   type HourSpent,
 } from "@/components/trainer/TrainerDashboard";
-import { trainers } from "@/mock/trainer/trainers_courses";
 import { type TodoMainTask } from "@/components/dashboard/TodoList";
 import { useAuth } from "@/Context/AuthContext";
+import { getTrainerById } from "@/Apis/Trainer";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 // Mock data for missing props
 const mockHoursSpent: HourSpent[] = [
@@ -37,49 +39,94 @@ const mockTodoList: TodoMainTask[] = [
 ];
 
 export default function TrainerDashboard() {
-  const { user } = useAuth();
+  const { user, token, isLoading } = useAuth();
+  const router = useRouter();
+  const [trainerData, setTrainerData] = React.useState<any>(null);
+  const [dataLoading, setDataLoading] = React.useState(true);
+
+  // Protected Route Logic
+  React.useEffect(() => {
+    if (!isLoading && !user) {
+        router.push("/trainer/login");
+    }
+  }, [isLoading, user, router]);
   
-  // Wait for user to be loaded
+  // API Fetch Logic
+  React.useEffect(() => {
+    const fetchTrainer = async () => {
+        // Fallback to localStorage if ID is not in token (backend limitation)
+        const storedTrainerId = localStorage.getItem("trainerId");
+        const idToUse = user?.id || storedTrainerId;
+
+        if (idToUse && token) {
+            try {
+                const data = await getTrainerById(idToUse, token);
+                setTrainerData(data);
+            } catch (error) {
+                console.error("Failed to fetch trainer data", error);
+            } finally {
+                setDataLoading(false);
+            }
+        } 
+    };
+
+    if (!isLoading) {
+        if (user && token) {
+             fetchTrainer();
+        } else {
+             // If no user (and redirect happened/happening), just stop loading data
+             setDataLoading(false);
+        }
+    }
+  }, [user, token, isLoading]);
+
+  // Loading State
+  if (isLoading || (user && dataLoading)) {
+      return (
+        <div className="flex h-screen w-full items-center justify-center bg-background">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
+  }
+
+  // Prevent flash content if redirecting
   if (!user) {
-      return null; // Or a loading spinner
+      return null; 
   }
 
-  const trainerId = user.id;
-
-  let trainer = trainers.find(
-    (t) => String(t.id) === String(trainerId)
-  );
-
-  // Fallback to first mock trainer if not found (for development/hybrid mode)
-  if (!trainer) {
-    console.warn(`Trainer with ID ${trainerId} not found in mock data. Using fallback.`);
-    trainer = trainers[0];
+  // No Data State (Should ideally be handled by empty response, but fallback here)
+  if (!trainerData) {
+    return (
+        <div className="flex flex-col h-screen w-full items-center justify-center bg-background gap-4">
+            <h2 className="text-xl font-semibold">Trainer Not Found</h2>
+            <p className="text-muted-foreground">We couldn&apos;t find your profile data.</p>
+        </div>
+    );
   }
 
-  if (!trainer) {
-    return <div className="p-8 text-center">Trainer not found.</div>;
-  }
-
-  // Map mock courses to Batch type
-  const batches = trainer.courses.map((c) => ({
-    id: c.id,
-    name: c.name,
-    code: c.id,
-    schedule: c.schedule,
-    students: 25, // Mock number
+  // Map courses to batches structure
+  const courses = trainerData.courses || [];
+  
+  const batches = courses.map((c: any) => ({
+    id: c.id || c._id,
+    name: c.name || "Untitled Course",
+    code: c.code || "C-XXX",
+    schedule: c.schedule || "TBD",
+    students: c.studentsCount || 0,
     active: true,
-    color: "#e0f2fe", // Default color
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", // Mock logo
-    instructor: trainer.name,
-    branch: "Online", // Mock dynamic branch
+    color: "#e0f2fe", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg", 
+    instructor: trainerData.name,
+    branch: trainerData.branch?.name || "Online", 
   }));
 
   return (
     <TrainerDashboardComponent
-      trainer={{ name: trainer.name, designation: trainer.role }}
+      trainer={{ name: trainerData.name, designation: trainerData.designation || "Trainer" }}
       batches={batches}
       todoList={mockTodoList}
-      trainerId={String(trainerId)}
+      trainerId={user?.id || (typeof window !== 'undefined' ? localStorage.getItem("trainerId") || "" : "")}
+      token={token || ""}
     />
   );
 }
