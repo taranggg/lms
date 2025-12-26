@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { TrainerProfileDialog } from "./TrainerProfileDialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 
 export interface TrainerSidebarItem {
   label: string;
@@ -20,6 +15,8 @@ interface TrainerSidebarProps {
   trainerName: string;
   trainerImage: string;
   trainerDesignation?: string;
+  trainerEmail?: string;
+  trainerId?: string;
 }
 
 export default function TrainerSidebar({
@@ -27,8 +24,11 @@ export default function TrainerSidebar({
   trainerName,
   trainerImage,
   trainerDesignation = "Senior Trainer",
+  trainerEmail,
+  trainerId,
 }: TrainerSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
 
 
   return (
@@ -84,66 +84,53 @@ export default function TrainerSidebar({
         ))}
       </nav>
 
-      {/* Profile Section (Replaces Settings) */}
+      {/* Profile Section */}
       <div className="mt-auto mb-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <div
-              className={`flex items-center gap-3 px-2 py-2 rounded-xl cursor-pointer hover:bg-primary/5 transition-colors border border-transparent hover:border-primary/10 ${
-                collapsed ? "justify-center" : ""
-              }`}
-            >
-              <Avatar className="h-9 w-9 border-2 border-background shadow-sm">
-                <AvatarImage src={trainerImage} alt={trainerName} />
-                <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                  {trainerName.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              {!collapsed && (
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-semibold text-sidebar-foreground truncate">
-                    {trainerName}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground truncate">
-                    {trainerDesignation}
-                  </span>
-                </div>
-              )}
-            </div>
-          </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            side="right"
-            className="w-64 p-4 ml-4 shadow-xl border-border bg-popover"
+          {/* Profile Row Trigger */}
+          <div
+            className={`flex items-center gap-3 px-2 py-2 rounded-xl cursor-pointer hover:bg-primary/5 transition-colors border border-transparent hover:border-primary/10 group ${
+              collapsed ? "justify-center" : ""
+            }`}
+            onClick={() => setShowProfileDialog(true)}
           >
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-12 w-12 border border-border">
-                  <AvatarImage src={trainerImage} alt={trainerName} />
-                  <AvatarFallback className="text-lg bg-sky-100 text-sky-700">
-                    {trainerName.charAt(0)}
-                  </AvatarFallback>
+            {/* Avatar Wrapper with Hover Indicator */}
+            <div className="relative">
+                <Avatar className="h-9 w-9 border-2 border-background shadow-sm transition-transform duration-300 group-hover:scale-105">
+                    <AvatarImage src={trainerImage} alt={trainerName} />
+                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                    {trainerName ? trainerName.charAt(0).toUpperCase() : "T"}
+                    </AvatarFallback>
                 </Avatar>
-                <div>
-                  <h4 className="font-semibold text-popover-foreground">{trainerName}</h4>
-                  <p className="text-xs text-muted-foreground">{trainerDesignation}</p>
-                </div>
-              </div>
-              
-              <Button
-                variant="destructive"
-                size="sm"
-                className="w-full gap-2"
-                onClick={() => {
-                  window.location.href = "/login";
-                }}
-              >
-                <LogOut size={14} />
-                Sign Out
-              </Button>
+                {/* Subtle edit dot/indicator could go here */}
             </div>
-          </PopoverContent>
-        </Popover>
+            
+            {!collapsed && (
+              <div className="flex flex-col min-w-0 text-left">
+                <span className="text-sm font-semibold text-sidebar-foreground truncate group-hover:text-primary transition-colors">
+                  {trainerName}
+                </span>
+                <span className="text-[10px] text-muted-foreground truncate">
+                  {trainerDesignation}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <TrainerProfileDialog 
+            isOpen={showProfileDialog}
+            onOpenChange={setShowProfileDialog}
+            trainer={{
+                name: trainerName,
+                email: trainerEmail || "",
+                designation: trainerDesignation || "",
+                image: trainerImage,
+                id: trainerId || ""
+            }}
+            onImageUpdate={(url) => {
+                // Handle local update if needed, though usually layout refresh handles it
+                console.log("Image updated", url);
+            }}
+          />
       </div>
     </aside>
   );

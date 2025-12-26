@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TrainerBatchList, { type Batch } from "./TrainerBatchList";
+import { NoData } from "@/components/ui/no-data";
 import {
     Dialog,
     DialogContent,
@@ -47,7 +48,16 @@ export default function TrainerBatchesPage({
 
       {/* Main Content */}
       <div className="w-full">
-         <TrainerBatchList batches={batches} trainerId={trainerId} />
+         {batches.length > 0 ? (
+            <TrainerBatchList batches={batches} trainerId={trainerId} />
+         ) : (
+            <div className="flex flex-col items-center justify-center min-h-[50vh]">
+                <NoData 
+                    message="No Batches Found" 
+                    description="You don't have any assigned batches yet. Create one using the button below." 
+                />
+            </div>
+         )}
       </div>
 
       {/* FAB with Dialog */}

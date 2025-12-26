@@ -1,23 +1,22 @@
 "use client";
-import React from "react";
-import TrainerDashboardComponent, {
-  type HourSpent,
-} from "@/components/trainer/TrainerDashboard";
-import { type TodoMainTask } from "@/components/dashboard/TodoList";
+
+import React, { useState } from "react";
+import Header from "@/components/dashboard/Header";
+import UpcomingClassesList from "@/components/trainer/UpcomingClassesList";
+import ResourceUpdateList from "@/components/trainer/ResourceUpdateList";
+import TrainerBatchesWithAttendance from "@/components/trainer/TrainerBatchesWithAttendance";
+import TodoList, { type TodoMainTask } from "@/components/dashboard/TodoList";
 import { useAuth } from "@/Context/AuthContext";
-import { getTrainerById } from "@/Apis/Trainer";
 import { Loader2 } from "lucide-react";
+import { getTrainerById } from "@/Apis/Trainer";
+import { NoData } from "@/components/ui/no-data";
+import { Button } from "@/components/ui/button";
+import { EmptyStateModal } from "@/components/trainer/TrainerEmptyState";
+import MobileBottomNav, { MobileNavItem } from "@/components/dashboard/MobileBottomNav";
+import { Home, Users, BookOpen, Calendar, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-// Mock data for missing props
-const mockHoursSpent: HourSpent[] = [
-  { month: "Jan", teaching: 40, preparation: 20 },
-  { month: "Feb", teaching: 35, preparation: 25 },
-  { month: "Mar", teaching: 45, preparation: 15 },
-  { month: "Apr", teaching: 50, preparation: 10 },
-  { month: "May", teaching: 42, preparation: 18 },
-];
-
+// Mock Todo List
 const mockTodoList: TodoMainTask[] = [
   {
     label: "Review Assignments",
@@ -38,23 +37,15 @@ const mockTodoList: TodoMainTask[] = [
   },
 ];
 
-export default function TrainerDashboard() {
+export default function TrainerDashboardPage() {
   const { user, token, isLoading } = useAuth();
-  const router = useRouter();
   const [trainerData, setTrainerData] = React.useState<any>(null);
   const [dataLoading, setDataLoading] = React.useState(true);
+  const [showEmptyStateModal, setShowEmptyStateModal] = useState(false);
+  const router = useRouter();
 
-  // Protected Route Logic
-  React.useEffect(() => {
-    if (!isLoading && !user) {
-        router.push("/trainer/login");
-    }
-  }, [isLoading, user, router]);
-  
-  // API Fetch Logic
   React.useEffect(() => {
     const fetchTrainer = async () => {
-        // Fallback to localStorage if ID is not in token (backend limitation)
         const storedTrainerId = localStorage.getItem("trainerId");
         const idToUse = user?.id || storedTrainerId;
 
@@ -67,21 +58,21 @@ export default function TrainerDashboard() {
             } finally {
                 setDataLoading(false);
             }
-        } 
+        } else {
+             setDataLoading(false);
+        }
     };
 
     if (!isLoading) {
         if (user && token) {
              fetchTrainer();
         } else {
-             // If no user (and redirect happened/happening), just stop loading data
              setDataLoading(false);
         }
     }
   }, [user, token, isLoading]);
 
-  // Loading State
-  if (isLoading || (user && dataLoading)) {
+  if (isLoading || dataLoading) {
       return (
         <div className="flex h-screen w-full items-center justify-center bg-background">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -89,24 +80,9 @@ export default function TrainerDashboard() {
       );
   }
 
-  // Prevent flash content if redirecting
-  if (!user) {
-      return null; 
-  }
+  if (!trainerData) return null;
 
-  // No Data State (Should ideally be handled by empty response, but fallback here)
-  if (!trainerData) {
-    return (
-        <div className="flex flex-col h-screen w-full items-center justify-center bg-background gap-4">
-            <h2 className="text-xl font-semibold">Trainer Not Found</h2>
-            <p className="text-muted-foreground">We couldn&apos;t find your profile data.</p>
-        </div>
-    );
-  }
-
-  // Map courses to batches structure
   const courses = trainerData.courses || [];
-  
   const batches = courses.map((c: any) => ({
     id: c.id || c._id,
     name: c.name || "Untitled Course",
@@ -120,13 +96,71 @@ export default function TrainerDashboard() {
     branch: trainerData.branch?.name || "Online", 
   }));
 
+  const mobileNavItems: MobileNavItem[] = [
+     { label: "Overview", icon: <Home className="w-5 h-5"/>, active: true, onClick: () => router.push("/trainer") },
+     { label: "My Batches", icon: <Users className="w-5 h-5"/>, active: false, onClick: () => router.push("/trainer/batches") },
+     { label: "Resources", icon: <BookOpen className="w-5 h-5"/>, active: false, onClick: () => router.push("/trainer/resources") },
+     { label: "Schedule", icon: <Calendar className="w-5 h-5"/>, active: false, onClick: () => router.push("/trainer/schedule") },
+     { label: "Assignments", icon: <FileText className="w-5 h-5"/>, active: false, onClick: () => router.push("/trainer/assignments") },
+  ];
+
   return (
-    <TrainerDashboardComponent
-      trainer={{ name: trainerData.name, designation: trainerData.designation || "Trainer" }}
-      batches={batches}
-      todoList={mockTodoList}
-      trainerId={user?.id || (typeof window !== 'undefined' ? localStorage.getItem("trainerId") || "" : "")}
-      token={token || ""}
-    />
+    <div className="flex w-full h-full overflow-hidden">
+       <EmptyStateModal 
+        isOpen={showEmptyStateModal} 
+        onOpenChange={setShowEmptyStateModal}
+        trainerId={trainerData._id}
+        token={token}
+        onAction={() => setShowEmptyStateModal(false)}
+      />
+
+       {/* Main Content Area */}
+       <div className="flex-1 flex flex-col h-full overflow-hidden">
+          <div className="px-4 md:px-6 xl:px-10 py-6 pb-2 shrink-0">
+             <Header name={trainerData.name} onSearch={() => {}} />
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 md:px-6 xl:px-10 pb-20 md:pb-10 custom-scrollbar pt-2">
+              <div className="max-w-[1200px] w-full mx-auto flex flex-col gap-8">
+                  {batches.length > 0 ? (
+                      <>
+                        <UpcomingClassesList />
+                        <ResourceUpdateList />
+                        <TrainerBatchesWithAttendance batches={batches} trainerId={trainerData._id} />
+                      </>
+                  ) : (
+                      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+                          <NoData 
+                            message="No Active Batches" 
+                            description="You haven't been assigned to any batches yet."
+                          />
+                          <Button variant="outline" className="mt-4" onClick={() => setShowEmptyStateModal(true)}>
+                                Check Status
+                          </Button>
+                      </div>
+                  )}
+
+                  {/* Mobile/Tablet Todo List fallback */}
+                  <div className="lg:hidden flex flex-col gap-6 mt-2">
+                       <h3 className="font-bold text-lg text-foreground">Quick Actions</h3>
+                       <TodoList items={mockTodoList} />
+                  </div>
+              </div>
+          </div>
+       </div>
+
+       {/* Right Sidebar - TODO List (Desktop Only) */}
+       <div className="hidden lg:flex shrink-0 h-full border-l border-border bg-background/50 backdrop-blur-sm z-10 w-[320px] flex-col py-4 pr-6 pl-2 overflow-y-auto custom-scrollbar">
+           <div className="flex flex-col gap-6 p-2">
+               <h3 className="font-bold text-lg text-foreground mt-4">Quick Actions</h3>
+               <TodoList items={mockTodoList} />
+           </div>
+       </div>
+
+        {/* Mobile Navigation */}
+       <div className="md:hidden">
+            <MobileBottomNav items={mobileNavItems} />
+       </div>
+    </div>
   );
 }

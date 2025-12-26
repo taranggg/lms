@@ -92,37 +92,37 @@ export default function TrainerBatchCard({
                 <Edit className="w-4 h-4 mr-2" />
                 Edit Batch
               </DropdownMenuItem>
-              <Link href={`/trainer/${trainerId}/${batch.id}?tab=students`}>
+              <Link href={`/trainer/batches/${batch.id}?tab=students`}>
                 <DropdownMenuItem>
                    <Users className="w-4 h-4 mr-2" />
                    Student List
                 </DropdownMenuItem>
               </Link>
-              <Link href={`/trainer/${trainerId}/${batch.id}?tab=attendance`}>
+              <Link href={`/trainer/batches/${batch.id}?tab=attendance`}>
                  <DropdownMenuItem>
                   <Calendar className="w-4 h-4 mr-2" />
                   Attendance
                  </DropdownMenuItem>
               </Link>
-              <Link href={`/trainer/${trainerId}/${batch.id}?tab=assignments`}>
+              <Link href={`/trainer/batches/${batch.id}?tab=assignments`}>
                 <DropdownMenuItem>
                   <BookOpen className="w-4 h-4 mr-2" />
                   Assignments
                 </DropdownMenuItem>
               </Link>
-              <Link href={`/trainer/${trainerId}/${batch.id}?tab=exams`}>
+              <Link href={`/trainer/batches/${batch.id}?tab=exams`}>
                 <DropdownMenuItem>
                   <FileText className="w-4 h-4 mr-2" />
                   Exams
                 </DropdownMenuItem>
               </Link>
-              <Link href={`/trainer/${trainerId}/${batch.id}?tab=results`}>
+              <Link href={`/trainer/batches/${batch.id}?tab=results`}>
                 <DropdownMenuItem>
                   <GraduationCap className="w-4 h-4 mr-2" />
                   Results
                 </DropdownMenuItem>
               </Link>
-              <Link href={`/trainer/${trainerId}/${batch.id}?tab=progress`}>
+              <Link href={`/trainer/batches/${batch.id}?tab=progress`}>
                 <DropdownMenuItem>
                   <BarChart className="w-4 h-4 mr-2" />
                   Progress
@@ -138,7 +138,7 @@ export default function TrainerBatchCard({
        </div>
 
        {/* Link Wrapper for clickable body */}
-       <Link href={`/trainer/${trainerId}/${batch.id}`} className="flex flex-col gap-3 cursor-pointer">
+       <Link href={`/trainer/batches/${batch.id}`} className="flex flex-col gap-3 cursor-pointer">
           {/* Info Rows */}
           <div className="flex flex-col gap-2.5 mt-1">
              <div className="flex items-center gap-3 text-slate-700 dark:text-slate-200">
