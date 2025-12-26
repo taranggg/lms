@@ -139,11 +139,11 @@ function AddTaskModal({
 }
 
 export default function TodoList({
-  items: initialItems,
+  items: initialItems = [],
 }: {
-  items: TodoMainTask[];
+  items?: TodoMainTask[];
 }) {
-  const [items, setItems] = useState<TodoMainTask[]>(initialItems);
+  const [items, setItems] = useState<TodoMainTask[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleAddTask = (task: TodoMainTask) => {
