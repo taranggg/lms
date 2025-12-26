@@ -27,7 +27,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import CreateBatchForm from "@/components/admin/forms/CreateBatchForm";
+import CreateBatchForm from "@/components/forms/CreateBatchForm";
 import { useAuth } from "@/Context/AuthContext";
 import { getAllBatches } from "@/Apis/Batch";
 import { getAllBranches } from "@/Apis/Branch";

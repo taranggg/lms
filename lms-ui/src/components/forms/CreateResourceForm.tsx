@@ -41,11 +41,11 @@ const createMaterial = async (data: any, token: string) => {
     return response.data;
 }
 
-interface TrainerCreateResourceFormProps {
+interface CreateResourceFormProps {
   onSuccess: () => void;
 }
 
-export default function TrainerCreateResourceForm({ onSuccess }: TrainerCreateResourceFormProps) {
+export default function CreateResourceForm({ onSuccess }: CreateResourceFormProps) {
   const { token } = useAuth();
 
   const form = useForm<CreateResourceFormValues>({

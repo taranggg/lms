@@ -26,7 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import AddStudentForm from "@/components/admin/forms/AddStudentForm";
+import AddStudentForm from "@/components/forms/AddStudentForm";
 import { useAuth } from "@/Context/AuthContext";
 import { getAllStudents } from "@/Apis/Student";
 import { getAllBranches } from "@/Apis/Branch";

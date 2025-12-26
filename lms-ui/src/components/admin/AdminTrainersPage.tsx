@@ -25,7 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import AddTrainerForm from "@/components/admin/forms/AddTrainerForm";
+import AddTrainerForm from "@/components/forms/AddTrainerForm";
 import { useAuth } from "@/Context/AuthContext";
 import { getAllTrainers } from "@/Apis/Trainer";
 import { getAllBranches } from "@/Apis/Branch";

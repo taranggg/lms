@@ -10,7 +10,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import TrainerCreateResourceForm from "./forms/TrainerCreateResourceForm";
+import CreateResourceForm from "@/components/forms/CreateResourceForm";
 import { NoData } from "@/components/ui/no-data";
 import { useAuth } from "@/Context/AuthContext";
 // Assuming getAllMaterials is available or needs to be stubbed for now
@@ -126,7 +126,7 @@ export default function TrainerResourcesPage() {
             <DialogTitle>Add New Resource</DialogTitle>
             </DialogHeader>
             <div className="mt-4">
-                <TrainerCreateResourceForm onSuccess={handleSuccess} />
+                <CreateResourceForm onSuccess={handleSuccess} />
             </div>
         </DialogContent>
       </Dialog>

@@ -12,7 +12,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import TrainerCreateBatchForm from "./forms/TrainerCreateBatchForm";
+import CreateBatchForm from "@/components/forms/CreateBatchForm";
 
 interface TrainerBatchesPageProps {
   batches: Batch[];
@@ -72,7 +72,7 @@ export default function TrainerBatchesPage({
             <DialogTitle>Create New Batch</DialogTitle>
             </DialogHeader>
             <div className="mt-4">
-                <TrainerCreateBatchForm onSuccess={handleSuccess} trainerId={trainerId} />
+                <CreateBatchForm onSuccess={handleSuccess} fixedTrainerId={trainerId} />
             </div>
         </DialogContent>
       </Dialog>
