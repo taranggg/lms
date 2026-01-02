@@ -26,6 +26,7 @@ export const admintrainerAuthenticator = (
     if (decode.role !== "Admin" && decode.role !== "Trainer") {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    (req as any).user = decode;
     next();
   } catch (error) {
     return res.status(401).json({ message: "Unauthorized" });

@@ -18,6 +18,8 @@ import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import authRouter from "./routes/auth.js";
 import domainRouter from "./routes/domain.js";
+import attendanceRouter from "./routes/attendance.js";
+import trainerSessionRouter from "./routes/trainerSession.js";
 
 // const __filename = fileURLToPath(import.meta.url); // Removed
 // const __dirname = path.dirname(__filename); // Removed
@@ -28,7 +30,10 @@ export const app = express();
 
 app.use("/assets", express.static(path.join(process.cwd(), "assets")));
 
+import { initScheduler } from "./utils/scheduler.js";
+
 connectDB();
+initScheduler();
 
 // Essential middleware in correct order
 app.use(helmet());
@@ -58,3 +63,5 @@ app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/batch", batchRouter);
 app.use("/api/v1/material", materialRouter);
 app.use("/api/v1/domain", domainRouter);
+app.use("/api/v1/attendance", attendanceRouter);
+app.use("/api/v1/trainerSession", trainerSessionRouter);
