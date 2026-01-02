@@ -21,8 +21,12 @@ export async function adminGoogleLogin(req: Request, res: Response) {
     const { email } = response.data;
     const isEmailExist = await EmailModel.findOne({ email });
     if (isEmailExist) {
+      const admin = await import("../models/admin.js").then((m) =>
+        m.default.findOne({ email: isEmailExist._id })
+      );
+
       const jwtToken = jwt.sign(
-        { email, role: isEmailExist.role },
+        { email, role: isEmailExist.role, userId: admin?._id },
         process.env.JWT_SECRET as string,
         {
           expiresIn: "9h",
@@ -53,14 +57,14 @@ export async function trainerGoogleLogin(req: Request, res: Response) {
     const { email } = response.data;
     const isEmailExist = await EmailModel.findOne({ email });
     if (isEmailExist) {
+      const trainer = await TrainerModel.findOne({ email: isEmailExist._id });
       const jwtToken = jwt.sign(
-        { email, role: isEmailExist.role },
+        { email, role: isEmailExist.role, userId: trainer?._id },
         process.env.JWT_SECRET as string,
         {
           expiresIn: "9h",
         }
       );
-      const trainer = await TrainerModel.findOne({ email: isEmailExist._id });
 
       return res.status(200).json({
         token: jwtToken,
