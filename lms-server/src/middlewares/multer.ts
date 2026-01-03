@@ -9,6 +9,8 @@ const storage = multer.diskStorage({
       uploadPath = path.join("assets", "profilePicture");
     } else if (file.fieldname === "files" || file.fieldname === "materials") {
       uploadPath = path.join("assets", "materials");
+    } else if (file.fieldname === "chatMedia") {
+      uploadPath = path.join("assets", "chat");
     }
 
     // Ensure directory exists

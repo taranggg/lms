@@ -12,32 +12,18 @@ export interface BranchResponse extends BranchData {
   updatedAt: string;
 }
 
-export const addBranch = async (data: BranchData, token: string) => {
+export const addBranch = async (data: BranchData) => {
   try {
-    const response = await axiosInstance.post(
-      ApiPaths.BRANCH.CREATE,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axiosInstance.post(ApiPaths.BRANCH.CREATE, data);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const getAllBranches = async (
-  token: string,
-  filters?: { search?: string }
-) => {
+export const getAllBranches = async (filters?: { search?: string }) => {
   try {
     const response = await axiosInstance.get(ApiPaths.BRANCH.GET_ALL, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
       params: filters,
     });
     return response.data;
@@ -46,20 +32,11 @@ export const getAllBranches = async (
   }
 };
 
-export const updateBranch = async (
-  id: string,
-  data: Partial<BranchData>,
-  token: string
-) => {
+export const updateBranch = async (id: string, data: Partial<BranchData>) => {
   try {
     const response = await axiosInstance.put(
       `${ApiPaths.BRANCH.UPDATE}/${id}`,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      data
     );
     return response.data;
   } catch (error) {
@@ -67,15 +44,10 @@ export const updateBranch = async (
   }
 };
 
-export const deleteBranch = async (id: string, token: string) => {
+export const deleteBranch = async (id: string) => {
   try {
     const response = await axiosInstance.delete(
-      `${ApiPaths.BRANCH.DELETE}/${id}`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      `${ApiPaths.BRANCH.DELETE}/${id}`
     );
     return response.data;
   } catch (error) {

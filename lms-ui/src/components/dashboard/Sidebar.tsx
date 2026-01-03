@@ -27,6 +27,7 @@ interface SidebarProps {
 }
 
 import { useRouter } from "next/navigation";
+import axiosInstance from "@/Utils/Axiosinstance";
 
 export default function Sidebar({ items }: SidebarProps) {
   const [collapsed, setCollapsed] = React.useState(false);
@@ -46,7 +47,7 @@ export default function Sidebar({ items }: SidebarProps) {
       <div className="flex items-center gap-2 mb-10 justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-             <div className="w-4 h-4 bg-primary rounded-sm" />
+            <div className="w-4 h-4 bg-primary rounded-sm" />
           </div>
           {!collapsed && (
             <span className="font-bold text-lg text-foreground">Learninja</span>
@@ -75,8 +76,8 @@ export default function Sidebar({ items }: SidebarProps) {
           <div
             key={item.label}
             className={`flex items-center gap-3 px-4 py-2 rounded-xl cursor-pointer font-medium transition-all duration-200 ${
-              item.active 
-                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" 
+              item.active
+                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                 : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
             }`}
             onClick={item.onClick}
@@ -118,10 +119,17 @@ export default function Sidebar({ items }: SidebarProps) {
                 <ModeToggle />
               </div>
               <div className="h-px bg-gray-200 my-1" />
+              import axiosInstance from "@/Utils/Axiosinstance"; // ... imports
+              // ... inside component
               <button
                 className="flex items-center gap-2 w-full px-2 py-2 rounded hover:bg-red-100 text-red-600 font-semibold"
-                onClick={() => {
-                  localStorage.clear();
+                onClick={async () => {
+                  try {
+                    await axiosInstance.post("/auth/logout");
+                  } catch (e) {
+                    console.error("Logout failed", e);
+                  }
+                  // Even if API fails, redirect to login
                   window.location.href = "/login";
                 }}
               >

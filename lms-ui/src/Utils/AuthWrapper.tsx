@@ -14,13 +14,9 @@ interface AuthResponse {
 export const useAuthVerification = async (): Promise<AuthResponse | false> => {
   try {
     if (typeof window != "undefined") {
-      const token = localStorage.getItem("socialMedia");
-      if (token) {
-        const ck = await axiosInstance.post("/auth/verify-token", { token });
-        return ck.data;
-      } else {
-        return false;
-      }
+      // Just call the API. The token will be sent via HTTP-Only cookie.
+      const ck = await axiosInstance.post("/auth/verify-token");
+      return ck.data;
     } else {
       return false;
     }
@@ -35,7 +31,7 @@ export const useAuthWrapper = (
 ) => {
   return function AuthProtected(props: any) {
     const router = useRouter();
-    const pathname = usePathname();
+    const pathname: string = usePathname() || "";
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthorized, setIsAuthorized] = useState(false);
 

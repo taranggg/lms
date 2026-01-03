@@ -22,10 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  CreateBatchFormValues,
-  createBatchSchema,
-} from "@/Schemas/adminForms";
+import { CreateBatchFormValues, createBatchSchema } from "@/Schemas/adminForms";
 import { createBatch } from "@/Apis/Batch";
 import { getAllTrainers } from "@/Apis/Trainer";
 import { getAllBranches } from "@/Apis/Branch";
@@ -67,50 +64,54 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-        if (!token) return;
-        setIsLoadingBranches(true);
-        try {
-            const branchesRes = await getAllBranches(token);
-            const branchList = Array.isArray(branchesRes) ? branchesRes : (branchesRes.data || []);
-            setBranches(branchList);
-        } catch (error) {
-            console.error("Failed to fetch data", error);
-            toast.error("Failed to load form data");
-        } finally {
-            setIsLoadingBranches(false);
-        }
+      if (!token) return;
+      setIsLoadingBranches(true);
+      try {
+        const branchesRes = await getAllBranches();
+        const branchList = Array.isArray(branchesRes)
+          ? branchesRes
+          : branchesRes.data || [];
+        setBranches(branchList);
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+        toast.error("Failed to load form data");
+      } finally {
+        setIsLoadingBranches(false);
+      }
     };
     fetchInitialData();
   }, [token]);
 
   useEffect(() => {
-      const fetchTrainersByBranch = async () => {
-          if (!token || !selectedBranch) {
-              setTrainers([]);
-              return;
-          }
-          
-          setIsLoadingTrainers(true);
-          try {
-              const trainersRes = await getAllTrainers(token, { branch: selectedBranch });
-              const trainerList = Array.isArray(trainersRes) ? trainersRes : (trainersRes.trainers || trainersRes.data || []);
-              setTrainers(trainerList);
-          } catch (error) {
-              console.error("Failed to fetch trainers", error);
-              setTrainers([]);
-          } finally {
-              setIsLoadingTrainers(false);
-          }
-      };
-
-      // Reset trainer selection when branch changes
-      form.setValue("trainer", ""); 
-      
-      if (selectedBranch) {
-          fetchTrainersByBranch();
-      } else {
-          setTrainers([]);
+    const fetchTrainersByBranch = async () => {
+      if (!token || !selectedBranch) {
+        setTrainers([]);
+        return;
       }
+
+      setIsLoadingTrainers(true);
+      try {
+        const trainersRes = await getAllTrainers({ branch: selectedBranch });
+        const trainerList = Array.isArray(trainersRes)
+          ? trainersRes
+          : trainersRes.trainers || trainersRes.data || [];
+        setTrainers(trainerList);
+      } catch (error) {
+        console.error("Failed to fetch trainers", error);
+        setTrainers([]);
+      } finally {
+        setIsLoadingTrainers(false);
+      }
+    };
+
+    // Reset trainer selection when branch changes
+    form.setValue("trainer", "");
+
+    if (selectedBranch) {
+      fetchTrainersByBranch();
+    } else {
+      setTrainers([]);
+    }
   }, [selectedBranch, token, form.setValue]);
 
   async function onSubmit(data: CreateBatchFormValues) {
@@ -119,7 +120,7 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
       return;
     }
     try {
-      await createBatch(data, token);
+      await createBatch(data);
       toast.success("Batch created successfully!");
       form.reset();
       onSuccess();
@@ -132,23 +133,22 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        
         <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Batch Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="React Mastery 2024" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Batch Title</FormLabel>
+              <FormControl>
+                <Input placeholder="React Mastery 2024" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
+          <FormField
             control={form.control}
             name="branch"
             render={({ field }) => (
@@ -161,17 +161,21 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                     {isLoadingBranches ? (
-                        <SelectItem value="loading" disabled>Loading branches...</SelectItem>
-                     ) : branches.length > 0 ? (
-                        branches.map((branch) => (
-                           <SelectItem key={branch._id} value={branch._id}>
-                             {branch.name}
-                           </SelectItem>
-                        ))
-                     ) : (
-                        <SelectItem value="none" disabled>No branches found</SelectItem>
-                     )}
+                    {isLoadingBranches ? (
+                      <SelectItem value="loading" disabled>
+                        Loading branches...
+                      </SelectItem>
+                    ) : branches.length > 0 ? (
+                      branches.map((branch) => (
+                        <SelectItem key={branch._id} value={branch._id}>
+                          {branch.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="none" disabled>
+                        No branches found
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -185,7 +189,11 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Trainer</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value} disabled={!selectedBranch}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={!selectedBranch}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Trainer" />
@@ -193,15 +201,19 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
                   </FormControl>
                   <SelectContent>
                     {isLoadingTrainers ? (
-                        <SelectItem value="loading" disabled>Loading trainers...</SelectItem>
+                      <SelectItem value="loading" disabled>
+                        Loading trainers...
+                      </SelectItem>
                     ) : trainers.length > 0 ? (
-                        trainers.map((trainer) => (
-                            <SelectItem key={trainer._id} value={trainer._id}>
-                                {trainer.name}
-                            </SelectItem>
-                        ))
+                      trainers.map((trainer) => (
+                        <SelectItem key={trainer._id} value={trainer._id}>
+                          {trainer.name}
+                        </SelectItem>
+                      ))
                     ) : (
-                        <SelectItem value="none" disabled>No trainers available</SelectItem>
+                      <SelectItem value="none" disabled>
+                        No trainers available
+                      </SelectItem>
                     )}
                   </SelectContent>
                 </Select>
@@ -212,7 +224,7 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <FormField
+          <FormField
             control={form.control}
             name="startDate"
             render={({ field }) => (
@@ -242,36 +254,36 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="startTime"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Start Time</FormLabel>
-                  <FormControl>
-                    <Input type="time" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="endTime"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>End Time</FormLabel>
-                  <FormControl>
-                    <Input type="time" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="startTime"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Start Time</FormLabel>
+                <FormControl>
+                  <Input type="time" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="endTime"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>End Time</FormLabel>
+                <FormControl>
+                  <Input type="time" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <FormField
+          <FormField
             control={form.control}
             name="type"
             render={({ field }) => (
@@ -295,10 +307,7 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
         </div>
 
         <div className="pt-4 flex justify-end">
-          <Button 
-            type="submit" 
-            disabled={isLoading}
-          >
+          <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Create Batch
           </Button>

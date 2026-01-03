@@ -3,6 +3,7 @@ import React from "react";
 import Sidebar, { SidebarItem } from "@/components/dashboard/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Users, BookOpen, GraduationCap } from "lucide-react";
+import axiosInstance from "@/Utils/Axiosinstance";
 
 export default function AdminLayout({
   children,
@@ -13,21 +14,24 @@ export default function AdminLayout({
   const router = useRouter();
 
   React.useEffect(() => {
-    // Mock Authentication Check
-    // In a real app, verify token validity with backend or use a robust auth context
-    const token = localStorage.getItem("accessToken"); // or whatever key you use
-    // For development convenience, we might want to skip this or strictly enforce it.
-    // The user requested: "should not show me any dashboard until i am authenticated"
-    if (!token) {
-       router.push("/admin/login");
-    }
+    // Check authentication via API (cookie based)
+    const checkAuth = async () => {
+      try {
+        await axiosInstance.post("/auth/verify-token");
+        // If success, do nothing (stay on page)
+      } catch (error) {
+        // If failed, redirect
+        router.push("/admin/login");
+      }
+    };
+    checkAuth();
   }, [router]);
 
   const items: SidebarItem[] = [
     {
       label: "Dashboard",
       icon: <LayoutDashboard size={20} />,
-      active: pathname === "/admin", 
+      active: pathname === "/admin",
       onClick: () => router.push("/admin"),
     },
     {

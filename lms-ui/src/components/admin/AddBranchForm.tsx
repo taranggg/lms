@@ -53,7 +53,7 @@ export default function AddBranchForm({
         toast.error("Authentication failed. Please login again.");
         return;
       }
-      await addBranch(data, token);
+      await addBranch(data);
       toast.success("Branch added successfully!");
       reset();
       onSuccess();
@@ -66,9 +66,14 @@ export default function AddBranchForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-background/90 backdrop-blur-xl border border-border" aria-describedby={undefined}>
+      <DialogContent
+        className="sm:max-w-md bg-background/90 backdrop-blur-xl border border-border"
+        aria-describedby={undefined}
+      >
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Add New Branch</DialogTitle>
+          <DialogTitle className="text-xl font-bold">
+            Add New Branch
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
@@ -89,14 +94,15 @@ export default function AddBranchForm({
               id="address"
               placeholder="e.g. 123 Tech Park, London"
               {...register("address")}
-               className="bg-transparent border-input"
+              className="bg-transparent border-input"
             />
             {errors.address && (
-              <p className="text-sm text-destructive">{errors.address.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.address.message}
+              </p>
             )}
           </div>
           <div className="flex justify-end gap-3 mt-6">
-           
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Adding..." : "Add Branch"}
             </Button>

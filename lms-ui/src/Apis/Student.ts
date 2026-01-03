@@ -6,38 +6,24 @@ export interface StudentData {
   email: string;
 }
 
-export const createStudent = async (data: StudentData, token: string) => {
+export const createStudent = async (data: StudentData) => {
   try {
-    const response = await axiosInstance.post(
-      ApiPaths.STUDENT.CREATE,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axiosInstance.post(ApiPaths.STUDENT.CREATE, data);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const getAllStudents = async (
-  token: string,
-  filters?: {
-    branch?: string;
-    batch?: string;
-    course?: string;
-    search?: string;
-    trainer?: string;
-  }
-) => {
+export const getAllStudents = async (filters?: {
+  branch?: string;
+  batch?: string;
+  course?: string;
+  search?: string;
+  trainer?: string;
+}) => {
   try {
     const response = await axiosInstance.get(ApiPaths.STUDENT.GET_ALL, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
       params: filters,
     });
     return response.data;
@@ -46,15 +32,10 @@ export const getAllStudents = async (
   }
 };
 
-export const getStudentById = async (id: string, token: string) => {
+export const getStudentById = async (id: string) => {
   try {
     const response = await axiosInstance.get(
-      `${ApiPaths.STUDENT.GET_BY_ID}/${id}`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      `${ApiPaths.STUDENT.GET_BY_ID}/${id}`
     );
     return response.data;
   } catch (error) {
@@ -62,15 +43,10 @@ export const getStudentById = async (id: string, token: string) => {
   }
 };
 
-export const getStudentByBranch = async (branch: string, token: string) => {
+export const getStudentByBranch = async (branch: string) => {
   try {
     const response = await axiosInstance.get(
-      `${ApiPaths.STUDENT.GET_BY_BRANCH}/${branch}`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      `${ApiPaths.STUDENT.GET_BY_BRANCH}/${branch}`
     );
     return response.data;
   } catch (error) {
@@ -78,20 +54,11 @@ export const getStudentByBranch = async (branch: string, token: string) => {
   }
 };
 
-export const updateStudent = async (
-  id: string,
-  data: Partial<StudentData>,
-  token: string
-) => {
+export const updateStudent = async (id: string, data: Partial<StudentData>) => {
   try {
     const response = await axiosInstance.put(
       `${ApiPaths.STUDENT.UPDATE}/${id}`,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      data
     );
     return response.data;
   } catch (error) {
@@ -99,15 +66,10 @@ export const updateStudent = async (
   }
 };
 
-export const deleteStudent = async (id: string, token: string) => {
+export const deleteStudent = async (id: string) => {
   try {
     const response = await axiosInstance.delete(
-      `${ApiPaths.STUDENT.DELETE}/${id}`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      `${ApiPaths.STUDENT.DELETE}/${id}`
     );
     return response.data;
   } catch (error) {

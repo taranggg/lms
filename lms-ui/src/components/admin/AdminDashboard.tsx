@@ -7,7 +7,16 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { Users, BookOpen, GraduationCap, Building2, MapPin, Plus, Search, Bell } from "lucide-react";
+import {
+  Users,
+  BookOpen,
+  GraduationCap,
+  Building2,
+  MapPin,
+  Plus,
+  Search,
+  Bell,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdminRecentActivity from "@/components/admin/AdminRecentActivity";
@@ -62,7 +71,7 @@ export default function AdminDashboardComponent() {
   const { token } = useAuth();
   const [selectedBranchId, setSelectedBranchId] = useState(ALL_BRANCH_ID);
   const [isAddBranchOpen, setIsAddBranchOpen] = useState(false);
-  
+
   const [branches, setBranches] = useState<DashboardBranch[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -73,43 +82,61 @@ export default function AdminDashboardComponent() {
     try {
       // 1. Fetch raw data in parallel using Promise.allSettled to prevent one failure from blocking others
       const results = await Promise.allSettled([
-        getAllBranches(token),
-        getAllBatches(token),
-        getAllTrainers(token),
-        getAllStudents(token)
+        getAllBranches(),
+        getAllBatches(),
+        getAllTrainers(),
+        getAllStudents(),
       ]);
 
-      const branchesData = results[0].status === 'fulfilled' ? results[0].value : [];
-      const batchesData = results[1].status === 'fulfilled' ? results[1].value : [];
-      const trainersData = results[2].status === 'fulfilled' ? results[2].value : [];
-      const studentsData = results[3].status === 'fulfilled' ? results[3].value : [];
+      const branchesData =
+        results[0].status === "fulfilled" ? results[0].value : [];
+      const batchesData =
+        results[1].status === "fulfilled" ? results[1].value : [];
+      const trainersData =
+        results[2].status === "fulfilled" ? results[2].value : [];
+      const studentsData =
+        results[3].status === "fulfilled" ? results[3].value : [];
 
-      if (results[0].status === 'rejected') {
-          console.error("Failed to fetch branches:", results[0].reason);
-          toast.error("Failed to fetch branches");
+      if (results[0].status === "rejected") {
+        console.error("Failed to fetch branches:", results[0].reason);
+        toast.error("Failed to fetch branches");
       }
 
       // Handle potential data wrapping (e.g. response.data.data) if API serves it that way
       // But assuming services return the data array or object directly as response.data
-      
-      const safeBranches = Array.isArray(branchesData) ? branchesData : (branchesData?.data || []);
-      const safeBatches = Array.isArray(batchesData) ? batchesData : (batchesData?.data || []);
-      const safeTrainers = Array.isArray(trainersData) ? trainersData : (trainersData?.data || []);
-      const safeStudents = Array.isArray(studentsData) ? studentsData : (studentsData?.data || []);
+
+      const safeBranches = Array.isArray(branchesData)
+        ? branchesData
+        : branchesData?.data || [];
+      const safeBatches = Array.isArray(batchesData)
+        ? batchesData
+        : batchesData?.data || [];
+      const safeTrainers = Array.isArray(trainersData)
+        ? trainersData
+        : trainersData?.data || [];
+      const safeStudents = Array.isArray(studentsData)
+        ? studentsData
+        : studentsData?.data || [];
 
       const processedBranches = safeBranches.map((branch: BranchResponse) => {
         const branchId = branch._id;
 
-        const studentCount = safeStudents.filter((s: any) => 
-            (typeof s.branch === 'string' ? s.branch === branchId : s.branch?._id === branchId)
+        const studentCount = safeStudents.filter((s: any) =>
+          typeof s.branch === "string"
+            ? s.branch === branchId
+            : s.branch?._id === branchId
         ).length;
 
-        const batchCount = safeBatches.filter((b: any) => 
-            (typeof b.branch === 'string' ? b.branch === branchId : b.branch?._id === branchId)
+        const batchCount = safeBatches.filter((b: any) =>
+          typeof b.branch === "string"
+            ? b.branch === branchId
+            : b.branch?._id === branchId
         ).length;
 
-        const trainerCount = safeTrainers.filter((t: any) => 
-            (typeof t.branch === 'string' ? t.branch === branchId : t.branch?._id === branchId)
+        const trainerCount = safeTrainers.filter((t: any) =>
+          typeof t.branch === "string"
+            ? t.branch === branchId
+            : t.branch?._id === branchId
         ).length;
 
         return {
@@ -117,19 +144,23 @@ export default function AdminDashboardComponent() {
           stats: {
             students: studentCount,
             batches: batchCount,
-            trainers: trainerCount
-          }
+            trainers: trainerCount,
+          },
         };
       });
 
       setBranches(processedBranches);
-      
-      // If no branch is selected (or all), keep it as ALL_BRANCH_ID. 
-      // If previously selected branch doesn't exist anymore, reset to ALL.
-      if (selectedBranchId !== ALL_BRANCH_ID && !processedBranches.find((b: DashboardBranch) => b._id === selectedBranchId)) {
-          setSelectedBranchId(ALL_BRANCH_ID);
-      }
 
+      // If no branch is selected (or all), keep it as ALL_BRANCH_ID.
+      // If previously selected branch doesn't exist anymore, reset to ALL.
+      if (
+        selectedBranchId !== ALL_BRANCH_ID &&
+        !processedBranches.find(
+          (b: DashboardBranch) => b._id === selectedBranchId
+        )
+      ) {
+        setSelectedBranchId(ALL_BRANCH_ID);
+      }
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
       toast.error("Failed to load dashboard data");
@@ -171,11 +202,11 @@ export default function AdminDashboardComponent() {
 
   // Initial Loading State (Auth Check) works best with a Spinner
   if (!token) {
-      return (
-          <div className="flex h-full w-full items-center justify-center">
-             <HashLoader color="#6366F1" size={40} />
-          </div>
-      );
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <HashLoader color="#6366F1" size={40} />
+      </div>
+    );
   }
 
   return (
@@ -188,68 +219,78 @@ export default function AdminDashboardComponent() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col gap-8 min-w-0">
-        
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div className="flex items-center gap-3">
-               <h1 className="text-3xl font-bold text-foreground tracking-tight">
-                 {loading ? <Skeleton className="h-10 w-48" /> : currentData.name}
-               </h1>
-               {/* Branch Select Dropdown */}
-               {loading ? (
-                   <Skeleton className="h-10 w-10 rounded-full" />
-               ) : (
+              <h1 className="text-3xl font-bold text-foreground tracking-tight">
+                {loading ? (
+                  <Skeleton className="h-10 w-48" />
+                ) : (
+                  currentData.name
+                )}
+              </h1>
+              {/* Branch Select Dropdown */}
+              {loading ? (
+                <Skeleton className="h-10 w-10 rounded-full" />
+              ) : (
                 <Select
-                    value={selectedBranchId}
-                    onValueChange={setSelectedBranchId}
-                    disabled={loading}
+                  value={selectedBranchId}
+                  onValueChange={setSelectedBranchId}
+                  disabled={loading}
                 >
-                    <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0 group">
-                      <div className="flex items-center gap-2">
-                         <div className="w-10 h-10 rounded-full bg-orange-100/50 dark:bg-orange-900/20 flex items-center justify-center text-foreground group-hover:bg-orange-100 dark:group-hover:bg-orange-900/30 transition-colors">
-                           <Building2 size={20} className="text-gray-700 dark:text-gray-300" />
-                         </div>
+                  <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0 group">
+                    <div className="flex items-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-orange-100/50 dark:bg-orange-900/20 flex items-center justify-center text-foreground group-hover:bg-orange-100 dark:group-hover:bg-orange-900/30 transition-colors">
+                        <Building2
+                          size={20}
+                          className="text-gray-700 dark:text-gray-300"
+                        />
                       </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={ALL_BRANCH_ID}>All Branches</SelectItem>
-                      {branches.map((b) => (
-                        <SelectItem key={b._id} value={b._id}>
-                          {b.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL_BRANCH_ID}>All Branches</SelectItem>
+                    {branches.map((b) => (
+                      <SelectItem key={b._id} value={b._id}>
+                        {b.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
-               )}
+              )}
             </div>
             <div className="flex items-center gap-2 text-muted-foreground mt-1">
-               <MapPin size={14} />
-               <div className="text-sm">
-                   {loading ? <Skeleton className="h-4 w-32" /> : (currentData.address || " ")}
-               </div>
+              <MapPin size={14} />
+              <div className="text-sm">
+                {loading ? (
+                  <Skeleton className="h-4 w-32" />
+                ) : (
+                  currentData.address || " "
+                )}
+              </div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="relative">
-               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-               <Input 
-                 placeholder="Search..." 
-                 className="pl-9 bg-white/50 dark:bg-black/50 border-white/20 backdrop-blur-sm w-full md:w-64 rounded-full"
-                 disabled={loading}
-               />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder="Search..."
+                className="pl-9 bg-white/50 dark:bg-black/50 border-white/20 backdrop-blur-sm w-full md:w-64 rounded-full"
+                disabled={loading}
+              />
             </div>
             <Button variant="ghost" size="icon" className="rounded-full">
-               <Bell className="w-5 h-5 text-foreground" />
+              <Bell className="w-5 h-5 text-foreground" />
             </Button>
-             <Button 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-10 px-4 shadow-lg shadow-primary/20"
-                onClick={() => setIsAddBranchOpen(true)}
-                disabled={loading}
+            <Button
+              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-10 px-4 shadow-lg shadow-primary/20"
+              onClick={() => setIsAddBranchOpen(true)}
+              disabled={loading}
             >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Branch
+              <Plus className="w-4 h-4 mr-2" />
+              Add Branch
             </Button>
           </div>
         </div>
@@ -259,107 +300,120 @@ export default function AdminDashboardComponent() {
           {/* Card 1: Students (Primary Blue) */}
           <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-sm hover:shadow-lg transition-all relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
-               <GraduationCap size={100} />
+              <GraduationCap size={100} />
             </div>
-             <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400">
-                   <GraduationCap size={24} />
-                </div>
-                <span className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs font-bold px-3 py-1 rounded-full">
-                  +12%
-                </span>
-             </div>
-             <div>
-                <div className="mb-1">
-                    {loading ? (
-                        <Skeleton className="h-10 w-24" />
-                    ) : (
-                        <h3 className="text-4xl font-extrabold text-foreground">
-                            {(currentData.stats?.students || 0).toLocaleString()}
-                        </h3>
-                    )}
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">Total Students</p>
-             </div>
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400">
+                <GraduationCap size={24} />
+              </div>
+              <span className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs font-bold px-3 py-1 rounded-full">
+                +12%
+              </span>
+            </div>
+            <div>
+              <div className="mb-1">
+                {loading ? (
+                  <Skeleton className="h-10 w-24" />
+                ) : (
+                  <h3 className="text-4xl font-extrabold text-foreground">
+                    {(currentData.stats?.students || 0).toLocaleString()}
+                  </h3>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground font-medium">
+                Total Students
+              </p>
+            </div>
           </div>
 
           {/* Card 2: Batches (Orange) */}
-           <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-sm hover:shadow-lg transition-all relative overflow-hidden group">
+          <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-sm hover:shadow-lg transition-all relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
-               <BookOpen size={100} />
+              <BookOpen size={100} />
             </div>
-             <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400">
-                   <BookOpen size={24} />
-                </div>
-                <span className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
-                  Active
-                </span>
-             </div>
-             <div>
-                <div className="mb-1">
-                    {loading ? (
-                        <Skeleton className="h-10 w-24" />
-                    ) : (
-                        <h3 className="text-4xl font-extrabold text-foreground">
-                            {(currentData.stats?.batches || 0).toLocaleString()}
-                        </h3>
-                    )}
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">Total Batches</p>
-             </div>
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl text-orange-600 dark:text-orange-400">
+                <BookOpen size={24} />
+              </div>
+              <span className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
+                Active
+              </span>
+            </div>
+            <div>
+              <div className="mb-1">
+                {loading ? (
+                  <Skeleton className="h-10 w-24" />
+                ) : (
+                  <h3 className="text-4xl font-extrabold text-foreground">
+                    {(currentData.stats?.batches || 0).toLocaleString()}
+                  </h3>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground font-medium">
+                Total Batches
+              </p>
+            </div>
           </div>
 
           {/* Card 3: Trainers (Emerald/Green) */}
-           <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-sm hover:shadow-lg transition-all relative overflow-hidden group">
+          <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-sm hover:shadow-lg transition-all relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
-               <Users size={100} />
+              <Users size={100} />
             </div>
-             <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
-                   <Users size={24} />
-                </div>
-                <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs font-bold px-3 py-1 rounded-full">
-                  Verified
-                </span>
-             </div>
-             <div>
-                 <div className="mb-1">
-                    {loading ? (
-                        <Skeleton className="h-10 w-24" />
-                    ) : (
-                        <h3 className="text-4xl font-extrabold text-foreground">
-                            {(currentData.stats?.trainers || 0).toLocaleString()}
-                        </h3>
-                    )}
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">Active Trainers</p>
-             </div>
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
+                <Users size={24} />
+              </div>
+              <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs font-bold px-3 py-1 rounded-full">
+                Verified
+              </span>
+            </div>
+            <div>
+              <div className="mb-1">
+                {loading ? (
+                  <Skeleton className="h-10 w-24" />
+                ) : (
+                  <h3 className="text-4xl font-extrabold text-foreground">
+                    {(currentData.stats?.trainers || 0).toLocaleString()}
+                  </h3>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground font-medium">
+                Active Trainers
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Recent Activity Section */}
         <div className="bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-3xl border border-white/20 p-8 shadow-sm h-full">
-             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-foreground">Recent Activity</h2>
-                <Button variant="link" className="text-primary p-0 h-auto font-semibold">View All</Button>
-             </div>
-             <AdminRecentActivity
-               activity={[
-                 {
-                   type: "New Enrollment",
-                   detail: `5 new students joined the UX Design Batch.`,
-                 },
-                 {
-                   type: "Batch Completed",
-                   detail: "React Basics batch concluded successfully.",
-                 },
-                 {
-                   type: "System Maintenance",
-                   detail: "Scheduled maintenance for server upgrade.",
-                 },
-               ]}
-             />
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-foreground">
+              Recent Activity
+            </h2>
+            <Button
+              variant="link"
+              className="text-primary p-0 h-auto font-semibold"
+            >
+              View All
+            </Button>
+          </div>
+          <AdminRecentActivity
+            activity={[
+              {
+                type: "New Enrollment",
+                detail: `5 new students joined the UX Design Batch.`,
+              },
+              {
+                type: "Batch Completed",
+                detail: "React Basics batch concluded successfully.",
+              },
+              {
+                type: "System Maintenance",
+                detail: "Scheduled maintenance for server upgrade.",
+              },
+            ]}
+          />
         </div>
       </div>
 
@@ -369,15 +423,14 @@ export default function AdminDashboardComponent() {
           <TodoList items={MOCK_TODO_LIST} />
         </div>
       </aside>
-      
-      <AddBranchForm 
-        open={isAddBranchOpen} 
+
+      <AddBranchForm
+        open={isAddBranchOpen}
         onOpenChange={setIsAddBranchOpen}
         onSuccess={() => {
-            fetchData();
+          fetchData();
         }}
       />
     </div>
   );
 }
-
