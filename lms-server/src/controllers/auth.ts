@@ -32,7 +32,17 @@ export async function adminGoogleLogin(req: Request, res: Response) {
           expiresIn: "9h",
         }
       );
-      return res.status(200).json({ token: jwtToken });
+
+      res.cookie("accessToken", jwtToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 9 * 60 * 60 * 1000,
+      });
+
+      return res
+        .status(200)
+        .json({ message: "Login successful", role: isEmailExist.role });
     } else {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -66,8 +76,15 @@ export async function trainerGoogleLogin(req: Request, res: Response) {
         }
       );
 
+      res.cookie("accessToken", jwtToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 9 * 60 * 60 * 1000,
+      });
+
       return res.status(200).json({
-        token: jwtToken,
+        message: "Login successful",
         firstLogin: trainer?.firstLogin,
         trainerId: trainer?._id,
       });
@@ -138,7 +155,17 @@ export async function studentLogin(req: Request, res: Response) {
           expiresIn: "9h",
         }
       );
-      return res.status(200).json({ token });
+
+      res.cookie("accessToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // true in production
+        sameSite: "lax", // or 'none' if cross-site
+        maxAge: 9 * 60 * 60 * 1000, // 9 hours
+      });
+
+      return res
+        .status(200)
+        .json({ message: "Login successful", role: "student" });
     }
   } catch (error) {
     console.log(error);
@@ -175,7 +202,15 @@ export async function updateStudentPassword(req: Request, res: Response) {
 
 export async function verifyToken(req: Request, res: Response) {
   try {
-    const { token } = req.body;
+    // const { token } = req.body; // Removed
+    const token = req.cookies.accessToken;
+    // ... existing code ...
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized! No token provided." });
+    }
+
     const decodedToken: any = jwt.verify(
       token,
       process.env.JWT_SECRET as string
@@ -186,5 +221,19 @@ export async function verifyToken(req: Request, res: Response) {
     return res
       .status(401)
       .json({ message: "Unauthorized! Please Signin Again!" });
+  }
+}
+
+export async function logout(req: Request, res: Response) {
+  try {
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    });
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 }

@@ -14,10 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  AddStudentFormValues,
-  addStudentSchema,
-} from "@/Schemas/adminForms";
+import { AddStudentFormValues, addStudentSchema } from "@/Schemas/adminForms";
 import { createStudent } from "@/Apis/Student";
 import { useAuth } from "@/Context/AuthContext";
 
@@ -47,7 +44,7 @@ export default function AddStudentForm({ onSuccess }: AddStudentFormProps) {
       return;
     }
     try {
-      await createStudent(data, token);
+      await createStudent(data);
       toast.success("Student added successfully!");
       form.reset();
       onSuccess();
@@ -89,10 +86,7 @@ export default function AddStudentForm({ onSuccess }: AddStudentFormProps) {
         />
 
         <div className="pt-4 flex justify-end">
-          <Button 
-            type="submit" 
-            disabled={isLoading}
-          >
+          <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add Student
           </Button>

@@ -20,6 +20,7 @@ import authRouter from "./routes/auth.js";
 import domainRouter from "./routes/domain.js";
 import attendanceRouter from "./routes/attendance.js";
 import trainerSessionRouter from "./routes/trainerSession.js";
+import chatRouter from "./routes/chatRoutes.js";
 
 // const __filename = fileURLToPath(import.meta.url); // Removed
 // const __dirname = path.dirname(__filename); // Removed
@@ -36,9 +37,23 @@ connectDB();
 initScheduler();
 
 // Essential middleware in correct order
+import cookieParser from "cookie-parser";
+
+// ... imports
+
 app.use(helmet());
 app.use(compression());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://192.168.1.21:3000",
+      "http://localhost:3001",
+    ], // Adjust as needed
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 app.use(morgan("combined"));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -65,3 +80,4 @@ app.use("/api/v1/material", materialRouter);
 app.use("/api/v1/domain", domainRouter);
 app.use("/api/v1/attendance", attendanceRouter);
 app.use("/api/v1/trainerSession", trainerSessionRouter);
+app.use("/api/v1/chat", chatRouter);

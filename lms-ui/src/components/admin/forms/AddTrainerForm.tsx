@@ -21,18 +21,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AddTrainerFormValues,
-  addTrainerSchema,
-} from "@/Schemas/adminForms";
+import { AddTrainerFormValues, addTrainerSchema } from "@/Schemas/adminForms";
 import { addTrainer } from "@/Apis/Trainer";
 import { getAllBranches } from "@/Apis/Branch";
 import { getAllDomains } from "@/Apis/Domain";
 
-
 import { useAuth } from "@/Context/AuthContext";
 import { useEffect, useState } from "react";
-
 
 interface AddTrainerFormProps {
   onSuccess: () => void;
@@ -71,16 +66,19 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
       setIsLoadingBranches(true);
       try {
         const [domainsRes, branchesRes] = await Promise.all([
-            getAllDomains(token),
-            getAllBranches(token)
+          getAllDomains(),
+          getAllBranches(),
         ]);
-        
-        const domainList = Array.isArray(domainsRes) ? domainsRes : (domainsRes.data || []);
+
+        const domainList = Array.isArray(domainsRes)
+          ? domainsRes
+          : domainsRes.data || [];
         setDomains(domainList);
 
-        const branchList = Array.isArray(branchesRes) ? branchesRes : (branchesRes.data || []);
+        const branchList = Array.isArray(branchesRes)
+          ? branchesRes
+          : branchesRes.data || [];
         setBranches(branchList);
-
       } catch (error) {
         console.error("Failed to fetch data", error);
         toast.error("Failed to load form data");
@@ -92,14 +90,13 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
     fetchData();
   }, [token]);
 
-
   async function onSubmit(data: AddTrainerFormValues) {
     if (!token) {
       toast.error("Authentication token missing");
       return;
     }
     try {
-      await addTrainer(data, token);
+      await addTrainer(data);
       toast.success("Trainer added successfully!");
       form.reset();
       onSuccess();
@@ -143,13 +140,16 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormField
+          <FormField
             control={form.control}
             name="gender"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Gender</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Gender" />
@@ -166,30 +166,37 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             )}
           />
 
-             <FormField
+          <FormField
             control={form.control}
             name="branch"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Branch</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Branch" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                     {isLoadingBranches ? (
-                        <SelectItem value="loading" disabled>Loading branches...</SelectItem>
-                     ) : branches.length > 0 ? (
-                        branches.map((branch) => (
-                           <SelectItem key={branch._id} value={branch._id}>
-                             {branch.name}
-                           </SelectItem>
-                        ))
-                     ) : (
-                        <SelectItem value="none" disabled>No branches found</SelectItem>
-                     )}
+                    {isLoadingBranches ? (
+                      <SelectItem value="loading" disabled>
+                        Loading branches...
+                      </SelectItem>
+                    ) : branches.length > 0 ? (
+                      branches.map((branch) => (
+                        <SelectItem key={branch._id} value={branch._id}>
+                          {branch.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="none" disabled>
+                        No branches found
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -203,24 +210,35 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Domain</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
-                       <SelectValue placeholder={isLoadingDomains ? "Loading..." : "Select Domain"} />
+                      <SelectValue
+                        placeholder={
+                          isLoadingDomains ? "Loading..." : "Select Domain"
+                        }
+                      />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                     {isLoadingDomains ? (
-                        <SelectItem value="loading" disabled>Loading domains...</SelectItem>
-                     ) : domains.length > 0 ? (
-                        domains.map((domain) => (
-                           <SelectItem key={domain._id} value={domain._id}>
-                             {domain.name}
-                           </SelectItem>
-                        ))
-                     ) : (
-                        <SelectItem value="none" disabled>No domains found</SelectItem>
-                     )}
+                    {isLoadingDomains ? (
+                      <SelectItem value="loading" disabled>
+                        Loading domains...
+                      </SelectItem>
+                    ) : domains.length > 0 ? (
+                      domains.map((domain) => (
+                        <SelectItem key={domain._id} value={domain._id}>
+                          {domain.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="none" disabled>
+                        No domains found
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -229,8 +247,8 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
           />
         </div>
 
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-           <FormField
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
             control={form.control}
             name="mobileNumber"
             render={({ field }) => (
@@ -260,10 +278,7 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
         </div>
 
         <div className="pt-4 flex justify-end gap-2">
-            <Button 
-                type="submit" 
-                disabled={isLoading}
-            >
+          <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Add Trainer
           </Button>

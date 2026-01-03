@@ -3,6 +3,7 @@
 import React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Users, FileText, Calendar, BadgeCheck } from "lucide-react";
+import axiosInstance from "@/Utils/Axiosinstance";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { Course } from "@/components/student/course-detail/OverviewTab";
 import ResourcesTab from "@/components/student/course-detail/ResourcesTab";
@@ -34,11 +35,11 @@ export default function StudentCourseDetail() {
   const params = useParams();
 
   const studentId =
-    (Array.isArray(params.studentId)
+    (Array.isArray(params?.studentId)
       ? params.studentId[0]
-      : params.studentId) ?? "";
+      : params?.studentId) ?? "";
   const courseId =
-    (Array.isArray(params.courseId) ? params.courseId[0] : params.courseId) ??
+    (Array.isArray(params?.courseId) ? params.courseId[0] : params?.courseId) ??
     "";
 
   const [tab, setTab] = React.useState("overview");
@@ -47,12 +48,14 @@ export default function StudentCourseDetail() {
   const course = useCourseData(courseId);
 
   React.useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      !window.localStorage.getItem("student_logged_in")
-    ) {
-      router.push("/student/login");
-    }
+    const checkAuth = async () => {
+      try {
+        await axiosInstance.post("/auth/verify-token");
+      } catch (e) {
+        router.push("/student/login");
+      }
+    };
+    checkAuth();
   }, [router]);
 
   if (!course || !student) {
@@ -95,14 +98,14 @@ export default function StudentCourseDetail() {
 
         {/* Title Section */}
         <div className="mb-6 sm:mb-8">
-            {course.code && (
-              <span className="inline-block px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 mb-2 border border-slate-200 dark:border-slate-700">
-                Code: {course.code}
-              </span>
-            )}
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--card-foreground)] break-words">
-              {course.name}
-            </h1>
+          {course.code && (
+            <span className="inline-block px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 mb-2 border border-slate-200 dark:border-slate-700">
+              Code: {course.code}
+            </span>
+          )}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--card-foreground)] break-words">
+            {course.name}
+          </h1>
           <p className="text-[var(--muted-foreground)] text-sm sm:text-base mt-1 break-words max-w-3xl">
             {course.description ||
               "Master the art of creating intuitive and beautiful user experiences."}

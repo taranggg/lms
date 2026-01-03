@@ -6,6 +6,7 @@ import {
   studentLogin,
   updateStudentPassword,
   verifyToken,
+  logout,
 } from "../controllers/auth.js";
 
 const authRouter = express.Router();
@@ -21,5 +22,7 @@ authRouter.post("/student/login", studentLogin);
 authRouter.post("/student/update-password", updateStudentPassword);
 
 authRouter.post("/verify-token", verifyToken);
+
+authRouter.post("/logout", logout);
 
 export default authRouter;

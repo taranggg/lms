@@ -6,45 +6,28 @@ export interface DomainData {
   description: string;
 }
 
-export const createDomain = async (data: DomainData, token: string) => {
+export const createDomain = async (data: DomainData) => {
   try {
-    const response = await axiosInstance.post(
-      ApiPaths.DOMAIN.CREATE,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axiosInstance.post(ApiPaths.DOMAIN.CREATE, data);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const getAllDomains = async (token: string) => {
+export const getAllDomains = async () => {
   try {
-    const response = await axiosInstance.get(ApiPaths.DOMAIN.GET_ALL, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get(ApiPaths.DOMAIN.GET_ALL);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const getDomainById = async (id: string, token: string) => {
+export const getDomainById = async (id: string) => {
   try {
     const response = await axiosInstance.get(
-      `${ApiPaths.DOMAIN.GET_BY_ID}/${id}`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      `${ApiPaths.DOMAIN.GET_BY_ID}/${id}`
     );
     return response.data;
   } catch (error) {
@@ -52,20 +35,11 @@ export const getDomainById = async (id: string, token: string) => {
   }
 };
 
-export const updateDomain = async (
-  id: string,
-  data: Partial<DomainData>,
-  token: string
-) => {
+export const updateDomain = async (id: string, data: Partial<DomainData>) => {
   try {
     const response = await axiosInstance.put(
       `${ApiPaths.DOMAIN.UPDATE}/${id}`,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      data
     );
     return response.data;
   } catch (error) {
@@ -73,15 +47,10 @@ export const updateDomain = async (
   }
 };
 
-export const deleteDomain = async (id: string, token: string) => {
+export const deleteDomain = async (id: string) => {
   try {
     const response = await axiosInstance.delete(
-      `${ApiPaths.DOMAIN.DELETE}/${id}`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      `${ApiPaths.DOMAIN.DELETE}/${id}`
     );
     return response.data;
   } catch (error) {

@@ -14,34 +14,24 @@ export interface BatchData {
   [key: string]: any; // Keep index signature for flexibility if needed
 }
 
-export const createBatch = async (data: BatchData, token: string) => {
+export const createBatch = async (data: BatchData) => {
   try {
-    const response = await axiosInstance.post(ApiPaths.BATCH.CREATE, data, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.post(ApiPaths.BATCH.CREATE, data);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const getAllBatches = async (
-  token: string,
-  filters?: {
-    branch?: string;
-    trainer?: string;
-    type?: string;
-    status?: string;
-    search?: string;
-  }
-) => {
+export const getAllBatches = async (filters?: {
+  branch?: string;
+  trainer?: string;
+  type?: string;
+  status?: string;
+  search?: string;
+}) => {
   try {
     const response = await axiosInstance.get(ApiPaths.BATCH.GET_ALL, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
       params: filters,
     });
     return response.data;
@@ -50,33 +40,22 @@ export const getAllBatches = async (
   }
 };
 
-export const getBatchById = async (id: string, token: string) => {
+export const getBatchById = async (id: string) => {
   try {
-    const response = await axiosInstance.get(`${ApiPaths.BATCH.GET_BY_ID}/${id}`, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.get(
+      `${ApiPaths.BATCH.GET_BY_ID}/${id}`
+    );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const updateBatch = async (
-  id: string,
-  data: Partial<BatchData>,
-  token: string
-) => {
+export const updateBatch = async (id: string, data: Partial<BatchData>) => {
   try {
     const response = await axiosInstance.put(
       `${ApiPaths.BATCH.UPDATE}/${id}`,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      data
     );
     return response.data;
   } catch (error) {
@@ -84,15 +63,10 @@ export const updateBatch = async (
   }
 };
 
-export const deleteBatch = async (id: string, token: string) => {
+export const deleteBatch = async (id: string) => {
   try {
     const response = await axiosInstance.delete(
-      `${ApiPaths.BATCH.DELETE}/${id}`,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      `${ApiPaths.BATCH.DELETE}/${id}`
     );
     return response.data;
   } catch (error) {
@@ -100,15 +74,13 @@ export const deleteBatch = async (id: string, token: string) => {
   }
 };
 
-export const getBatchesByFilters = async (
-  filters: { branchId?: string; trainerId?: string; type?: string },
-  token: string
-) => {
+export const getBatchesByFilters = async (filters: {
+  branchId?: string;
+  trainerId?: string;
+  type?: string;
+}) => {
   try {
     const response = await axiosInstance.get(ApiPaths.BATCH.GET_BY_FILTERS, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
       params: filters,
     });
     return response.data;
@@ -117,19 +89,14 @@ export const getBatchesByFilters = async (
   }
 };
 
-export const assignBatchToStudent = async (
-  data: { batchId: string; studentId: string },
-  token: string
-) => {
+export const assignBatchToStudent = async (data: {
+  batchId: string;
+  studentId: string;
+}) => {
   try {
     const response = await axiosInstance.post(
       ApiPaths.BATCH.ASSIGN_TO_STUDENT,
-      data,
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
+      data
     );
     return response.data;
   } catch (error) {
