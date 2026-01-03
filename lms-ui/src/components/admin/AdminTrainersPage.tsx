@@ -33,7 +33,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminTrainersPage() {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBranch, setFilterBranch] = useState("All");
   const [mounted, setMounted] = useState(false);
@@ -50,7 +50,7 @@ export default function AdminTrainersPage() {
   // Fetch Branches Metadata only once
   useEffect(() => {
     const fetchMetadata = async () => {
-      if (!token) return;
+      if (!isAuthenticated) return;
       try {
         const branchesRes = await getAllBranches();
         const branchesData = Array.isArray(branchesRes)
@@ -62,10 +62,10 @@ export default function AdminTrainersPage() {
       }
     };
     fetchMetadata();
-  }, [token]);
+  }, [isAuthenticated]);
 
   const fetchTrainers = async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     setLoading(true);
     try {
       const filters: any = {};
@@ -92,7 +92,7 @@ export default function AdminTrainersPage() {
       fetchTrainers();
     }, 500);
     return () => clearTimeout(timer);
-  }, [token, filterBranch, searchQuery]);
+  }, [isAuthenticated, filterBranch, searchQuery]);
 
   // Helper to get Branch Name by ID
   const getBranchName = (branchIdOrObj: any) => {

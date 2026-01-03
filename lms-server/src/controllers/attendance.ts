@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import AttendanceModel from "../models/attendance.js";
-import mongoose from "mongoose";
+import TrainerAttendanceModel from "../models/trainerAttendance.js";
 
 // Mark Attendance (Upsert: Create or Update)
 export const markBatchAttendance = async (req: Request, res: Response) => {
@@ -110,6 +110,70 @@ export const getStudentAttendance = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Error fetching student history",
+      error,
+    });
+  }
+};
+
+// Get Trainer Attendance History (Admin/Trainer View)
+
+export const getTrainerAttendanceHistory = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const {
+      trainerId,
+      startDate,
+      endDate,
+      status,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    const query: any = {};
+
+    // Filter by Trainer (Admin can query anyone, Trainer only themselves)
+    if (trainerId) query.trainerId = trainerId;
+    //@ts-ignore
+    else if (req.user?.role === "Trainer") query.trainerId = req.user.userId;
+
+    // Filter by Date Range
+    if (startDate && endDate) {
+      query.date = {
+        $gte: new Date(startDate as string),
+        $lte: new Date(endDate as string),
+      };
+    }
+
+    // Filter by Status
+    if (status && status !== "All") {
+      query.status = status;
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const history = await TrainerAttendanceModel.find(query)
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(Number(limit))
+      .populate("trainerId", "name email branch domain");
+
+    const total = await TrainerAttendanceModel.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      data: history,
+      pagination: {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / Number(limit)),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching trainer attendance history",
       error,
     });
   }

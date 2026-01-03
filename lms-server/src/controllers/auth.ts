@@ -40,9 +40,13 @@ export async function adminGoogleLogin(req: Request, res: Response) {
         maxAge: 9 * 60 * 60 * 1000,
       });
 
-      return res
-        .status(200)
-        .json({ message: "Login successful", role: isEmailExist.role });
+      return res.status(200).json({
+        message: "Login successful",
+        role: isEmailExist.role,
+        userId: admin?._id,
+        email: email,
+        verified: true,
+      });
     } else {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -87,6 +91,10 @@ export async function trainerGoogleLogin(req: Request, res: Response) {
         message: "Login successful",
         firstLogin: trainer?.firstLogin,
         trainerId: trainer?._id,
+        userId: trainer?._id, // Alias for consistency
+        email: email,
+        role: isEmailExist.role,
+        verified: true,
       });
     } else {
       return res.status(401).json({ message: "Unauthorized" });
@@ -215,7 +223,12 @@ export async function verifyToken(req: Request, res: Response) {
       token,
       process.env.JWT_SECRET as string
     );
-    return res.status(200).json({ role: decodedToken.role, verified: true });
+    return res.status(200).json({
+      role: decodedToken.role,
+      verified: true,
+      userId: decodedToken.userId,
+      email: decodedToken.email,
+    });
   } catch (error) {
     console.log(error);
     return res

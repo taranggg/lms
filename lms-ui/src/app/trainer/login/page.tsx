@@ -16,7 +16,7 @@ import { ConnectGoogleModal } from "@/components/trainer/ConnectGoogleModal";
 
 const TrainerLoginContent = () => {
   const router = useRouter();
-  const { dispatch } = useAuth();
+  const { login: setAuthUser } = useAuth();
   const [isLoading, setIsLoading] = React.useState(false);
   const [showGoogleModal, setShowGoogleModal] = React.useState(false);
   const [currentTrainerId, setCurrentTrainerId] = React.useState("");
@@ -26,7 +26,8 @@ const TrainerLoginContent = () => {
       setIsLoading(true);
       try {
         const res = await TrainerGoogleLogin(tokenResponse.access_token);
-        dispatch({ type: "SIGN_IN", payload: res.token });
+        // res now contains { userId, role, email, verified, ... }
+        setAuthUser(res);
         toast.success("Login Successful");
 
         if (res.firstLogin && res.trainerId) {

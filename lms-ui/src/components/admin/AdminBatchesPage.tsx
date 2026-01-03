@@ -35,7 +35,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminBatchesPage() {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBranch, setFilterBranch] = useState("All");
   const [filterTrainer, setFilterTrainer] = useState("All");

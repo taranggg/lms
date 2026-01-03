@@ -27,7 +27,7 @@ interface AddStudentFormProps {
 // ...
 
 export default function AddStudentForm({ onSuccess }: AddStudentFormProps) {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const form = useForm<AddStudentFormValues>({
     resolver: zodResolver(addStudentSchema),
     defaultValues: {
@@ -39,8 +39,8 @@ export default function AddStudentForm({ onSuccess }: AddStudentFormProps) {
   const isLoading = form.formState.isSubmitting;
 
   async function onSubmit(data: AddStudentFormValues) {
-    if (!token) {
-      toast.error("Authentication token missing");
+    if (!isAuthenticated) {
+      toast.error("Authentication required");
       return;
     }
     try {
