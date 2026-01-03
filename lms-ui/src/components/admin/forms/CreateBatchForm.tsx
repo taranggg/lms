@@ -39,7 +39,7 @@ interface TrainerOption {
 }
 
 export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [trainers, setTrainers] = useState<TrainerOption[]>([]);
   const [branches, setBranches] = useState<any[]>([]);
   const [isLoadingTrainers, setIsLoadingTrainers] = useState(false);
@@ -64,7 +64,7 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      if (!token) return;
+      if (!isAuthenticated) return;
       setIsLoadingBranches(true);
       try {
         const branchesRes = await getAllBranches();
@@ -80,11 +80,11 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
       }
     };
     fetchInitialData();
-  }, [token]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const fetchTrainersByBranch = async () => {
-      if (!token || !selectedBranch) {
+      if (!isAuthenticated || !selectedBranch) {
         setTrainers([]);
         return;
       }
@@ -112,11 +112,11 @@ export default function CreateBatchForm({ onSuccess }: CreateBatchFormProps) {
     } else {
       setTrainers([]);
     }
-  }, [selectedBranch, token, form.setValue]);
+  }, [selectedBranch, isAuthenticated, form.setValue]);
 
   async function onSubmit(data: CreateBatchFormValues) {
-    if (!token) {
-      toast.error("Authentication token missing");
+    if (!isAuthenticated) {
+      toast.error("Authentication required");
       return;
     }
     try {

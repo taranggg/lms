@@ -36,7 +36,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminStudentsPage() {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBranch, setFilterBranch] = useState("All");
   const [filterBatch, setFilterBatch] = useState("All");
@@ -57,7 +57,7 @@ export default function AdminStudentsPage() {
   // Fetch Metadata (Branches, Batches, Trainers) only once
   useEffect(() => {
     const fetchMetadata = async () => {
-      if (!token) return;
+      if (!isAuthenticated) return;
       try {
         const [branchesRes, batchesRes, trainersRes] = await Promise.all([
           getAllBranches(),
@@ -82,10 +82,10 @@ export default function AdminStudentsPage() {
       }
     };
     fetchMetadata();
-  }, [token]);
+  }, [isAuthenticated]);
 
   const fetchStudents = async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     setLoading(true);
     try {
       const filters: any = {};
@@ -113,7 +113,7 @@ export default function AdminStudentsPage() {
       fetchStudents();
     }, 500);
     return () => clearTimeout(timer);
-  }, [token, filterBranch, filterBatch, filterTrainer, searchQuery]);
+  }, [isAuthenticated, filterBranch, filterBatch, filterTrainer, searchQuery]);
 
   const handleSuccess = () => {
     setIsAddStudentOpen(false);

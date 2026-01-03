@@ -3,6 +3,7 @@ import {
   markBatchAttendance,
   getBatchAttendance,
   getStudentAttendance,
+  getTrainerAttendanceHistory,
 } from "../controllers/attendance.js";
 import { admintrainerAuthenticator } from "../middlewares/admintrainerAuthenticator.js";
 
@@ -14,5 +15,9 @@ attendanceRouter.use(admintrainerAuthenticator);
 attendanceRouter.post("/markBatchAttendance", markBatchAttendance);
 attendanceRouter.get("/getBatchAttendance", getBatchAttendance);
 attendanceRouter.get("/getStudentAttendance", getStudentAttendance);
+attendanceRouter.get(
+  "/getTrainerAttendanceHistory",
+  getTrainerAttendanceHistory
+); // New Route
 
 export default attendanceRouter;

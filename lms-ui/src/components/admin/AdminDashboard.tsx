@@ -68,7 +68,7 @@ const MOCK_TODO_LIST: TodoMainTask[] = [
 const ALL_BRANCH_ID = "all";
 
 export default function AdminDashboardComponent() {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [selectedBranchId, setSelectedBranchId] = useState(ALL_BRANCH_ID);
   const [isAddBranchOpen, setIsAddBranchOpen] = useState(false);
 
@@ -77,7 +77,7 @@ export default function AdminDashboardComponent() {
 
   // Fetch all data
   const fetchData = async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     setLoading(true);
     try {
       // 1. Fetch raw data in parallel using Promise.allSettled to prevent one failure from blocking others
@@ -171,7 +171,7 @@ export default function AdminDashboardComponent() {
 
   useEffect(() => {
     fetchData();
-  }, [token]);
+  }, [isAuthenticated]);
 
   // Logic to handle "All Branches" or specific branch
   const isAllSelected = selectedBranchId === ALL_BRANCH_ID;
@@ -201,7 +201,7 @@ export default function AdminDashboardComponent() {
   }, [selectedBranchId, isAllSelected, branches]);
 
   // Initial Loading State (Auth Check) works best with a Spinner
-  if (!token) {
+  if (!isAuthenticated) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <HashLoader color="#6366F1" size={40} />

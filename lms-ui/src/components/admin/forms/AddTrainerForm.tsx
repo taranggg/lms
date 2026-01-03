@@ -38,7 +38,7 @@ interface AddTrainerFormProps {
 // ...
 
 export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [domains, setDomains] = useState<any[]>([]);
   const [branches, setBranches] = useState<any[]>([]);
   const [isLoadingDomains, setIsLoadingDomains] = useState(false);
@@ -61,7 +61,7 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!token) return;
+      if (!isAuthenticated) return;
       setIsLoadingDomains(true);
       setIsLoadingBranches(true);
       try {
@@ -88,11 +88,11 @@ export default function AddTrainerForm({ onSuccess }: AddTrainerFormProps) {
       }
     };
     fetchData();
-  }, [token]);
+  }, [isAuthenticated]);
 
   async function onSubmit(data: AddTrainerFormValues) {
-    if (!token) {
-      toast.error("Authentication token missing");
+    if (!isAuthenticated) {
+      toast.error("Authentication required");
       return;
     }
     try {

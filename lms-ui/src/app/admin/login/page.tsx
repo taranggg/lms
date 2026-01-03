@@ -16,55 +16,16 @@ import { SlideToLogin } from "@/components/ui/slide-to-login";
 
 const AdminLoginContent = () => {
   const router = useRouter();
-  const { dispatch } = useAuth();
+  const { login: setAuthUser } = useAuth();
   const [isLoading, setIsLoading] = React.useState(false);
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse: TokenResponse) => {
       // isLoading is already true from the button click
       try {
-        // Note: tokenResponse returns 'access_token'.
-        // If AdminGoogleLogin expects 'credential' (ID Token), we might need 'flow: "auth-code"' or adjust backend.
-        // HOWEVER, standard GoogleLogin (the button) returns credential (ID Token).
-        // useGoogleLogin with default flow (implicit) returns access_token.
-        // Let's check AdminGoogleLogin.
-        // Assuming AdminGoogleLogin expects the ID Token (credential), we need to set flow='implicit' but asking for id_token is deprecated or specific.
-        // Actually, useGoogleLogin doesn't return ID token easily in implicit flow anymore.
-        // Use `onSuccess` with `credentialResponse` is for the component.
-        // For the HOOK, to get the ID Token, we usually just get an access token and send it to backend, OR we use the component.
-        // BUT the user wants the custom slide button.
-        // Strategy: useGoogleLogin can behave like the button if we don't specify flow, but it returns access_token.
-        // If backend verifies access_token or ID_token matters.
-        // Let's try to pass the access_token. If backend fails, we might need to fetch user info then send email?
-        // OR better: useGoogleLogin can perform `flow: 'auth-code'` to get a code, then backend exchanges it.
-        // OR we can fetch the user profile with the access token and then "login" if that's how the logic works?
-        // Let's assume for now we pass the access_token.
-
-        // WAIT: Previous code was `credentialResponse.credential` which is an ID Token (JWT).
-        // To get ID Token with hook, need specific setup or just use access_token.
-        // Let's assume AdminGoogleLogin handles the token it gets.
-        // If previous code was `AdminGoogleLogin(credentialResponse.credential)`, it likely expects a JWT.
-        // Getting JWT from hook:
-        // The hook doesn't return "credential" (JWT) by default in the response object like the Button does.
-        // We might need to fetch user info via Google API using the access_token,
-        // OR change AdminGoogleLogin to accept access_token.
-
-        // Alternative: `useGoogleLogin` can handle the popup.
-        // Let's assume we can get the necessary token.
-
-        // FIX: we will use `useGoogleLogin` and pass the `access_token`.
-        // If `AdminGoogleLogin` fails, we will know.
-        // But wait, standard `GoogleLogin` button returns an ID Token (JWT).
-        // `useGoogleLogin` returns an access token.
-        // If the backend strictly needs ID Token, the Hook is tricky without backend changes or extra call.
-        // Let's try to get the ID Token via `flow: 'implicit'`? No.
-
-        // Let's proceed with passing the accessToken, and if it fails I'll fix the service.
-        // Actually, `AdminGoogleLogin` likely calls an endpoint that verifies the token.
-
         const res = await AdminGoogleLogin(tokenResponse.access_token);
         // Backend sets cookie. We just need to update local state.
-        dispatch({ type: "SIGN_IN", payload: "admin_logged_in" });
+        setAuthUser(res); // "res" now matches the User interface
         toast.success("Welcome back! Login Successful");
         router.push("/admin");
       } catch (err: any) {

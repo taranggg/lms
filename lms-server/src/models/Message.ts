@@ -17,7 +17,7 @@ const messageSchema = new mongoose.Schema<Message>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Batch",
       required: true,
-      index: true, // Important for fetching history by batch
+      index: true,
     },
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -35,7 +35,7 @@ const messageSchema = new mongoose.Schema<Message>(
     },
     content: {
       type: String,
-      required: true, // Even for file, we might want a caption or just empty string
+      required: true,
       default: "",
     },
     type: {

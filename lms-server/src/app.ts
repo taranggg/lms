@@ -19,7 +19,6 @@ import fs from "fs";
 import authRouter from "./routes/auth.js";
 import domainRouter from "./routes/domain.js";
 import attendanceRouter from "./routes/attendance.js";
-import trainerSessionRouter from "./routes/trainerSession.js";
 import chatRouter from "./routes/chatRoutes.js";
 
 // const __filename = fileURLToPath(import.meta.url); // Removed
@@ -79,5 +78,4 @@ app.use("/api/v1/batch", batchRouter);
 app.use("/api/v1/material", materialRouter);
 app.use("/api/v1/domain", domainRouter);
 app.use("/api/v1/attendance", attendanceRouter);
-app.use("/api/v1/trainerSession", trainerSessionRouter);
 app.use("/api/v1/chat", chatRouter);
